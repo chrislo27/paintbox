@@ -1,14 +1,7 @@
 apply plugin: "java"
 apply plugin: 'kotlin'
 
-sourceSets.main.java.srcDirs = [ "src/main/kotlin/" ]
+sourceSets.main.java.srcDirs = [ "src/main/kotlin/", "src/main/java" ]
 
 project.ext.mainClassName = "polyrhythmmania.desktop.DesktopLauncher"
-project.ext.assetsDir = new File("../core/assets");
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-        freeCompilerArgs += "-Xopt-in=kotlin.ExperimentalUnsignedTypes"
-    }
-}
+project.ext.assetsDir = new File("../core/assets")

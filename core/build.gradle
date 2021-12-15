@@ -1,14 +1,5 @@
 apply plugin: "java"
 apply plugin: 'kotlin'
 
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-
 sourceSets.main.java.srcDirs = [ "src/main/kotlin", "src/main/java" ]
 sourceSets.main.resources.srcDir("assets/")
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "11"
-        freeCompilerArgs += "-Xopt-in=kotlin.ExperimentalUnsignedTypes"
-    }
-}
