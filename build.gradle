@@ -1,0 +1,116 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+allprojects {
+    apply plugin: "java"
+    apply plugin: "kotlin"
+    apply plugin: "maven-publish"
+
+    ext {
+        appName = "Paintbox"
+        gdxVersion = '1.10.0'
+        gdxControllersVersion = '2.2.1'
+        paintboxVersion = "0.1.0"
+    }
+    version = ext.paintboxVersion
+    archivesBaseName = "Paintbox-${project.name}"
+    
+    java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    repositories {
+        mavenCentral()
+//        maven { url 'https://jitpack.io/' }
+    }
+    
+    dependencies {
+        api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+        api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+        
+        api "com.eclipsesource.minimal-json:minimal-json:0.9.5"
+        api "com.beust:jcommander:1.81"
+        api "org.slf4j:slf4j-simple:1.7.32"
+        api "io.dropwizard.metrics:metrics-core:4.2.5"
+    }
+
+    if (hasProperty("JITPACK")) {
+        // Jitpack generates the wrong Gradle .module data and causes missing native dependencies (classifiers).
+        // https://github.com/jitpack/jitpack.io/issues/4476
+        tasks.withType(GenerateModuleMetadata).configureEach {
+            enabled = false
+        }
+    }
+}
+
+project(":core") {
+    apply plugin: "java"
+    apply plugin: "kotlin"
+
+    dependencies {
+        api "com.badlogicgames.gdx:gdx:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+        api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+//        api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version"
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = 'com.github.chrislo27'
+                artifactId = 'paintbox-core'
+
+                from components.java
+            }
+        }
+    }
+}
+
+project(":desktop") {
+    apply plugin: "java"
+    apply plugin: "kotlin"
+
+    dependencies {
+        implementation project(":core")
+
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-windows"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-windows-x86"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-linux"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-linux-arm64"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-linux-arm32"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-macos"
+
+        api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+        api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+//        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+    }
+    
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = 'com.github.chrislo27'
+                artifactId = 'paintbox-desktop'
+
+                from components.java
+            }
+        }
+    }
+}
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions {
+        jvmTarget = "11"
+        freeCompilerArgs += "-Xopt-in=kotlin.ExperimentalUnsignedTypes"
+    }
+}
