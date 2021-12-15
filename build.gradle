@@ -18,7 +18,7 @@ allprojects {
         appName = "Paintbox"
         gdxVersion = '1.10.0'
         gdxControllersVersion = '2.2.1'
-        paintboxVersion = "0.1.0"
+        paintboxVersion = "0.1.1"
     }
     version = ext.paintboxVersion
     archivesBaseName = "Paintbox-${project.name}"
@@ -44,7 +44,7 @@ allprojects {
         api "io.dropwizard.metrics:metrics-core:4.2.5"
     }
 
-    if (hasProperty("JITPACK")) {
+    if (System.getenv("JITPACK") == "true") {
         // Jitpack generates the wrong Gradle .module data and causes missing native dependencies (classifiers).
         // https://github.com/jitpack/jitpack.io/issues/4476
         tasks.withType(GenerateModuleMetadata).configureEach {
