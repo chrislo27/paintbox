@@ -56,6 +56,11 @@ interface Var<T> : ReadOnlyVar<T> {
                 level = DeprecationLevel.ERROR)
         operator fun invoke(item: Long): LongVar = LongVar(item)
         
+        @Deprecated("Prefer using the DoubleVar constructor to avoid confusion with generic versions",
+                replaceWith = ReplaceWith("DoubleVar"),
+                level = DeprecationLevel.ERROR)
+        operator fun invoke(item: Double): DoubleVar = DoubleVar(item)
+        
     }
 
     /**
@@ -171,6 +176,22 @@ interface Var<T> : ReadOnlyVar<T> {
          * The long specialization method. Adds the receiver as a dependency and returns a primitive long.
          */
         fun ReadOnlyLongVar.use(): Long {
+            dependencies += this
+            return this.get()
+        }
+        
+
+        @Deprecated("Don't use ReadOnlyVar<Double>, use ReadOnlyDoubleVar.use() instead to avoid explicit boxing",
+                replaceWith = ReplaceWith("(this as ReadOnlyDoubleVar).use()"),
+                level = DeprecationLevel.ERROR)
+        fun ReadOnlyVar<Double>.use(): Double {
+            return use(this)
+        }
+
+        /**
+         * The double specialization method. Adds the receiver as a dependency and returns a primitive double.
+         */
+        fun ReadOnlyDoubleVar.use(): Double {
             dependencies += this
             return this.get()
         }
