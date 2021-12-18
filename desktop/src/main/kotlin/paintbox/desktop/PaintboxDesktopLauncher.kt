@@ -19,7 +19,7 @@ class PaintboxDesktopLauncher(val game: PaintboxGame, val arguments: PaintboxArg
         System.setProperty("file.encoding", "UTF-8")
 
         val fps = arguments.fps
-        if (fps != null && fps < 0) {
+        if (fps != null && fps > 0) {
             config.setForegroundFPS(fps)
             config.setIdleFPS(if (fps == 0 /* fps = 0 -> unbounded*/) 60 else fps.coerceAtMost(60))
             game.launcherSettings.fps = fps
