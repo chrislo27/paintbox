@@ -1,9 +1,6 @@
 package paintbox.util
 
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sin
+import kotlin.math.*
 
 
 /**
@@ -41,6 +38,13 @@ object MathHelper {
         if (abs <= 0f)
             return value
         return (value / abs).roundToInt() * abs
+    }
+
+    fun snapToNearest(value: Double, interval: Double): Double {
+        val abs = abs(interval)
+        if (abs <= 0.0)
+            return value
+        return (value / abs).roundToLong() * abs
     }
 
     fun getSawtoothWave(time: Long, seconds: Float): Float {
