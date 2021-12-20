@@ -5,7 +5,7 @@ import paintbox.Paintbox
 import java.util.*
 
 
-data class NamedLocaleBundle(val locale: NamedLocale, val bundle: I18NBundle) {
+data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundle, val bundleName: String) {
 
     /**
      * Keys with missing information.
@@ -43,7 +43,7 @@ data class NamedLocaleBundle(val locale: NamedLocale, val bundle: I18NBundle) {
             bundle[key]
         } catch (e: MissingResourceException) {
             missingKeys += key
-            Paintbox.LOGGER.warn("Missing content for I18N key $key in bundle $locale")
+            Paintbox.LOGGER.warn("Missing content for I18N key $key in bundle $bundleName $namedLocale")
             return true
         }
         return false

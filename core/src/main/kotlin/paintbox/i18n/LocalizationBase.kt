@@ -43,7 +43,7 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val langDefFile: Fil
         loadBundles()
         if (lastBundle != null) {
             val bundles = bundles.getOrCompute()
-            currentBundle.set(bundles.find { it.locale == lastBundle.locale })
+            currentBundle.set(bundles.find { it.namedLocale == lastBundle.namedLocale })
         }
     }
 
@@ -70,7 +70,7 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val langDefFile: Fil
     }
 
     protected fun createNamedLocaleBundle(locale: NamedLocale, baseHandle: FileHandle): NamedLocaleBundle {
-        return NamedLocaleBundle(locale, I18NBundle.createBundle(baseHandle, locale.locale, "UTF-8"))
+        return NamedLocaleBundle(locale, I18NBundle.createBundle(baseHandle, locale.locale, "UTF-8"), baseHandle.pathWithoutExtension())
     }
 
     protected fun getBundlesFromLangFile(langDefFile: FileHandle, baseHandle: FileHandle): List<NamedLocaleBundle> {
@@ -100,7 +100,7 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val langDefFile: Fil
         }
 
         missing.filter { it.second.isNotEmpty() }.forEach {
-            Paintbox.LOGGER.warn("Missing ${it.second.size} keys for bundle ${it.first.locale}:${it.second.joinToString(separator = "") { i -> "\n  * $i" }}")
+            Paintbox.LOGGER.warn("Missing ${it.second.size} keys for bundle ${it.first.namedLocale}:${it.second.joinToString(separator = "") { i -> "\n  * $i" }}")
         }
     }
 
