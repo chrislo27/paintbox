@@ -187,6 +187,78 @@ class IntVar : ReadOnlyIntVar, Var<Int> {
     }
 
     /**
+     * Increments this value by 1 and returns the ORIGINAL value.
+     */
+    fun getAndIncrement(): Int {
+        val old = this.get()
+        this.set(old + 1)
+        return old
+    }
+    
+    /**
+     * Increments this value by 1 and returns the NEW value.
+     */
+    fun incrementAndGet(): Int {
+        val newValue = this.get() + 1
+        this.set(newValue)
+        return newValue
+    }
+
+    /**
+     * Increments this value by [amount] and returns the ORIGINAL value.
+     */
+    fun getAndIncrementBy(amount: Int): Int {
+        val old = this.get()
+        this.set(old + amount)
+        return old
+    }
+    
+    /**
+     * Increments this value by [amount] and returns the NEW value.
+     */
+    fun incrementAndGetBy(amount: Int): Int {
+        val newValue = this.get() + amount
+        this.set(newValue)
+        return newValue
+    }
+
+    /**
+     * Decrements this value by 1 and returns the ORIGINAL value.
+     */
+    fun getAndDecrement(): Int {
+        val old = this.get()
+        this.set(old - 1)
+        return old
+    }
+    
+    /**
+     * Decrements this value by 1 and returns the NEW value.
+     */
+    fun decrementAndGet(): Int {
+        val newValue = this.get() - 1
+        this.set(newValue)
+        return newValue
+    }
+
+    /**
+     * Decrements this value by [amount] and returns the ORIGINAL value.
+     */
+    fun getAndDecrementBy(amount: Int): Int {
+        val old = this.get()
+        this.set(old - amount)
+        return old
+    }
+    
+    /**
+     * Decrements this value by [amount] and returns the NEW value.
+     */
+    fun decrementAndGetBy(amount: Int): Int {
+        val newValue = this.get() - amount
+        this.set(newValue)
+        return newValue
+    }
+
+    /**
      * Cannot be inner for garbage collection reasons! We are avoiding an explicit strong reference to the parent Var
      */
     private class InvalListener(v: IntVar) : VarChangedListener<Any?> {
@@ -227,4 +299,76 @@ fun Var<Int>.negate(): Int {
     val newState = -this.getOrCompute()
     this.set(newState)
     return newState
+}
+
+/**
+ * Increments this value by 1 and returns the ORIGINAL value.
+ */
+fun Var<Int>.getAndIncrement(): Int {
+    val old = this.getOrCompute()
+    this.set(old + 1)
+    return old
+}
+
+/**
+ * Increments this value by 1 and returns the NEW value.
+ */
+fun Var<Int>.incrementAndGet(): Int {
+    val newValue = this.getOrCompute() + 1
+    this.set(newValue)
+    return newValue
+}
+
+/**
+ * Increments this value by [amount] and returns the ORIGINAL value.
+ */
+fun Var<Int>.getAndIncrementBy(amount: Int): Int {
+    val old = this.getOrCompute()
+    this.set(old + amount)
+    return old
+}
+
+/**
+ * Increments this value by [amount] and returns the NEW value.
+ */
+fun Var<Int>.incrementAndGetBy(amount: Int): Int {
+    val newValue = this.getOrCompute() + amount
+    this.set(newValue)
+    return newValue
+}
+
+/**
+ * Decrements this value by 1 and returns the ORIGINAL value.
+ */
+fun Var<Int>.getAndDecrement(): Int {
+    val old = this.getOrCompute()
+    this.set(old - 1)
+    return old
+}
+
+/**
+ * Decrements this value by 1 and returns the NEW value.
+ */
+fun Var<Int>.decrementAndGet(): Int {
+    val newValue = this.getOrCompute() - 1
+    this.set(newValue)
+    return newValue
+}
+
+/**
+ * Decrements this value by [amount] and returns the ORIGINAL value.
+ */
+fun Var<Int>.getAndDecrementBy(amount: Int): Int {
+    val old = this.getOrCompute()
+    this.set(old - amount)
+    return old
+}
+
+/**
+ * Decrements this value by [amount] and returns the NEW value.
+ */
+fun Var<Int>.decrementAndGetBy(amount: Int): Int {
+    val newValue = this.getOrCompute() - amount
+    this.set(newValue)
+    return newValue
 }

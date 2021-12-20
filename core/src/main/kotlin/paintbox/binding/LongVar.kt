@@ -176,7 +176,7 @@ class LongVar : ReadOnlyLongVar, Var<Long> {
     }
 
     /**
-     * [Sets][set] this [IntVar] to be the negation of its value from [IntVar.get].
+     * [Sets][set] this [LongVar] to be the negation of its value from [LongVar.get].
      *
      * Returns the new state.
      */
@@ -184,6 +184,78 @@ class LongVar : ReadOnlyLongVar, Var<Long> {
         val newState = -this.get()
         this.set(newState)
         return newState
+    }
+    
+    /**
+     * Increments this value by 1 and returns the ORIGINAL value.
+     */
+    fun getAndIncrement(): Long {
+        val old = this.get()
+        this.set(old + 1)
+        return old
+    }
+
+    /**
+     * Increments this value by 1 and returns the NEW value.
+     */
+    fun incrementAndGet(): Long {
+        val newValue = this.get() + 1
+        this.set(newValue)
+        return newValue
+    }
+
+    /**
+     * Increments this value by [amount] and returns the ORIGINAL value.
+     */
+    fun getAndIncrementBy(amount: Long): Long {
+        val old = this.get()
+        this.set(old + amount)
+        return old
+    }
+
+    /**
+     * Increments this value by [amount] and returns the NEW value.
+     */
+    fun incrementAndGetBy(amount: Long): Long {
+        val newValue = this.get() + amount
+        this.set(newValue)
+        return newValue
+    }
+
+    /**
+     * Decrements this value by 1 and returns the ORIGINAL value.
+     */
+    fun getAndDecrement(): Long {
+        val old = this.get()
+        this.set(old - 1)
+        return old
+    }
+
+    /**
+     * Decrements this value by 1 and returns the NEW value.
+     */
+    fun decrementAndGet(): Long {
+        val newValue = this.get() - 1
+        this.set(newValue)
+        return newValue
+    }
+
+    /**
+     * Decrements this value by [amount] and returns the ORIGINAL value.
+     */
+    fun getAndDecrementBy(amount: Long): Long {
+        val old = this.get()
+        this.set(old - amount)
+        return old
+    }
+
+    /**
+     * Decrements this value by [amount] and returns the NEW value.
+     */
+    fun decrementAndGetBy(amount: Long): Long {
+        val newValue = this.get() - amount
+        this.set(newValue)
+        return newValue
     }
 
     /**
@@ -227,4 +299,76 @@ fun Var<Long>.negate(): Long {
     val newState = -this.getOrCompute()
     this.set(newState)
     return newState
+}
+
+/**
+ * Increments this value by 1 and returns the ORIGINAL value.
+ */
+fun Var<Long>.getAndIncrement(): Long {
+    val old = this.getOrCompute()
+    this.set(old + 1)
+    return old
+}
+
+/**
+ * Increments this value by 1 and returns the NEW value.
+ */
+fun Var<Long>.incrementAndGet(): Long {
+    val newValue = this.getOrCompute() + 1
+    this.set(newValue)
+    return newValue
+}
+
+/**
+ * Increments this value by [amount] and returns the ORIGINAL value.
+ */
+fun Var<Long>.getAndIncrementBy(amount: Long): Long {
+    val old = this.getOrCompute()
+    this.set(old + amount)
+    return old
+}
+
+/**
+ * Increments this value by [amount] and returns the NEW value.
+ */
+fun Var<Long>.incrementAndGetBy(amount: Long): Long {
+    val newValue = this.getOrCompute() + amount
+    this.set(newValue)
+    return newValue
+}
+
+/**
+ * Decrements this value by 1 and returns the ORIGINAL value.
+ */
+fun Var<Long>.getAndDecrement(): Long {
+    val old = this.getOrCompute()
+    this.set(old - 1)
+    return old
+}
+
+/**
+ * Decrements this value by 1 and returns the NEW value.
+ */
+fun Var<Long>.decrementAndGet(): Long {
+    val newValue = this.getOrCompute() - 1
+    this.set(newValue)
+    return newValue
+}
+
+/**
+ * Decrements this value by [amount] and returns the ORIGINAL value.
+ */
+fun Var<Long>.getAndDecrementBy(amount: Long): Long {
+    val old = this.getOrCompute()
+    this.set(old - amount)
+    return old
+}
+
+/**
+ * Decrements this value by [amount] and returns the NEW value.
+ */
+fun Var<Long>.decrementAndGetBy(amount: Long): Long {
+    val newValue = this.getOrCompute() - amount
+    this.set(newValue)
+    return newValue
 }
