@@ -13,6 +13,14 @@ class LanguageObject {
 
 }
 
+/**
+ * See [com.badlogic.gdx.utils.I18NBundle] for valid locale formats.
+ * 
+ * The fields should be all present in order of [language], then [country], then [variant]. Having all fields be NOT
+ * present is also legal.
+ * Variants may be created for just a country (with no language) or just a language (with no country), but
+ * not when language and country are not present.
+ */
 class LocaleObject {
 
     var language: String? = null

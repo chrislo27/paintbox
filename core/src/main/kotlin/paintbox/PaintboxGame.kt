@@ -122,8 +122,9 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
     /**
      * Set this for default debug localization behaviours.
      */
-    protected var localizationInstance: LocalizationBase? = null
-
+    protected var reloadableLocalizationInstances: List<LocalizationBase> = emptyList()
+    
+    
     val debugFont: PaintboxFont
         inline get() = fontCache["DEBUG_FONT"]
     val debugFontBordered: PaintboxFont
@@ -375,15 +376,17 @@ ${(screen as? PaintboxScreen)?.getDebugString() ?: ""}"""
             var pressed = true
             when (keycode) {
                 Input.Keys.I -> {
-                    val loc = localizationInstance
-                    if (loc != null) {
+                    val locs = reloadableLocalizationInstances.takeIf { it.isNotEmpty() }
+                    if (locs != null) {
                         val nano = measureNanoTime {
-                            loc.reloadAll()
-                            loc.logMissingLocalizations()
+                            locs.forEach { loc ->
+                                loc.reloadAll()
+                                loc.logMissingLocalizations()
+                            }
                         }
-                        Paintbox.LOGGER.debug("Reloaded I18N from files in ${nano / 1_000_000.0} ms")
+                        Paintbox.LOGGER.debug("Reloaded I18N (${locs.size} instance(s)) from files in ${nano / 1_000_000.0} ms")
                     } else {
-                        Paintbox.LOGGER.debug("Could not reload I18N, localizationInstance was not set")
+                        Paintbox.LOGGER.debug("No I18N to reload, PaintboxGame#reloadableLocalizationInstances was empty")
                     }
                 }
                 Input.Keys.S -> {
