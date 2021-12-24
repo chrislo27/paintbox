@@ -143,7 +143,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
             RectangleStack.pop()
         }
 
-        val drawOutlines = Paintbox.stageOutlines
+        val drawOutlines = Paintbox.stageOutlines.getOrCompute()
         if (drawOutlines != Paintbox.StageOutlineMode.NONE) {
             val lastPackedColor = batch.packedColor
             batch.setColor(0f, 1f, 0f, 1f)

@@ -1,6 +1,8 @@
 package paintbox
 
 import com.badlogic.gdx.Input
+import paintbox.binding.BooleanVar
+import paintbox.binding.Var
 import paintbox.logging.Logger
 
 /**
@@ -13,8 +15,8 @@ object Paintbox {
 
     const val DEBUG_KEY: Int = Input.Keys.F8
     val DEBUG_KEY_NAME: String = Input.Keys.toString(DEBUG_KEY)
-    var debugMode: Boolean = false
-    var stageOutlines: StageOutlineMode = StageOutlineMode.NONE
+    val debugMode: BooleanVar = BooleanVar(false)
+    var stageOutlines: Var<StageOutlineMode> = Var(StageOutlineMode.NONE)
 
     enum class StageOutlineMode {
         NONE, ALL, ONLY_VISIBLE

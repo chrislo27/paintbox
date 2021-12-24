@@ -234,7 +234,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
             resetViewportToScreen()
             debugInfo.update(Gdx.graphics.deltaTime)
 
-            if (Paintbox.debugMode) {
+            if (Paintbox.debugMode.get()) {
                 debugInfo.tmpMatrix.set(batch.projectionMatrix)
                 batch.projectionMatrix = nativeCamera.combined
                 batch.begin()
@@ -390,12 +390,12 @@ ${(screen as? PaintboxScreen)?.getDebugString() ?: ""}"""
                     }
                 }
                 Input.Keys.S -> {
-                    val old = Paintbox.stageOutlines
-                    Paintbox.stageOutlines = when (old) {
+                    val old = Paintbox.stageOutlines.getOrCompute()
+                    Paintbox.stageOutlines.set(when (old) {
                         NONE -> if (Gdx.input.isShiftDown()) ALL else ONLY_VISIBLE
                         ALL -> if (Gdx.input.isShiftDown()) ONLY_VISIBLE else NONE
                         ONLY_VISIBLE -> if (Gdx.input.isShiftDown()) ALL else NONE
-                    }
+                    })
                     Paintbox.LOGGER.debug("Toggled stage outlines to ${Paintbox.stageOutlines}")
                 }
                 Input.Keys.G -> System.gc()
@@ -418,8 +418,8 @@ ${(screen as? PaintboxScreen)?.getDebugString() ?: ""}"""
             val shouldToggle = shouldToggleDebugAfterPress
             shouldToggleDebugAfterPress = true
             if (shouldToggle) {
-                val old = Paintbox.debugMode
-                Paintbox.debugMode = !old
+                val old = Paintbox.debugMode.get()
+                Paintbox.debugMode.set(!old)
                 onDebugChange(old, !old)
                 Paintbox.LOGGER.debug("Switched debug mode to ${!old}")
                 return true
