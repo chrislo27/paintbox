@@ -68,12 +68,13 @@ class IntVar : ReadOnlyIntVar, Var<Int> {
         var anyNeedToBeDisposed = false
         listeners.forEach {
             it.onChange(this)
-            if (it is InvalListener && it.disposeMe) {
+            if (it is DisposableVarChangedListener<*> && it.shouldBeDisposed) {
                 anyNeedToBeDisposed = true
             }
         }
         if (anyNeedToBeDisposed) {
-            listeners -= listeners.filter { it is InvalListener && it.disposeMe }.toSet()
+            @Suppress("SuspiciousCollectionReassignment")
+            listeners -= listeners.filter { it is DisposableVarChangedListener<*> && it.shouldBeDisposed }.toSet()
         }
     }
 
@@ -171,6 +172,13 @@ class IntVar : ReadOnlyIntVar, Var<Int> {
         }
     }
 
+    override fun invalidate() {
+        if (!this.invalidated) {
+            this.invalidated = true
+            this.notifyListeners()
+        }
+    }
+
     override fun toString(): String {
         return get().toString()
     }
@@ -256,26 +264,6 @@ class IntVar : ReadOnlyIntVar, Var<Int> {
         val newValue = this.get() - amount
         this.set(newValue)
         return newValue
-    }
-
-    /**
-     * Cannot be inner for garbage collection reasons! We are avoiding an explicit strong reference to the parent Var
-     */
-    private class InvalListener(v: IntVar) : VarChangedListener<Any?> {
-        val weakRef: WeakReference<IntVar> = WeakReference(v)
-        var disposeMe: Boolean = false
-
-        override fun onChange(v: ReadOnlyVar<Any?>) {
-            val parent = weakRef.get()
-            if (!disposeMe && parent != null) {
-                if (!parent.invalidated) {
-                    parent.invalidated = true
-                    parent.notifyListeners()
-                }
-            } else {
-                disposeMe = true
-            }
-        }
     }
 
     private sealed class IntBinding {

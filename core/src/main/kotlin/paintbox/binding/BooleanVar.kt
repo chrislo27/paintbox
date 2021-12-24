@@ -1,6 +1,5 @@
 package paintbox.binding
 
-import java.lang.ref.WeakReference
 
 /**
  * The [Boolean] specialization of [ReadOnlyVar].
@@ -68,12 +67,13 @@ class BooleanVar : ReadOnlyBooleanVar, Var<Boolean> {
         var anyNeedToBeDisposed = false
         listeners.forEach {
             it.onChange(this)
-            if (it is InvalListener && it.disposeMe) {
+            if (it is DisposableVarChangedListener<*> && it.shouldBeDisposed) {
                 anyNeedToBeDisposed = true
             }
         }
         if (anyNeedToBeDisposed) {
-            listeners -= listeners.filter { it is InvalListener && it.disposeMe }.toSet()
+            @Suppress("SuspiciousCollectionReassignment")
+            listeners -= listeners.filter { it is DisposableVarChangedListener<*> && it.shouldBeDisposed }.toSet()
         }
     }
 
@@ -171,6 +171,13 @@ class BooleanVar : ReadOnlyBooleanVar, Var<Boolean> {
         }
     }
 
+    override fun invalidate() {
+        if (!this.invalidated) {
+            this.invalidated = true
+            this.notifyListeners()
+        }
+    }
+
     override fun toString(): String {
         return get().toString()
     }
@@ -184,26 +191,6 @@ class BooleanVar : ReadOnlyBooleanVar, Var<Boolean> {
         val newState = !this.get()
         this.set(newState)
         return newState
-    }
-
-    /**
-     * Cannot be inner for garbage collection reasons! We are avoiding an explicit strong reference to the parent Var
-     */
-    private class InvalListener(v: BooleanVar) : VarChangedListener<Any?> {
-        val weakRef: WeakReference<BooleanVar> = WeakReference(v)
-        var disposeMe: Boolean = false
-
-        override fun onChange(v: ReadOnlyVar<Any?>) {
-            val parent = weakRef.get()
-            if (!disposeMe && parent != null) {
-                if (!parent.invalidated) {
-                    parent.invalidated = true
-                    parent.notifyListeners()
-                }
-            } else {
-                disposeMe = true
-            }
-        }
     }
 
     private sealed class BooleanBinding {

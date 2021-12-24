@@ -45,12 +45,13 @@ class GenericVar<T> : Var<T> {
         var anyNeedToBeDisposed = false
         listeners.forEach {
             it.onChange(this)
-            if (it is InvalListener<*> && it.disposeMe) {
+            if (it is DisposableVarChangedListener<*> && it.shouldBeDisposed) {
                 anyNeedToBeDisposed = true
             }
         }
         if (anyNeedToBeDisposed) {
-            listeners -= listeners.filter { it is InvalListener<*> && it.disposeMe }.toSet()
+            @Suppress("SuspiciousCollectionReassignment")
+            listeners -= listeners.filter { it is DisposableVarChangedListener<*> && it.shouldBeDisposed }.toSet()
         }
     }
 
@@ -138,28 +139,15 @@ class GenericVar<T> : Var<T> {
         }
     }
 
-    override fun toString(): String {
-        return getOrCompute().toString()
+    override fun invalidate() {
+        if (!this.invalidated) {
+            this.invalidated = true
+            this.notifyListeners()
+        }
     }
 
-    /**
-     * Cannot be inner for garbage collection reasons! We are avoiding an explicit strong reference to the parent Var
-     */
-    private class InvalListener<T>(v: GenericVar<T>) : VarChangedListener<Any?> {
-        val weakRef: WeakReference<GenericVar<T>> = WeakReference(v)
-        var disposeMe: Boolean = false
-        
-        override fun onChange(v: ReadOnlyVar<Any?>) {
-            val parent = weakRef.get()
-            if (!disposeMe && parent != null) {
-                if (!parent.invalidated) {
-                    parent.invalidated = true
-                    parent.notifyListeners()
-                }
-            } else {
-                disposeMe = true
-            }
-        }
+    override fun toString(): String {
+        return getOrCompute().toString()
     }
 
     private sealed class GenericBinding<out T> {

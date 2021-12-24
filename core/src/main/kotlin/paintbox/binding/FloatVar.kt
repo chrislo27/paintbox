@@ -68,12 +68,13 @@ class FloatVar : ReadOnlyFloatVar, Var<Float> {
         var anyNeedToBeDisposed = false
         listeners.forEach {
             it.onChange(this)
-            if (it is InvalListener && it.disposeMe) {
+            if (it is DisposableVarChangedListener<*> && it.shouldBeDisposed) {
                 anyNeedToBeDisposed = true
             }
         }
         if (anyNeedToBeDisposed) {
-            listeners -= listeners.filter { it is InvalListener && it.disposeMe }.toSet()
+            @Suppress("SuspiciousCollectionReassignment")
+            listeners -= listeners.filter { it is DisposableVarChangedListener<*> && it.shouldBeDisposed }.toSet()
         }
     }
 
@@ -171,28 +172,15 @@ class FloatVar : ReadOnlyFloatVar, Var<Float> {
         }
     }
 
-    override fun toString(): String {
-        return get().toString()
+    override fun invalidate() {
+        if (!this.invalidated) {
+            this.invalidated = true
+            this.notifyListeners()
+        }
     }
 
-    /**
-     * Cannot be inner for garbage collection reasons! We are avoiding an explicit strong reference to the parent Var
-     */
-    private class InvalListener(v: FloatVar) : VarChangedListener<Any?> {
-        val weakRef: WeakReference<FloatVar> = WeakReference(v)
-        var disposeMe: Boolean = false
-        
-        override fun onChange(v: ReadOnlyVar<Any?>) {
-            val parent = weakRef.get()
-            if (!disposeMe && parent != null) {
-                if (!parent.invalidated) {
-                    parent.invalidated = true
-                    parent.notifyListeners()
-                }
-            } else {
-                disposeMe = true
-            }
-        }
+    override fun toString(): String {
+        return get().toString()
     }
 
     private sealed class FloatBinding {
