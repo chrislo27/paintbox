@@ -68,7 +68,7 @@ class DoubleVar : ReadOnlyDoubleVar, Var<Double> {
         var anyNeedToBeDisposed = false
         listeners.forEach {
             it.onChange(this)
-            if (it is DisposableVarChangedListener<*> && it.shouldBeDisposed) {
+            if (!anyNeedToBeDisposed && it is DisposableVarChangedListener<*> && it.shouldBeDisposed) {
                 anyNeedToBeDisposed = true
             }
         }
