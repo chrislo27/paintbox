@@ -74,6 +74,7 @@ class Markup(fontMapping: Map<String, PaintboxFont>, val defaultTextRun: TextRun
         val TAG_CARRYOVERX: String = "carryoverx"
         val TAG_CARRYOVERY: String = "carryovery"
         val TAG_XADVANCE: String = "xadvance"
+        val TAG_LINEHEIGHT: String = "lineheight"
         val TAG_BOLD: String = "bold"
         val TAG_BOLD2: String = "b"
         val TAG_ITALIC: String = "italic"
@@ -144,6 +145,7 @@ class Markup(fontMapping: Map<String, PaintboxFont>, val defaultTextRun: TextRun
             var carryoverX = tag.attrMap[TAG_CARRYOVERX]?.valueAsBooleanOr(true) ?: true
             var carryoverY = tag.attrMap[TAG_CARRYOVERY]?.valueAsBooleanOr(false) ?: false
             var xAdvance = tag.attrMap[TAG_XADVANCE]?.valueAsFloatOr(0f) ?: 0f
+            var lineHeightScale = tag.attrMap[TAG_LINEHEIGHT]?.valueAsFloatOr(1f) ?: 1f
 
             
             val scale = tag.attrMap[TAG_SCALE]?.valueAsFloatOr(1f) ?: 1f
@@ -189,7 +191,7 @@ class Markup(fontMapping: Map<String, PaintboxFont>, val defaultTextRun: TextRun
                 scaleY = 0.58f
             }
 
-            runs += TextRun(font, tag.text, color, scaleX, scaleY, offsetX, offsetY, carryoverX, carryoverY, xAdvance)
+            runs += TextRun(font, tag.text, color, scaleX, scaleY, offsetX, offsetY, carryoverX, carryoverY, xAdvance, lineHeightScale)
         }
 
         return TextBlock(runs)
@@ -206,8 +208,9 @@ class Markup(fontMapping: Map<String, PaintboxFont>, val defaultTextRun: TextRun
                 Attribute(TAG_OFFSETY, defaultTextRun.offsetYEm),
                 Attribute(TAG_CARRYOVERX, defaultTextRun.carryOverOffsetX),
                 Attribute(TAG_CARRYOVERY, defaultTextRun.carryOverOffsetY),
-                Attribute(TAG_XADVANCE, defaultTextRun.xAdvanceEm)),
-                "")
+                Attribute(TAG_XADVANCE, defaultTextRun.xAdvanceEm),
+                Attribute(TAG_LINEHEIGHT, defaultTextRun.lineHeightScale),
+        ), "")
         val tagStack = mutableListOf<Tag>(defaultRootTag)
         val tags = mutableListOf<Tag>()
         var text = ""

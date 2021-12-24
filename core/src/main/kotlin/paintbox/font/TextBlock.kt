@@ -100,9 +100,13 @@ data class TextBlock(val runs: List<TextRun>) {
 
     private fun adjustFontForTextRun(font: BitmapFont, textRun: TextRun) {
         font.scaleMul(textRun.scaleX, textRun.scaleY)
+        font.data.lineHeight *= textRun.lineHeightScale
+        font.data.down = font.data.lineHeight * if (font.data.flipped) 1 else -1
     }
 
     private fun resetFontForTextRun(font: BitmapFont, textRun: TextRun) {
+        font.data.lineHeight /= textRun.lineHeightScale
+        font.data.down = font.data.lineHeight * if (font.data.flipped) 1 else -1
         font.scaleMul(1f / textRun.scaleX, 1f / textRun.scaleY)
     }
 
