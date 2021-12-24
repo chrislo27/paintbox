@@ -73,7 +73,7 @@ class IntVar : ReadOnlyIntVar, Var<Int> {
             }
         }
         if (anyNeedToBeDisposed) {
-            listeners = listeners.filter { it is InvalListener && it.disposeMe }.toSet()
+            listeners -= listeners.filter { it is InvalListener && it.disposeMe }.toSet()
         }
     }
 

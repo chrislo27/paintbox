@@ -73,7 +73,7 @@ class FloatVar : ReadOnlyFloatVar, Var<Float> {
             }
         }
         if (anyNeedToBeDisposed) {
-            listeners = listeners.filter { it is InvalListener && it.disposeMe }.toSet()
+            listeners -= listeners.filter { it is InvalListener && it.disposeMe }.toSet()
         }
     }
 

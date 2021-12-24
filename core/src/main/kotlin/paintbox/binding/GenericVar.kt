@@ -50,7 +50,7 @@ class GenericVar<T> : Var<T> {
             }
         }
         if (anyNeedToBeDisposed) {
-            listeners = listeners.filter { it is InvalListener<*> && it.disposeMe }.toSet()
+            listeners -= listeners.filter { it is InvalListener<*> && it.disposeMe }.toSet()
         }
     }
 
