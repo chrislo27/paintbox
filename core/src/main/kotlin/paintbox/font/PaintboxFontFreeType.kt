@@ -118,9 +118,9 @@ class PaintboxFontFreeType(params: PaintboxFontParams,
             val generatedFont = generator.generateFont(newParam)
             this.generator = generator
             this.currentFont = generatedFont
-            this.fontDataInfo.copyFromFont(generatedFont)
-
+            
             this.afterLoad(generatedFont)
+            this.fontDataInfo.copyFromFont(generatedFont)
         }
         
         this.isLoaded = true
