@@ -171,11 +171,6 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
         }
         paintboxSpritesheet = PaintboxSpritesheet(spritesheetTexture)
 
-        AssetRegistry.addAssetLoader(object : AssetRegistry.IAssetLoader {
-            override fun addManagedAssets(manager: AssetManager) {}
-            override fun addUnmanagedAssets(assets: MutableMap<String, Any>) {}
-        })
-
         batch = SpriteBatch()
         shapeRenderer = ShapeRenderer()
         fontCache = FontCache(this)

@@ -13,10 +13,8 @@ import paintbox.lazysound.LazySoundLoader
 import paintbox.packing.PackedSheet
 import paintbox.packing.PackedSheetLoader
 
-/**
- * Holds all the global assets needed for a game and can be easily disposed of at the end.
- */
-object AssetRegistry : Disposable {
+
+open class AssetRegistryInstance : Disposable {
 
     enum class LoadState {
         NONE, LOADING, DONE
@@ -33,6 +31,12 @@ object AssetRegistry : Disposable {
     init {
         manager.setLoader(LazySound::class.java, LazySoundLoader(manager.fileHandleResolver))
         manager.setLoader(PackedSheet::class.java, PackedSheetLoader(manager.fileHandleResolver))
+        
+        // No-op asset loader
+        addAssetLoader(object : IAssetLoader {
+            override fun addManagedAssets(manager: AssetManager) {}
+            override fun addUnmanagedAssets(assets: MutableMap<String, Any>) {}
+        })
     }
 
     fun bindAsset(key: String, file: String): Pair<String, String> {
@@ -76,6 +80,7 @@ object AssetRegistry : Disposable {
     }
 
     fun loadBlocking() {
+        @Suppress("ControlFlowWithEmptyBody")
         while (load(Int.MAX_VALUE.toFloat()) < 1f);
     }
 
@@ -129,13 +134,18 @@ object AssetRegistry : Disposable {
         unmanagedAssets.values.filterIsInstance(Disposable::class.java).forEach(Disposable::dispose)
         manager.dispose()
     }
+    
+}
 
-    interface IAssetLoader {
+/**
+ * Holds all the global assets needed for a game and can be easily disposed of at the end.
+ */
+object AssetRegistry : AssetRegistryInstance()
 
-        fun addManagedAssets(manager: AssetManager)
+interface IAssetLoader {
 
-        fun addUnmanagedAssets(assets: MutableMap<String, Any>)
+    fun addManagedAssets(manager: AssetManager)
 
-    }
+    fun addUnmanagedAssets(assets: MutableMap<String, Any>)
 
 }
