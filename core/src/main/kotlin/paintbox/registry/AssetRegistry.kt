@@ -26,6 +26,7 @@ open class AssetRegistryInstance : Disposable {
 
     private val assetLoaders: MutableList<IAssetLoader> = mutableListOf()
 
+    private var disposed: Boolean = false
     private var loadingState: LoadState = LoadState.NONE
 
     init {
@@ -64,6 +65,10 @@ open class AssetRegistryInstance : Disposable {
     }
 
     fun load(delta: Float): Float {
+        if (disposed) {
+            return 0f
+        }
+        
         if (loadingState == LoadState.NONE) {
             loadingState = LoadState.LOADING
 
@@ -115,6 +120,16 @@ open class AssetRegistryInstance : Disposable {
         return manager.get(assetMap[key])
     }
 
+    /**
+     * Unloads all assets and resets the state of this [AssetRegistryInstance] so it can be loaded again.
+     */
+    fun unloadAllAssets() {
+        unmanagedAssets.values.filterIsInstance(Disposable::class.java).forEach(Disposable::dispose)
+        unmanagedAssets.clear()
+        manager.clear()
+        loadingState = LoadState.NONE
+    }
+
     fun stopAllSounds() {
         manager.getAll(Sound::class.java, Array()).toList().forEach(Sound::stop)
         manager.getAll(LazySound::class.java, Array()).toList().filter(LazySound::isLoaded).forEach { it.sound.stop() }
@@ -131,7 +146,8 @@ open class AssetRegistryInstance : Disposable {
     }
 
     override fun dispose() {
-        unmanagedAssets.values.filterIsInstance(Disposable::class.java).forEach(Disposable::dispose)
+        disposed = true
+        unloadAllAssets()
         manager.dispose()
     }
     
