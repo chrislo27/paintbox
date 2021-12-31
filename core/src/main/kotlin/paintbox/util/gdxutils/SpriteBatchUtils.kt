@@ -121,6 +121,9 @@ inline fun SpriteBatch.batchCall(projection: Matrix4 = this.projectionMatrix, dr
     val oldProjection = this.projectionMatrix
     val oldColor = this.packedColor
 
+    this.projectionMatrix = projection
+    this.packedColor = Color.WHITE_FLOAT_BITS
+    
     this.begin()
     this.drawFunction()
     this.end()

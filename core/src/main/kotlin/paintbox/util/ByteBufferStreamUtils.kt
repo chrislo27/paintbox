@@ -17,13 +17,13 @@ class ByteBufferBackedInputStream(buf: ByteBuffer) : InputStream() {
     }
 
     override fun read(bytes: ByteArray?, off: Int, len: Int): Int {
-        var len = len
+        var l = len
         if (!buf.hasRemaining()) {
             return -1
         }
-        len = min(len, buf.remaining())
-        buf.get(bytes, off, len)
-        return len
+        l = min(l, buf.remaining())
+        buf.get(bytes, off, l)
+        return l
     }
 
     init {
