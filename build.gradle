@@ -18,7 +18,7 @@ allprojects {
         appName = "Paintbox"
         gdxVersion = '1.10.0'
         gdxControllersVersion = '2.2.1'
-        paintboxVersion = "0.1.10"
+        paintboxVersion = "0.2.0"
     }
     version = ext.paintboxVersion
     archivesBaseName = "Paintbox-${project.name}"
@@ -41,7 +41,7 @@ allprojects {
         api "com.eclipsesource.minimal-json:minimal-json:0.9.5"
         api "com.beust:jcommander:1.81"
         api "org.slf4j:slf4j-simple:1.7.32"
-        api "io.dropwizard.metrics:metrics-core:4.2.5"
+        api "io.dropwizard.metrics:metrics-core:4.2.7"
     }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
