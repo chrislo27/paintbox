@@ -29,7 +29,13 @@ class PaintboxFontBitmap(params: PaintboxFontParams,
     }
 
     override fun begin(areaWidth: Float, areaHeight: Float): BitmapFont {
-        if (isInBegin) error("Cannot call begin before end")
+        if (isInBegin) {
+            if (PaintboxFont.LENIENT_BEGIN_END) {
+                end()
+            } else {
+                error("Cannot call begin before end")
+            }
+        }
         isInBegin = true
         
         if (this.params.scaleToReferenceSize) {
@@ -44,7 +50,7 @@ class PaintboxFontBitmap(params: PaintboxFontParams,
     }
 
     override fun end() {
-        if (!isInBegin) error("Cannot call end before begin")
+        if (!isInBegin && !PaintboxFont.LENIENT_BEGIN_END) error("Cannot call end before begin")
         isInBegin = false
         
         // Sets font back to scaleXY = 1.0

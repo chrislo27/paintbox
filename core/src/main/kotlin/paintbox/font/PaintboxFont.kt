@@ -20,6 +20,16 @@ import paintbox.util.WindowSize
  */
 abstract class PaintboxFont(val params: PaintboxFontParams)
     : Disposable {
+    
+    companion object {
+        /**
+         * If true, calling [PaintboxFont.begin] or [PaintboxFont.end] when it is inappropriate to do so will not
+         * throw an exception.
+         * 
+         * Used for crash screen behaviour.
+         */
+        var LENIENT_BEGIN_END: Boolean = false
+    }
 
     /**
      * For caching the information in [BitmapFont.BitmapFontData] to prevent floating point error with repeated
@@ -91,14 +101,14 @@ abstract class PaintboxFont(val params: PaintboxFontParams)
      * [PaintboxFontParams].
      *
      * Call [end] once finished. Implementors must ensure that this function cannot be called if attempting to
-     * begin again before [end] was called.
+     * begin again before [end] was called, unless [LENIENT_BEGIN_END] is true.
      */
     abstract fun begin(areaWidth: Float, areaHeight: Float): BitmapFont
 
     /**
      * Uses the passed in [camera]'s width and height as the area width and height. This assumes that the camera
      * area spans the entire window. If the camera does NOT span the window (for example, for a frame buffer),
-     * use the normal [begin] function with the width and height of the actual area.
+     * you should use the normal [begin] function with the width and height of the actual area.
      * @see [begin]
      */
     fun begin(camera: OrthographicCamera): BitmapFont = begin(camera.viewportWidth, camera.viewportHeight)
@@ -107,7 +117,7 @@ abstract class PaintboxFont(val params: PaintboxFontParams)
     /**
      * Uses [Gdx.graphics.getWidth][Graphics.getWidth] and [Gdx.graphics.getHeight][Graphics.getHeight] as
      * the area width and height. If the camera does NOT span the window (for example, for a frame buffer),
-     * use the normal [begin] function with the width and height of the actual area.
+     * you should use the normal [begin] function with the width and height of the actual area.
      * @see [begin]
      */
     fun begin(): BitmapFont = begin(Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
@@ -116,7 +126,8 @@ abstract class PaintboxFont(val params: PaintboxFontParams)
      * Instructs the font instance that the usage of the provided [BitmapFont] from calling [begin] is complete
      * and cleanup can occur.
      *
-     * Implementors must ensure that this function cannot be called if [begin] was not previously called.
+     * Implementors must ensure that this function cannot be called if [begin] was not previously called,
+     * unless [LENIENT_BEGIN_END] is true.
      */
     abstract fun end()
 
