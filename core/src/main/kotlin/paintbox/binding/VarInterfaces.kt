@@ -1,6 +1,12 @@
 package paintbox.binding
 
 
+/**
+ * Represents an immutable var. 
+ *
+ * The default implementation is [GenericVar]. Note that [GenericVar] is mutable since it also implements the
+ * [Var] interface; this is similar to the Kotlin [List] and [MutableList] default implementations that use [ArrayList] which is mutable.
+ */
 interface ReadOnlyVar<out T> {
 
     /**
@@ -23,7 +29,7 @@ interface ReadOnlyVar<out T> {
 }
 
 /**
- * Represents a writable var.
+ * Represents a mutable var.
  *
  * The default implementation is [GenericVar].
  */
@@ -93,16 +99,28 @@ interface Var<T> : ReadOnlyVar<T> {
     fun sideEffecting(sideEffecting: Context.(existing: T) -> T) {
         sideEffecting(getOrCompute(), sideEffecting)
     }
+    
+    // Javadoc override
+    /**
+     * Gets (and computes if necessary) the value represented by this [Var].
+     *
+     * If using this [Var] in a binding, use [Var.Context] to do dependency tracking.
+     */
+    override fun getOrCompute(): T
 
     class Context {
         
         val dependencies: MutableSet<ReadOnlyVar<Any?>> = LinkedHashSet(2)
-
-
+        
+        
         /**
          * Adds the [varr] as a dependency and returns the var's value.
          * 
-         * This function can be used on any [ReadOnlyVar], even specialized ones.
+         * This function can be used on any [ReadOnlyVar] (even non-specialized ones) for compatibility. It is
+         * recommended to use the receiver-style `use` function where possible.
+         * 
+         * Note that if the receiver is a primitive-specialized var,
+         * the appropriate specialized `use` function should be used instead.
          */
         @JvmName("use")
         fun <R> use(varr: ReadOnlyVar<R>): R { // DON'T add specialized deprecations for this particular use function for generic compatibility
@@ -113,7 +131,9 @@ interface Var<T> : ReadOnlyVar<T> {
         /**
          * Adds the receiver [var][R] as a dependency and returns the var's value.
          * 
-         * Note that if there are specializations available, the specialized `use` function should be used instead.
+         * This is the "receiver-style" syntax for more fluent usage.
+         * Note that if the receiver is a primitive-specialized var,
+         * the appropriate specialized `use` function should be used instead.
          */
         @JvmName("useAndGet")
         fun <R> ReadOnlyVar<R>.use(): R { // Specialized deprecations may be added for this use function

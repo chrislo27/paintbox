@@ -1,8 +1,5 @@
 package paintbox.binding
 
-import java.lang.ref.WeakReference
-import java.util.concurrent.ConcurrentHashMap
-
 
 /**
  * The default implementation of [Var].

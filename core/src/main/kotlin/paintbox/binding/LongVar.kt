@@ -1,7 +1,5 @@
 package paintbox.binding
 
-import java.lang.ref.WeakReference
-
 /**
  * The [Long] specialization of [ReadOnlyVar].
  *
