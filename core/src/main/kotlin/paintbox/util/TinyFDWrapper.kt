@@ -17,7 +17,7 @@ import javax.swing.UIManager
 
 object TinyFDWrapper {
     
-    private val isWindows: Boolean = "windows" in (System.getProperty("os.name").lowercase(Locale.ROOT))
+    private val isWindows: Boolean = SystemUtils.isWindows()
 
     /**
      * A file extension filter. The [extensions] should be strings in a format like `*.png`, `*.ogg`, etc.

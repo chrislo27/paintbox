@@ -7,6 +7,7 @@ import paintbox.PaintboxGame
 import paintbox.lazysound.LazySound
 import paintbox.util.BranchedOutputStream
 import paintbox.util.MemoryUtils
+import paintbox.util.SystemUtils
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -74,6 +75,7 @@ object SysOutPiper {
         builder.append("    OS Name: " + System.getProperty("os.name") + "\n")
         builder.append("    OS Version: " + System.getProperty("os.version") + "\n")
         builder.append("    OS Arch: " + System.getProperty("os.arch") + "\n")
+        builder.append("    SystemUtils.OSType: " + SystemUtils.OS + "\n")
         builder.append("    JVM memory available: " + MemoryUtils.maxMemoryKiB + " KiB\n")
 
         builder.append("\n")

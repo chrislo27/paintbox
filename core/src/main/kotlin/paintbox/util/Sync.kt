@@ -19,8 +19,7 @@ open class Sync {
         private const val NANOS_IN_SECOND = 1000L * 1000L * 1000L
         
         init {
-            val osName = System.getProperty("os.name")
-            if (osName.startsWith("Win")) {
+            if (SystemUtils.isWindows()) {
                 // On Windows the sleep functions can be highly inaccurate by
                 // over 10ms making in unusable. However it can be forced to
                 // be a bit more accurate by running a separate sleeping daemon thread.
