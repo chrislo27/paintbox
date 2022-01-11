@@ -197,7 +197,9 @@ data class TextBlock(val runs: List<TextRun>) {
 
                 glyphRunInfo.lineIndex = currentLineIndex
                 
-                posX += glyphRun.glyphs.first().xoffset
+                if (glyphRunInfoIndex > 0) { // Fixes extra offset at very beginning of glyph run for first glyph
+                    posX += glyphRun.glyphs.first().xoffset
+                }
 
                 // Update X/Y based on GlyphRun x/y
                 if (glyphRun.x < lastGlyphRunRightEdge
