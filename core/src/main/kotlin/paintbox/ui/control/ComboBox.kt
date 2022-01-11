@@ -69,7 +69,6 @@ open class ComboBox<T>(startingList: List<T>, selectedItem: T,
     val renderAlign: IntVar = IntVar(Align.left)
     val textAlign: Var<TextAlign> = Var { TextAlign.fromInt(renderAlign.use()) }
     val doXCompression: BooleanVar = BooleanVar(true)
-    val doLineWrapping: BooleanVar = BooleanVar(false)
 
     /**
      * The [Markup] object to use. If null, no markup parsing is done. If not null,
