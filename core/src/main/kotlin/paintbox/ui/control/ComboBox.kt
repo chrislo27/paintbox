@@ -176,6 +176,7 @@ open class ComboBoxSkin(element: ComboBox<Any?>) : Skin<ComboBox<Any?>>(element)
         val contentH = contentBounds.height.get()
         val lastPackedColor = batch.packedColor
         val opacity = element.apparentOpacity.get()
+        val disabled = element.apparentDisabledState.get()
 
         val rectColor: Color = ColorStack.getAndPush()
         rectColor.set(element.backgroundColor.getOrCompute())
@@ -186,6 +187,9 @@ open class ComboBoxSkin(element: ComboBox<Any?>) : Skin<ComboBox<Any?>>(element)
 
         rectColor.set(element.arrowColor.getOrCompute())
         rectColor.a *= opacity
+        if (disabled) {
+            rectColor.a *= 0.35f
+        }
         batch.color = rectColor
         val arrowSize = min(contentW * element.scaleX.get(), contentH * element.scaleY.get()) * 0.75f
         if (arrowSize > 0f) {
@@ -206,6 +210,9 @@ open class ComboBoxSkin(element: ComboBox<Any?>) : Skin<ComboBox<Any?>>(element)
             val tmpColor = ColorStack.getAndPush()
             tmpColor.set(batch.color).mul(element.textColor.getOrCompute())
             tmpColor.a *= opacity
+            if (disabled) {
+                rectColor.a *= 0.35f
+            }
 
             if (text.isRunInfoInvalid()) {
                 // Prevents flickering when drawing on first frame due to bounds not being computed yet
