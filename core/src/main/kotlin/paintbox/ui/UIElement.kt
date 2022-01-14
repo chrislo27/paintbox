@@ -180,6 +180,10 @@ open class UIElement : UIBounds() {
         }
         return false
     }
+    
+    fun removeAllChildren() {
+        children.toList().forEach { removeChild(it) }
+    }
 
     /**
      * Called when a child is added to this [UIElement]. This will be called BEFORE the companion call to [onAddedToParent].
