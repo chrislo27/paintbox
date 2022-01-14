@@ -109,7 +109,7 @@ open class AssetRegistryInstance : Disposable {
             error("Key not found in mappings: $key")
         }
         if (!manager.isLoaded(assetMap[key], T::class.java)) {
-            error("Asset not loaded/found: ${T::class.java.canonicalName} - $key")
+            error("Asset not loaded/found: ${T::class.java.name} - $key")
         }
 
         return manager.get(assetMap[key], T::class.java)

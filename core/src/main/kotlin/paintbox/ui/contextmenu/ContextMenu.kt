@@ -239,7 +239,7 @@ open class ContextMenu : Control<ContextMenu>() {
                         })
                     }
                 }
-//                else -> error("MenuItem type was not implemented yet: ${item.javaClass.canonicalName}")
+//                else -> error("MenuItem type was not implemented yet: ${item.javaClass.name}")
             }
             MenuItemMetadata(item, basePane)
         }
