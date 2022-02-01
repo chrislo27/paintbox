@@ -72,15 +72,6 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         return false
     }
 
-//    private fun dispatchEvent(evt: InputEvent): Boolean {
-//        val lastPath = lastHoveredElementPath
-//        for (element in lastPath) {
-//            val consumed: Boolean = element.listeners.getOrCompute().any { it.handle(evt) }
-//            if (consumed) return true
-//        }
-//        return false
-//    }
-
     private fun updateDeepmostElementForMouseLocation(layer: SceneRoot.Layer, x: Float, y: Float, triggerTooltips: Boolean): Boolean {
         val lastPath: MutableList<UIElement> = layer.lastHoveredElementPath
         if (lastPath.isEmpty()) {
@@ -231,6 +222,26 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
 
         return touch != null || click != null
     }
+    
+    private inline fun propagateEventFromClickPressedState(
+        previousClick: ClickPressedState,
+        eventFactory: (element: UIElement, layer: SceneRoot.Layer, lastHoveredElementPath: List<UIElement>) -> InputEvent
+    ): Boolean {
+        var anyClick = false
+        outer@ for (layer in sceneRoot.allLayersReversed) {
+            val lastHoveredElementPath = previousClick.lastHoveredElementPathPerLayer.getValue(layer)
+            for (element in lastHoveredElementPath.asReversed()) {
+                val eventResult = element.fireEvent(eventFactory(element, layer, lastHoveredElementPath))
+                if (eventResult) {
+                    anyClick = true
+                }
+            }
+            if (anyClick) {
+                break@outer
+            }
+        }
+        return anyClick
+    }
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         val vec: Vector2 = sceneRoot.screenToUI(vector.set(screenX.toFloat(), screenY.toFloat()))
@@ -242,22 +253,11 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         val previousClick = clickPressedList[button]
         if (previousClick != null) {
             clickPressedList.remove(button)
-            outer@ for (layer in sceneRoot.allLayersReversed) {
-                val lastHoveredElementPath = previousClick.lastHoveredElementPathPerLayer.getValue(layer)
-                for (element in lastHoveredElementPath.asReversed()) {
-                    val eventResult = element.fireEvent(ClickReleased(vec.x, vec.y, button,
-                            element === previousClick.accepted?.second,
-                            element in lastHoveredElementPath,
-                            element in layer.lastHoveredElementPath && element.apparentVisibility.get())
-                    )
-                    if (eventResult) {
-                        anyClick = true
-//                        break@outer
-                    }
-                }
-                if (anyClick) {
-                    break@outer
-                }
+            anyClick = propagateEventFromClickPressedState(previousClick) { element, layer, lastHoveredElementPath ->
+                ClickReleased(vec.x, vec.y, button,
+                    element === previousClick.accepted?.second,
+                    element in lastHoveredElementPath,
+                    element in layer.lastHoveredElementPath && element.apparentVisibility.get())
             }
         }
         pointerPressedButton.remove(pointer)
@@ -274,19 +274,9 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         if (pressedButton != null) {
             val previousClick = clickPressedList[pressedButton]
             if (previousClick != null) {
-                outer@ for (layer in sceneRoot.allLayersReversed) {
-                    val lastHoveredElementPath = previousClick.lastHoveredElementPathPerLayer.getValue(layer)
-                    for (element in lastHoveredElementPath.asReversed()) {
-                        val eventResult = element.fireEvent(TouchDragged(vec.x, vec.y, pointer,
-                                element in layer.lastHoveredElementPath && element.apparentVisibility.get())
-                        )
-                        if (eventResult) {
-                            anyClick = true
-                        }
-                    }
-                    if (anyClick) {
-                        break@outer
-                    }
+                anyClick = propagateEventFromClickPressedState(previousClick) { element, layer, _ ->
+                    TouchDragged(vec.x, vec.y, pointer, 
+                        element in layer.lastHoveredElementPath && element.apparentVisibility.get())
                 }
             }
         }
