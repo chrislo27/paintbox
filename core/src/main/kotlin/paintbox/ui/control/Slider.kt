@@ -61,7 +61,7 @@ open class Slider : Control<Slider>() {
                     val endCap = bounds.height.get() * 0.4f
                     setValue(convertPercentageToValue(((lastMouseRelativeToRoot.x - endCap) / (bounds.width.get() - endCap * 2)).coerceIn(0f, 1f)))
                     
-                    true
+                    event !is TouchDragged // TouchDragged should not be consumed
                 } else false
             } else if (event is Scrolled) {
                 setValue(value.get() - event.amountY.sign.toInt() * tickUnit.get())

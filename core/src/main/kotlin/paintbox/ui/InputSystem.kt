@@ -12,6 +12,12 @@ import paintbox.util.sumOfFloat
  * will always receive inputs.
  */
 class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
+    
+    private enum class EventHandleResult {
+        NOT_HANDLED,
+        FILTERED_OUT,
+        HANDLED,
+    }
 
     private val vector: Vector2 = Vector2(0f, 0f)
     private val clickPressedList: MutableMap<Int, ClickPressedState> = mutableMapOf()
@@ -22,33 +28,49 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
      */
     val mouseVector: Vector2
         get() = vector
-
-
-    private fun dispatchEventBasedOnMouse(layer: SceneRoot.Layer, evt: InputEvent): UIElement? {
-        val currentFocused = sceneRoot.currentFocusedElement.getOrCompute()
+    
+    
+    private fun propagateEventForLayer(layer: SceneRoot.Layer, evt: InputEvent): UIElement? {
         val lastPath = layer.lastHoveredElementPath
         var acceptedElement: UIElement? = null
         var anyFired = false
-        for (i in lastPath.size - 1 downTo 0) {
+
+        // Filter
+        for (i in 0 until lastPath.size) {
             val element = lastPath[i]
-            anyFired = true
-            if (element.fireEvent(evt)) {
-                acceptedElement = element
-                break
+            val listeners = element.inputListeners.getOrCompute()
+            if (listeners.any { l -> !l.filter(evt) }) {
+                return null
             }
         }
+
+        // Fire
+        outer@ for (i in lastPath.size - 1 downTo 0) {
+            anyFired = true
+            val element = lastPath[i]
+            val listeners = element.inputListeners.getOrCompute()
+            for (l in listeners) {
+                if (l.handle(evt)) {
+                    // Consumed
+                    acceptedElement = element
+                    break@outer
+                }
+            }
+        }
+
         if (anyFired) {
+            val currentFocused = sceneRoot.currentFocusedElement.getOrCompute()
             if (evt is ClickPressed && currentFocused != null && sceneRoot.currentFocusedElement.getOrCompute() !== acceptedElement) {
                 sceneRoot.setFocusedElement(null) // Unfocus if there's a ClickPressed event not on the currently focused element
             }
         }
-        
+
         return acceptedElement
     }
 
     private fun dispatchEventBasedOnMouse(evt: InputEvent): Pair<SceneRoot.Layer, UIElement>? {
         for (layer in sceneRoot.allLayersReversed) {
-            val result = dispatchEventBasedOnMouse(layer, evt)
+            val result = propagateEventForLayer(layer, evt)
             if (result != null) {
                 return layer to result
             }
@@ -59,17 +81,21 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
     private fun dispatchFocusedEvent(evt: FocusedInputEvent): Boolean {
         val currentFocused = sceneRoot.currentFocusedElement.getOrCompute()
         if (currentFocused != null && currentFocused is UIElement /* instanceof should always be true but check is for smart-casting */) {
-            return currentFocused.fireEvent(evt)
+            return currentFocused.fireSingularEvent(evt) == EventHandleResult.HANDLED
         }
         return false
     }
 
-    private fun UIElement.fireEvent(event: InputEvent): Boolean {
+    /**
+     * Filters and fires the [event] based on this [UIElement]'s [UIElement.inputListeners].
+     */
+    private fun UIElement.fireSingularEvent(event: InputEvent): EventHandleResult {
         val listeners = this.inputListeners.getOrCompute()
         for (l in listeners) {
-            if (l.handle(event)) return true
+            if (!l.filter(event)) return EventHandleResult.FILTERED_OUT
+            if (l.handle(event)) return EventHandleResult.HANDLED
         }
-        return false
+        return EventHandleResult.NOT_HANDLED
     }
 
     private fun updateDeepmostElementForMouseLocation(layer: SceneRoot.Layer, x: Float, y: Float, triggerTooltips: Boolean): Boolean {
@@ -82,9 +108,9 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
             if (triggerTooltips) {
                 wasTooltipTriggered = tooltipMouseEntered(newPath, x, y)
             }
-            val evt = MouseEntered(x, y)
+            val mouseEnteredEvt = MouseEntered(x, y)
             newPath.forEach {
-                it.fireEvent(evt)
+                it.fireSingularEvent(mouseEnteredEvt)
             }
             return wasTooltipTriggered
         }
@@ -108,7 +134,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
                         )) {
             val removed = lastPath.removeLast()
             onMouseExited(removed, x, y)
-            removed.fireEvent(MouseExited(x, y))
+            removed.fireSingularEvent(MouseExited(x, y))
             cursor = lastPath.lastOrNull()
             if (cursor != null) {
                 offX -= cursor.contentZone.x.get()
@@ -133,7 +159,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
                 do {
                     val removed = lastPath.removeLast()
                     onMouseExited(removed, x, y)
-                    removed.fireEvent(MouseExited(x, y))
+                    removed.fireSingularEvent(MouseExited(x, y))
                     lastRemoved = removed
                     cursor = lastPath.lastOrNull()
                     if (cursor != null) {
@@ -159,9 +185,9 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
             if (triggerTooltips) {
                 wasTooltipTriggered = tooltipMouseEntered(subPath, x, y)
             }
-            val evt = MouseEntered(x, y)
+            val mouseEnteredEvt = MouseEntered(x, y)
             subPath.forEach {
-                it.fireEvent(evt)
+                it.fireSingularEvent(mouseEnteredEvt)
             }
         }
 
@@ -228,18 +254,39 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         eventFactory: (element: UIElement, layer: SceneRoot.Layer, lastHoveredElementPath: List<UIElement>) -> InputEvent
     ): Boolean {
         var anyClick = false
-        outer@ for (layer in sceneRoot.allLayersReversed) {
+        @Suppress("ReplaceManualRangeWithIndicesCalls")
+        layerOuter@ for (layer in sceneRoot.allLayersReversed) {
             val lastHoveredElementPath = previousClick.lastHoveredElementPathPerLayer.getValue(layer)
-            for (element in lastHoveredElementPath.asReversed()) {
-                val eventResult = element.fireEvent(eventFactory(element, layer, lastHoveredElementPath))
-                if (eventResult) {
-                    anyClick = true
+
+            // Filter
+            for (i in 0 until lastHoveredElementPath.size) {
+                val element = lastHoveredElementPath[i]
+                val listeners = element.inputListeners.getOrCompute()
+                val evt = eventFactory(element, layer, lastHoveredElementPath)
+                if (listeners.any { l -> !l.filter(evt) }) {
+                    continue@layerOuter
                 }
             }
+
+            // Fire
+            outer@ for (i in lastHoveredElementPath.size - 1 downTo 0) {
+                val element = lastHoveredElementPath[i]
+                val listeners = element.inputListeners.getOrCompute()
+                val evt = eventFactory(element, layer, lastHoveredElementPath)
+                for (l in listeners) {
+                    if (l.handle(evt)) {
+                        // Consumed
+                        anyClick = true
+                        break@outer
+                    }
+                }
+            }
+            
             if (anyClick) {
-                break@outer
+                break@layerOuter
             }
         }
+
         return anyClick
     }
 

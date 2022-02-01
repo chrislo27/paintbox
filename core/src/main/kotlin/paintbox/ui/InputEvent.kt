@@ -1,9 +1,33 @@
 package paintbox.ui
 
 
-
+/**
+ * Handles and optionally filters an [InputEvent].
+ * 
+ * Events are filtered "top-down" (from the parent to the child) and are handled "bottom-up" (child to parent).
+ * 
+ * By default, events are always filtered through and are not stopped.
+ * 
+ * **Special cases:** Not all events flow from the parent to the child. Some events only target a specific element,
+ * such as [MouseEntered] and [MouseExited]. In these cases, the [filter] and [handle] functions act as expected, 
+ * but with a chain of exactly one element.
+ */
 fun interface InputEventListener {
+
+    /**
+     * Called to handle the [event].
+     * Returns true if the event has been consumed and event propagation should stop.
+     */
     fun handle(event: InputEvent): Boolean
+
+    /**
+     * Called to filter the [event]. Return true to continue propagating the event, false to stop it and cancel it.
+     * 
+     * The default behaviour is to let the event though.
+     */
+    fun filter(event: InputEvent): Boolean {
+        return true
+    }
 }
 
 /**

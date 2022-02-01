@@ -239,8 +239,8 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
                             if (pressedState.getOrCompute().pressed) {
                                 val newValue = scrollBar.convertPercentageToValue(mousePercent - pressedOrigin)
                                 scrollBar.setValue(newValue, true)
-                                true
-                            } else false
+                            }
+                            false // TouchDragged should not be consumed
                         }
                         is ClickReleased -> {
                             if (isPressedDown.get()) {

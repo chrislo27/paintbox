@@ -151,7 +151,7 @@ open class TextField(font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
                 is TouchDragged -> {
                     if (pressedState.getOrCompute().pressed) {
                         moveCaretFromMouse(event)
-                        consumed = true
+                        consumed = false // TouchDragged should not be consumed
                     }
                 }
                 is KeyTyped -> {
