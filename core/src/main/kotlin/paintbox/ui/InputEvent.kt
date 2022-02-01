@@ -64,6 +64,10 @@ class TouchUp(x: Float, y: Float, val button: Int, val pointer: Int) : MouseInpu
 
 /**
  * Represents the gdx touchDragged event in InputProcessor.
+ * 
+ * It is **strongly suggested** to NOT consume this event so it can be correctly propagated to other elements,
+ * otherwise there may be unexpected behaviour, such as the event not firing when the mouse is dragging
+ * out of bounds of the element.
  */
 class TouchDragged(x: Float, y: Float, val pointer: Int,
                    val isCurrentlyWithinBounds: Boolean) : MouseInputEvent(x, y)
@@ -86,6 +90,8 @@ class ClickPressed(x: Float, y: Float, val button: Int) : MouseInputEvent(x, y)
 /**
  * Called when a mouse button is released on this element, having previously received the [ClickPressed]
  * event. [consumedPrior] will be true if this element previously consumed the [ClickPressed] event.
+ *
+ * It is **strongly suggested** to NOT consume this event so it can be correctly propagated to other elements.
  */
 class ClickReleased(x: Float, y: Float, val button: Int, val consumedPrior: Boolean,
                     val wasWithinBounds: Boolean, val isCurrentlyWithinBounds: Boolean) : MouseInputEvent(x, y)
