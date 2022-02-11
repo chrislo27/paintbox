@@ -18,7 +18,7 @@ allprojects {
         appName = "Paintbox"
         gdxVersion = '1.10.0'
         gdxControllersVersion = '2.2.1'
-        paintboxVersion = "0.3.0"
+        paintboxVersion = "0.4.0"
     }
     version = ext.paintboxVersion
     archivesBaseName = "Paintbox-${project.name}"
@@ -60,11 +60,26 @@ allprojects {
     }
 }
 
-project(":core") {
-    apply plugin: "java"
-    apply plugin: "kotlin"
-
+project(":utils") {
     dependencies {
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = 'com.github.chrislo27'
+                artifactId = 'paintbox-utils'
+
+                from components.java
+            }
+        }
+    }
+}
+
+project(":core") {
+    dependencies {
+        api project(":utils")
+        
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
@@ -85,11 +100,8 @@ project(":core") {
 }
 
 project(":desktop") {
-    apply plugin: "java"
-    apply plugin: "kotlin"
-
     dependencies {
-        implementation project(":core")
+        api project(":core")
 
         api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-windows"
         api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-windows-x86"
