@@ -5,6 +5,14 @@ import java.io.OutputStream
 import java.nio.ByteBuffer
 import kotlin.math.min
 
+
+fun AutoCloseable.closeQuietly() {
+    try {
+        this.close()
+    } catch (ignored: Throwable) {}
+}
+
+
 // https://stackoverflow.com/questions/4332264/wrapping-a-bytebuffer-with-an-inputstream/6603018#6603018
 
 class ByteBufferBackedInputStream(buf: ByteBuffer) : InputStream() {
