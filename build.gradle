@@ -33,16 +33,6 @@ allprojects {
         mavenCentral()
 //        maven { url 'https://jitpack.io/' }
     }
-    
-    dependencies {
-        api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-        api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-        
-        api "com.eclipsesource.minimal-json:minimal-json:0.9.5"
-        api "com.beust:jcommander:1.82"
-        api "org.slf4j:slf4j-simple:1.7.33"
-        api "io.dropwizard.metrics:metrics-core:4.2.7"
-    }
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
         kotlinOptions {
@@ -62,6 +52,13 @@ allprojects {
 
 project(":utils") {
     dependencies {
+        api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+        api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+        api "com.eclipsesource.minimal-json:minimal-json:0.9.5"
+        api "com.beust:jcommander:1.82"
+        api "org.slf4j:slf4j-simple:1.7.33"
+        api "io.dropwizard.metrics:metrics-core:4.2.7"
     }
 
     publishing {
