@@ -2,6 +2,7 @@ package paintbox.registry
 
 import com.badlogic.gdx.assets.AssetLoaderParameters
 import com.badlogic.gdx.assets.AssetManager
+import com.badlogic.gdx.assets.loaders.TextureLoader
 import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
@@ -163,5 +164,10 @@ interface IAssetLoader {
     fun addManagedAssets(manager: AssetManager)
 
     fun addUnmanagedAssets(assets: MutableMap<String, Any>)
+    
+    fun linearTexture(): TextureLoader.TextureParameter = TextureLoader.TextureParameter().apply {
+        this.magFilter = Texture.TextureFilter.Linear
+        this.minFilter = Texture.TextureFilter.Linear
+    }
 
 }
