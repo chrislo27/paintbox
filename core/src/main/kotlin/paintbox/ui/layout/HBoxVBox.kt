@@ -10,7 +10,7 @@ import paintbox.ui.area.Insets
 /**
  * An abstract pane that lays out its children. Use [HBox] and [VBox] for implementations.
  */
-abstract class AbstractHVBox : Pane() {
+abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
 
     /*
     The element data cache stores a particular dimension of an element and the accumulated value. This allows
@@ -21,8 +21,8 @@ abstract class AbstractHVBox : Pane() {
     will be updated (not necessarily recalculated).
      */
 
-    enum class InternalAlignment {
-        MIN, MIDDLE, MAX
+    interface BoxAlign {
+        val internalAlignment: InternalAlignment
     }
     
     protected inner class ElementData(val element: UIElement, var index: Int, var dimension: Float) {
@@ -48,6 +48,8 @@ abstract class AbstractHVBox : Pane() {
     val disableLayouts: BooleanVar = BooleanVar(false)
     
     protected val internalAlignment: Var<InternalAlignment> = Var(InternalAlignment.MIN)
+
+    abstract val align: Var<AlignEnum>
 
     init {
         spacing.addListener {
@@ -167,17 +169,17 @@ abstract class AbstractHVBox : Pane() {
  * A [Pane] that lays out its children from left to right. Children of this [HBox] should expect their
  * [bounds.x][Bounds.x] to be changed, and should NOT have their width depend on their own x.
  */
-open class HBox : AbstractHVBox() {
+open class HBox : AbstractHVBox<HBox.Align>() {
     
-    enum class Align(val internal: InternalAlignment) {
+    enum class Align(override val internalAlignment: InternalAlignment) : BoxAlign {
         LEFT(InternalAlignment.MIN), CENTRE(InternalAlignment.MIDDLE), RIGHT(InternalAlignment.MAX);
     }
 
-    val align: Var<Align> = Var(Align.LEFT)
+    override val align: Var<Align> = Var(Align.LEFT)
 
     init {
         this.internalAlignment.bind { 
-            align.use().internal
+            align.use().internalAlignment
         }
         this.bounds.width.addListener {
             attemptLayout(0)
@@ -219,17 +221,17 @@ open class HBox : AbstractHVBox() {
  * A [Pane] that lays out its children from top to bottom. Children of this [VBox] should expect their
  * [bounds.y][Bounds.y] to be changed, and should NOT have their height depend on their own y.
  */
-open class VBox : AbstractHVBox() {
+open class VBox : AbstractHVBox<VBox.Align>() {
     
-    enum class Align(val internal: InternalAlignment) {
+    enum class Align(override val internalAlignment: InternalAlignment) : BoxAlign {
         TOP(InternalAlignment.MIN), CENTRE(InternalAlignment.MIDDLE), BOTTOM(InternalAlignment.MAX);
     }
 
-    val align: Var<Align> = Var(Align.TOP)
+    override val align: Var<Align> = Var(Align.TOP)
 
     init {
         this.internalAlignment.bind {
-            align.use().internal
+            align.use().internalAlignment
         }
         this.bounds.height.addListener {
             attemptLayout(0)
