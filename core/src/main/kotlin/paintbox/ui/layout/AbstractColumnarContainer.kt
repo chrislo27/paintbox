@@ -4,39 +4,58 @@ import paintbox.binding.FloatVar
 import paintbox.binding.ReadOnlyFloatVar
 import paintbox.ui.Pane
 import paintbox.ui.UIElement
+import paintbox.util.ListOfOnes
 
 
 /**
  * An abstract pane that can have 1 or more columns or rows.
+ * 
+ * @param columnAllotment A list of positive integers indicating how many logical columns each real column takes up
  */
 abstract class AbstractColumnarContainer<Container : UIElement>(
-    val numColumns: Int, val useRows: Boolean,
+    val columnAllotment: List<Int>, val useRows: Boolean
 ) : Pane() {
 
+    val numLogicalColumns: Int
+    val numRealColumns: Int get() = columnAllotment.size
     val spacing: FloatVar = FloatVar(0f)
     val columnBoxes: List<Container>
 
     init {
-        val proportion = 1f / numColumns
-        columnBoxes = (0 until numColumns).map { index ->
+        columnAllotment.forEachIndexed { index, item ->
+            if (item <= 0) {
+                error("columnAllotment[$index] = $item was less than or equal to zero, must be positive")
+            }
+        }
+        numLogicalColumns = columnAllotment.sum()
+        
+        val usableWidth = FloatVar {
+            val spacing = spacing.use()
+            val thisDimension = getThisDimensional().use()
+            (thisDimension - (spacing * (numLogicalColumns - 1))).coerceAtLeast(1f)
+        }
+        val proportion = 1f / numLogicalColumns
+        var colAccumulator = 0
+        columnBoxes = columnAllotment.mapIndexed { index, logicalCols ->
             createBox().also { newBox ->
-                val boxDimensional = getDimensional(newBox)
-                boxDimensional.bind {
-                    val spacing = spacing.use()
-                    val thisDimension = getThisDimensional().use()
-                    val usableWidth = (thisDimension - (spacing * (numColumns - 1))).coerceAtLeast(1f)
-                    usableWidth * proportion
+                val colsSoFar = colAccumulator
+                getDimensional(newBox).bind {
+                    (usableWidth.use() * proportion * logicalCols) + (spacing.use() * (logicalCols - 1))
                 }
-                getPositional(newBox).bind { 
-                    (boxDimensional.use() + spacing.use()) * index
+                getPositional(newBox).bind {
+                    (usableWidth.use() * proportion + spacing.use()) * colsSoFar
                 }
                 onCreate(newBox, index)
+                
+                colAccumulator += logicalCols
             }
         }
         columnBoxes.forEach { 
             addChild(it)
         }
     }
+    
+    constructor(numColumns: Int, useRows: Boolean) : this(ListOfOnes(numColumns), useRows)
 
     protected abstract fun onCreate(newBox: Container, index: Int)
 
@@ -70,18 +89,25 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
 /**
  * An [AbstractColumnarContainer] whose container is an [AbstractHVBox].
  */
-abstract class ColumnarBox<Box : AbstractHVBox<AlignEnum>, AlignEnum : AbstractHVBox.BoxAlign>(
-    numColumns: Int, useRows: Boolean
-) : AbstractColumnarContainer<Box>(numColumns, useRows) {
+abstract class ColumnarBox<Box : AbstractHVBox<AlignEnum>, AlignEnum : AbstractHVBox.BoxAlign>
+    : AbstractColumnarContainer<Box> {
+    
+    constructor(columnAllotment: List<Int>, useRows: Boolean) : super(columnAllotment, useRows)
+    constructor(numColumns: Int, useRows: Boolean) : super(numColumns, useRows)
+
 
     protected abstract fun getDefaultAlignment(index: Int, total: Int): AlignEnum
 
     override fun onCreate(newBox: Box, index: Int) {
-        newBox.align.set(getDefaultAlignment(index, numColumns))
+        newBox.align.set(getDefaultAlignment(index, numLogicalColumns))
     }
 }
 
-open class ColumnarHBox(numColumns: Int, useRows: Boolean) : ColumnarBox<HBox, HBox.Align>(numColumns, useRows) {
+open class ColumnarHBox : ColumnarBox<HBox, HBox.Align> {
+    
+    constructor(columnAllotment: List<Int>, useRows: Boolean) : super(columnAllotment, useRows)
+    constructor(numColumns: Int, useRows: Boolean) : super(numColumns, useRows)
+
     override fun createBox(): HBox {
         return HBox()
     }
@@ -96,7 +122,11 @@ open class ColumnarHBox(numColumns: Int, useRows: Boolean) : ColumnarBox<HBox, H
 }
 
 
-open class ColumnarVBox(numColumns: Int, useRows: Boolean) : ColumnarBox<VBox, VBox.Align>(numColumns, useRows) {
+open class ColumnarVBox : ColumnarBox<VBox, VBox.Align> {
+    
+    constructor(columnAllotment: List<Int>, useRows: Boolean) : super(columnAllotment, useRows)
+    constructor(numColumns: Int, useRows: Boolean) : super(numColumns, useRows)
+    
     override fun createBox(): VBox {
         return VBox()
     }
