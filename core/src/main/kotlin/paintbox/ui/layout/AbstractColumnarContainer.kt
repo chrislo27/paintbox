@@ -45,7 +45,7 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
                 getPositional(newBox).bind {
                     (usableWidth.use() * proportion + spacing.use()) * colsSoFar
                 }
-                onCreate(newBox, index)
+                onCreate(newBox, colsSoFar, index)
                 
                 colAccumulator += logicalCols
             }
@@ -57,7 +57,7 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
     
     constructor(numColumns: Int, useRows: Boolean) : this(ListOfOnes(numColumns), useRows)
 
-    protected abstract fun onCreate(newBox: Container, index: Int)
+    protected abstract fun onCreate(newBox: Container, logicalIndex: Int, realIndex: Int)
 
     protected abstract fun createBox(): Container
 
@@ -96,10 +96,10 @@ abstract class ColumnarBox<Box : AbstractHVBox<AlignEnum>, AlignEnum : AbstractH
     constructor(numColumns: Int, useRows: Boolean) : super(numColumns, useRows)
 
 
-    protected abstract fun getDefaultAlignment(index: Int, total: Int): AlignEnum
+    protected abstract fun getDefaultAlignment(logicalIndex: Int, realIndex: Int, logicalCols: Int, totalCols: Int): AlignEnum
 
-    override fun onCreate(newBox: Box, index: Int) {
-        newBox.align.set(getDefaultAlignment(index, numLogicalColumns))
+    override fun onCreate(newBox: Box, logicalIndex: Int, realIndex: Int) {
+        newBox.align.set(getDefaultAlignment(logicalIndex, realIndex, numLogicalColumns, numRealColumns))
     }
 }
 
@@ -112,11 +112,11 @@ open class ColumnarHBox : ColumnarBox<HBox, HBox.Align> {
         return HBox()
     }
 
-    override fun getDefaultAlignment(index: Int, total: Int): HBox.Align {
-        return when (total) {
+    override fun getDefaultAlignment(logicalIndex: Int, realIndex: Int, logicalCols: Int, totalCols: Int): HBox.Align {
+        return when (totalCols) {
             1 -> HBox.Align.CENTRE
-            2 -> if (index == 0) HBox.Align.LEFT else HBox.Align.RIGHT
-            else -> if (index == 0) HBox.Align.LEFT else if (index == total - 1) HBox.Align.RIGHT else HBox.Align.CENTRE
+            2 -> if (realIndex == 0) HBox.Align.LEFT else HBox.Align.RIGHT
+            else -> if (realIndex == 0) HBox.Align.LEFT else if (realIndex == totalCols - 1) HBox.Align.RIGHT else HBox.Align.CENTRE
         }
     }
 }
@@ -131,11 +131,11 @@ open class ColumnarVBox : ColumnarBox<VBox, VBox.Align> {
         return VBox()
     }
 
-    override fun getDefaultAlignment(index: Int, total: Int): VBox.Align {
-        return when (total) {
+    override fun getDefaultAlignment(logicalIndex: Int, realIndex: Int, logicalCols: Int, totalCols: Int): VBox.Align {
+        return when (totalCols) {
             1 -> VBox.Align.CENTRE
-            2 -> if (index == 0) VBox.Align.TOP else VBox.Align.BOTTOM
-            else -> if (index == 0) VBox.Align.TOP else if (index == total - 1) VBox.Align.BOTTOM else VBox.Align.CENTRE
+            2 -> if (realIndex == 0) VBox.Align.TOP else VBox.Align.BOTTOM
+            else -> if (realIndex == 0) VBox.Align.TOP else if (realIndex == totalCols - 1) VBox.Align.BOTTOM else VBox.Align.CENTRE
         }
     }
 }
