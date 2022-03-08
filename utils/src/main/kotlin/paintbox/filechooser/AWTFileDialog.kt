@@ -10,7 +10,7 @@ import javax.swing.filechooser.FileNameExtensionFilter
 
 
 /**
- * Implementation of [IFileDialog] using [JFileChooser].
+ * Implementation of [IFileDialog] using Swing's [JFileChooser].
  */
 open class AWTFileDialog : IFileDialog {
     
@@ -33,18 +33,23 @@ open class AWTFileDialog : IFileDialog {
             }
         }
     }
-    
+
     protected fun File.parentOrSelf(): File {
         return if (this.isFile) this.parentFile else this
     }
-    
+
+    protected fun FileExtFilter.toFNEF(): FileNameExtensionFilter {
+        val filter = this
+        return FileNameExtensionFilter(filter.description, *filter.extensions.toTypedArray())
+    }
+
     override fun saveFile(title: String, defaultFile: File?, filter: FileExtFilter?, callback: (File?) -> Unit) {
-        val fc = createJFileChooser(defaultFile?.parentOrSelf()).apply { 
+        val fc = createJFileChooser(defaultFile?.parentOrSelf()).apply {
             this.fileSelectionMode = JFileChooser.FILES_ONLY
             this.dialogTitle = title
         }
         if (filter != null) {
-            fc.fileFilter = FileNameExtensionFilter(filter.description, *filter.extensions.toTypedArray())
+            fc.fileFilter = filter.toFNEF()
         }
         
         if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -60,7 +65,7 @@ open class AWTFileDialog : IFileDialog {
             this.dialogTitle = title
         }
         if (filter != null) {
-            fc.fileFilter = FileNameExtensionFilter(filter.description, *filter.extensions.toTypedArray())
+            fc.fileFilter = filter.toFNEF()
         }
 
         if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -77,7 +82,7 @@ open class AWTFileDialog : IFileDialog {
             this.dialogTitle = title
         }
         if (filter != null) {
-            fc.fileFilter = FileNameExtensionFilter(filter.description, *filter.extensions.toTypedArray())
+            fc.fileFilter = filter.toFNEF()
         }
 
         if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
