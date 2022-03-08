@@ -128,7 +128,6 @@ object TinyFDWrapper : IFileDialog {
             }.apply { 
                 this.fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
                 this.dialogTitle = title
-                this.fileFilter
             }
             return when (fileChooser.showOpenDialog(null)) {
                 JFileChooser.APPROVE_OPTION -> {
