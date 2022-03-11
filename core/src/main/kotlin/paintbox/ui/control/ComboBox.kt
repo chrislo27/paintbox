@@ -9,6 +9,7 @@ import paintbox.binding.FloatVar
 import paintbox.binding.IntVar
 import paintbox.binding.Var
 import paintbox.font.*
+import paintbox.ui.StringConverter
 import paintbox.ui.area.Insets
 import paintbox.ui.border.SolidBorder
 import paintbox.ui.contextmenu.ContextMenu
@@ -29,7 +30,7 @@ open class ComboBox<T>(startingList: List<T>, selectedItem: T,
     companion object {
         const val COMBOBOX_SKIN_ID: String = "ComboBox"
         
-        val DEFAULT_STRING_CONVERTER: (Any?) -> String = { it.toString() }
+        val DEFAULT_STRING_CONVERTER: StringConverter<Any?> get() = StringConverter.DEFAULT_STRING_CONVERTER
         val DEFAULT_PADDING: Insets = Insets(2f, 2f, 4f, 4f)
         
         init {
@@ -41,7 +42,7 @@ open class ComboBox<T>(startingList: List<T>, selectedItem: T,
         
         fun createInternalTextBlockVar(comboBox: ComboBox<Any?>): Var<TextBlock> {
             return Var {
-                val text = comboBox.itemStringConverter.use().invoke(comboBox.selectedItem.use())
+                val text = comboBox.itemStringConverter.use().convert(comboBox.selectedItem.use())
                 val markup: Markup? = comboBox.markup.use()
                 if (markup != null) {
                     markup.parse(text)
@@ -56,7 +57,7 @@ open class ComboBox<T>(startingList: List<T>, selectedItem: T,
     
     val items: Var<List<T>> = Var(startingList)
     val selectedItem: Var<T> = Var(selectedItem)
-    val itemStringConverter: Var<(T) -> String> = Var(DEFAULT_STRING_CONVERTER as ((T) -> String))
+    val itemStringConverter: Var<StringConverter<T>> = Var(DEFAULT_STRING_CONVERTER as StringConverter<T>)
     
     val backgroundColor: Var<Color> = Var(Color(1f, 1f, 1f, 1f))
     val contrastColor: Var<Color> = Var(Color(0f, 0f, 0f, 1f))
@@ -108,8 +109,8 @@ open class ComboBox<T>(startingList: List<T>, selectedItem: T,
                 val menuItems: List<Pair<T, MenuItem>> = itemList.map { item: T ->
                     val scaleXY: Float = min(scaleX.get(), scaleY.get())
                     item to (if (thisMarkup != null)
-                        SimpleMenuItem.create(strConverter.invoke(item), thisMarkup, scaleXY)
-                    else SimpleMenuItem.create(strConverter.invoke(item), thisFont, scaleXY)).also { smi ->
+                        SimpleMenuItem.create(strConverter.convert(item), thisMarkup, scaleXY)
+                    else SimpleMenuItem.create(strConverter.convert(item), thisFont, scaleXY)).also { smi ->
                         smi.closeMenuAfterAction = true
                         smi.onAction = {
                             this.selectedItem.set(item)
