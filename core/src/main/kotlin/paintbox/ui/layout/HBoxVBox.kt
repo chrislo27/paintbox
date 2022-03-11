@@ -163,6 +163,40 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
         }
         attemptLayout(index)
     }
+
+    fun sizeWidthToChildren(minimumWidth: Float = 0f) {
+        val last = children.lastOrNull()
+        var width = 0f
+        if (last != null) {
+            width = last.bounds.x.get() + last.bounds.width.get()
+        }
+
+        val borderInsets = this.border.getOrCompute()
+        val marginInsets = this.margin.getOrCompute()
+        val paddingInsets = this.padding.getOrCompute()
+        fun Insets.leftright(): Float = this.left + this.right
+
+        width += borderInsets.leftright() + marginInsets.leftright() + paddingInsets.leftright()
+        
+        this.bounds.width.set(width.coerceAtLeast(minimumWidth))
+    }
+    
+    fun sizeHeightToChildren(minimumHeight: Float = 0f) {
+        val last = children.lastOrNull()
+        var height = 0f
+        if (last != null) {
+            height = last.bounds.y.get() + last.bounds.height.get()
+        }
+
+        val borderInsets = this.border.getOrCompute()
+        val marginInsets = this.margin.getOrCompute()
+        val paddingInsets = this.padding.getOrCompute()
+        fun Insets.topbottom(): Float = this.top + this.bottom
+
+        height += borderInsets.topbottom() + marginInsets.topbottom() + paddingInsets.topbottom()
+
+        this.bounds.height.set(height.coerceAtLeast(minimumHeight))
+    }
 }
 
 /**
@@ -197,24 +231,6 @@ open class HBox : AbstractHVBox<HBox.Align>() {
     override fun getThisDimensional(): ReadOnlyFloatVar {
         return this.contentZone.width
     }
-
-    fun sizeWidthToChildren(minimumWidth: Float = 0f) {
-        val last = children.lastOrNull()
-        var width = 0f
-        if (last != null) {
-            width = last.bounds.x.get() + last.bounds.width.get()
-        }
-        
-        val borderInsets = this.border.getOrCompute()
-        val marginInsets = this.margin.getOrCompute()
-        val paddingInsets = this.padding.getOrCompute()
-        fun Insets.leftright(): Float = this.left + this.right
-
-        width += borderInsets.leftright() + marginInsets.leftright() + paddingInsets.leftright()
-
-
-        this.bounds.width.set(width.coerceAtLeast(minimumWidth))
-    }
 }
 
 /**
@@ -248,22 +264,5 @@ open class VBox : AbstractHVBox<VBox.Align>() {
 
     override fun getThisDimensional(): ReadOnlyFloatVar {
         return this.contentZone.height
-    }
-    
-    fun sizeHeightToChildren(minimumHeight: Float = 0f) {
-        val last = children.lastOrNull()
-        var height = 0f
-        if (last != null) {
-            height = last.bounds.y.get() + last.bounds.height.get()
-        }
-
-        val borderInsets = this.border.getOrCompute()
-        val marginInsets = this.margin.getOrCompute()
-        val paddingInsets = this.padding.getOrCompute()
-        fun Insets.topbottom(): Float = this.top + this.bottom
-        
-        height += borderInsets.topbottom() + marginInsets.topbottom() + paddingInsets.topbottom()
-        
-        this.bounds.height.set(height.coerceAtLeast(minimumHeight))
     }
 }
