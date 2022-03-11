@@ -1,14 +1,16 @@
 package paintbox.ui
 
 import com.badlogic.gdx.Input
+import paintbox.binding.Var
 
 
-open class ActionablePane : Pane() {
+open class ActionablePane : Pane(), HasTooltip {
     companion object {
         val DEFAULT_ACTION: () -> Boolean = { false }
         val DEFAULT_EVENT_ACTION: (InputEvent) -> Boolean = { false }
     }
 
+    override val tooltipElement: Var<UIElement?> = Var(null)
     var onAction: () -> Boolean = DEFAULT_ACTION
     var onAltAction: () -> Boolean = DEFAULT_ACTION
     var onLeftClick: (event: ClickReleased) -> Boolean = DEFAULT_EVENT_ACTION
