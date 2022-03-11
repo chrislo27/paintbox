@@ -18,8 +18,13 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
 
     val numLogicalColumns: Int
     val numRealColumns: Int get() = columnAllotment.size
+    val numSpacers: Int get() = (columnAllotment.size - 1).coerceAtLeast(0)
+    protected val usableWidth: ReadOnlyFloatVar
+    protected val logicalColumnsTally: List<Int> // Represents logical columns taken for each real column, used for spacer information
     val spacing: FloatVar = FloatVar(0f)
     val columnBoxes: List<Container>
+    protected val spacersList: MutableList<UIElement?>
+    val spacers: List<UIElement?> get() = spacersList
 
     init {
         columnAllotment.forEachIndexed { index, item ->
@@ -29,15 +34,18 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
         }
         numLogicalColumns = columnAllotment.sum()
         
-        val usableWidth = FloatVar {
+        spacersList = MutableList(numSpacers) { null }
+        
+        usableWidth = FloatVar {
             val spacing = spacing.use()
             val thisDimension = getThisDimensional().use()
             (thisDimension - (spacing * (numLogicalColumns - 1))).coerceAtLeast(1f)
         }
         val proportion = 1f / numLogicalColumns
         var colAccumulator = 0
+        logicalColumnsTally = mutableListOf()
         columnBoxes = columnAllotment.mapIndexed { index, logicalCols ->
-            createBox().also { newBox ->
+            val box = createBox().also { newBox ->
                 val colsSoFar = colAccumulator
                 getDimensional(newBox).bind {
                     (usableWidth.use() * proportion * logicalCols) + (spacing.use() * (logicalCols - 1))
@@ -49,6 +57,8 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
                 
                 colAccumulator += logicalCols
             }
+            logicalColumnsTally.add(colAccumulator)
+            box
         }
         columnBoxes.forEach { 
             addChild(it)
@@ -60,6 +70,45 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
     protected abstract fun onCreate(newBox: Container, logicalIndex: Int, realIndex: Int)
 
     protected abstract fun createBox(): Container
+
+    /**
+     * Sets the spacer element. This will change the [element]'s bounds
+     * [dimensionally][getDimensional] and [positionally][getPositional] if not null.
+     * If [element] is null, this removes the existing element, if any.
+     * 
+     * @return The last element in that [spacer position][spacerIndex]
+     * @see numSpacers
+     */
+    fun setSpacer(spacerIndex: Int, element: UIElement?): UIElement? {
+        require(spacerIndex in 0 until numSpacers) { "spacerIndex out of bounds, got $spacerIndex, must be in [0, $numSpacers)" }
+        
+        val last = spacersList[spacerIndex]
+        if (last != null) {
+            removeChild(last)
+        }
+        if (element != null) {
+            addChild(element)
+            getDimensional(element).bind { spacing.use() }
+            getPositional(element).bind {
+                val logicalCols = logicalColumnsTally[spacerIndex]
+                (usableWidth.use() * logicalCols / numLogicalColumns) + (spacing.use() * (logicalCols - 1))
+            }
+        }
+        
+        spacersList[spacerIndex] = element
+        return last
+    }
+    
+    fun getSpacer(spacerIndex: Int): UIElement? {
+        require(spacerIndex in 0 until numSpacers) { "spacerIndex out of bounds, got $spacerIndex, must be in [0, $numSpacers)" }
+        return spacersList[spacerIndex]
+    }
+    
+    inline fun setAllSpacers(getter: (index: Int) -> UIElement?) {
+        (0 until numSpacers).forEach { idx ->
+            setSpacer(idx, getter(idx))
+        }
+    }
 
     /**
      * Returns either the width or height var for this columnar from [contentZone].

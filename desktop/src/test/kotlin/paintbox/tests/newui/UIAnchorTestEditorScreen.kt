@@ -18,6 +18,8 @@ import paintbox.ui.contextmenu.SeparatorMenuItem
 import paintbox.ui.contextmenu.SimpleMenuItem
 import paintbox.ui.control.*
 import paintbox.ui.element.RectElement
+import paintbox.ui.layout.ColumnarHBox
+import paintbox.ui.layout.ColumnarVBox
 import paintbox.util.MathHelper
 import paintbox.util.gdxutils.isControlDown
 import paintbox.util.DecimalFormats
@@ -448,6 +450,34 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             Anchor.CentreRight.configure(this, offsetX = -100f - 50f, offsetY = 100f)
             this.bounds.width.set(200f)
             this.bounds.height.set(30f)
+        }
+        
+        bg += ColumnarHBox(listOf(1, 1, 1), false).apply { 
+            Anchor.BottomCentre.configure(this, offsetY = -25f)
+            this.bindWidthToParent(multiplier = 0.6f)
+            this.bounds.height.set(50f)
+            this.spacing.set(4f)
+            
+            this[0].addChild(RectElement(Color.RED))
+            this[1].addChild(RectElement(Color.GREEN))
+            this[2].addChild(RectElement(Color.BLUE))
+            this.setAllSpacers { idx ->
+                RectElement(Color.WHITE)
+            }
+        }
+        
+        bg += ColumnarVBox(listOf(1, 1, 1), true).apply { 
+            Anchor.BottomRight.configure(this, offsetY = -25f, offsetX = -50f)
+            this.bounds.width.set(25f)
+            this.bindHeightToParent(multiplier = 0.4f, adjust = -50f)
+            this.spacing.set(4f)
+            
+            this[0].addChild(RectElement(Color.RED))
+            this[1].addChild(RectElement(Color.GREEN))
+            this[2].addChild(RectElement(Color.BLUE))
+            this.setAllSpacers { idx ->
+                RectElement(Color.WHITE)
+            }
         }
         
         bg += RectElement(Color(0f, 0f, 0f, 0.75f)).apply {
