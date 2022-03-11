@@ -170,7 +170,6 @@ open class ColumnarHBox : ColumnarBox<HBox, HBox.Align> {
     }
 }
 
-
 open class ColumnarVBox : ColumnarBox<VBox, VBox.Align> {
     
     constructor(columnAllotment: List<Int>, useRows: Boolean) : super(columnAllotment, useRows)
@@ -186,5 +185,17 @@ open class ColumnarVBox : ColumnarBox<VBox, VBox.Align> {
             2 -> if (realIndex == 0) VBox.Align.TOP else VBox.Align.BOTTOM
             else -> if (realIndex == 0) VBox.Align.TOP else if (realIndex == totalCols - 1) VBox.Align.BOTTOM else VBox.Align.CENTRE
         }
+    }
+}
+
+open class ColumnarPane : AbstractColumnarContainer<Pane> {
+    constructor(columnAllotment: List<Int>, useRows: Boolean) : super(columnAllotment, useRows)
+    constructor(numColumns: Int, useRows: Boolean) : super(numColumns, useRows)
+
+    override fun onCreate(newBox: Pane, logicalIndex: Int, realIndex: Int) {
+    }
+
+    override fun createBox(): Pane {
+        return Pane()
     }
 }
