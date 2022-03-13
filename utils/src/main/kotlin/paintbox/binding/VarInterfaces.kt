@@ -16,8 +16,14 @@ interface ReadOnlyVar<out T> {
      */
     fun getOrCompute(): T
 
+    /**
+     * Adds a *strong* reference listener to this [ReadOnlyVar]. It can be removed with [removeListener].
+     */
     fun addListener(listener: VarChangedListener<T>)
 
+    /**
+     * Removes the given [listener] from this [ReadOnlyVar].
+     */
     fun removeListener(listener: VarChangedListener<T>)
 
     /**
