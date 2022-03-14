@@ -5,6 +5,9 @@ import paintbox.ui.Pane
 import paintbox.ui.UIElement
 import paintbox.ui.area.Bounds
 import paintbox.ui.area.Insets
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 
 /**
@@ -84,7 +87,11 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
      * Sets [disableLayouts] to true, runs the [func], then sets [disableLayouts] to false.
      * This is intended as an optimization when adding a set of children to avoid constant layout recomputations.
      */
+    @OptIn(ExperimentalContracts::class)
     inline fun temporarilyDisableLayouts(func: () -> Unit) {
+        contract {
+            callsInPlace(func, InvocationKind.EXACTLY_ONCE)
+        }
         disableLayouts.set(true)
         func()
         disableLayouts.set(false)
