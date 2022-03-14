@@ -161,7 +161,7 @@ open class UIElement : UIBounds() {
             childrenCopy.add(atIndex, child)
             children = childrenCopy
             child.parent.set(this)
-            this.onChildAdded(child)
+            this.onChildAdded(child, atIndex)
             child.onAddedToParent(this)
             
             return true
@@ -208,7 +208,7 @@ open class UIElement : UIBounds() {
             removeAt(index)
         }
         child.parent.set(null)
-        this.onChildRemoved(child)
+        this.onChildRemoved(child, index)
         child.onRemovedFromParent(this)
 
         return true
@@ -227,13 +227,13 @@ open class UIElement : UIBounds() {
     /**
      * Called when a child is added to this [UIElement]. This will be called BEFORE the companion call to [onAddedToParent].
      */
-    protected open fun onChildAdded(newChild: UIElement) {
+    protected open fun onChildAdded(newChild: UIElement, atIndex: Int) {
     }
 
     /**
      * Called when a child is removed from this [UIElement]. This will be called BEFORE the companion call to [onRemovedFromParent].
      */
-    protected open fun onChildRemoved(oldChild: UIElement) {
+    protected open fun onChildRemoved(oldChild: UIElement, oldIndex: Int) {
     }
 
     /**
@@ -250,6 +250,10 @@ open class UIElement : UIBounds() {
     
     operator fun contains(other: UIElement): Boolean {
         return other in children
+    }
+
+    override fun toString(): String {
+        return "{${this.javaClass.name}, x=${this.bounds.x.get()}, y=${this.bounds.y.get()}, w=${this.bounds.width.get()}, h=${this.bounds.height.get()}}"
     }
 
     fun addInputEventListener(listener: InputEventListener) {
