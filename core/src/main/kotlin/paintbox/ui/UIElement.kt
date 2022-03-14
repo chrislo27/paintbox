@@ -215,7 +215,13 @@ open class UIElement : UIBounds() {
     }
     
     fun removeAllChildren() {
-        children.toList().forEach { removeChild(it) }
+        val childrenSize = children.size
+        if (childrenSize > 0) {
+            // Delete backwards
+            for (i in childrenSize - 1 downTo 0) {
+                removeChild(i)
+            }
+        }
     }
 
     /**
