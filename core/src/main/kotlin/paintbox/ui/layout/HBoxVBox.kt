@@ -141,25 +141,26 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
         }
     }
 
-    override fun onChildAdded(newChild: UIElement) {
-        super.onChildAdded(newChild)
+    override fun onChildAdded(newChild: UIElement, atIndex: Int) {
+        super.onChildAdded(newChild, atIndex)
 
-        // Add to end of cache.
+        // Add to correct position in cache based on atIndex
         val currentCache = elementCache.toList()
-        val prev = currentCache.lastOrNull()
         val dimensional = getDimensional(newChild)
         val elementData = ElementData(newChild, currentCache.size, dimensional.get())
         dimensional.addListener(elementData.sizeListener)
-        elementCache += elementData
-        attemptLayout((currentCache.size - 1).coerceAtLeast(0))
+        elementCache.add(atIndex, elementData)
+        attemptLayout((atIndex).coerceAtLeast(0))
     }
 
-    override fun onChildRemoved(oldChild: UIElement) {
-        super.onChildRemoved(oldChild)
+    override fun onChildRemoved(oldChild: UIElement, oldIndex: Int) {
+        super.onChildRemoved(oldChild, oldIndex)
 
         // Find where in the cache it was deleted and update the subsequent ones
         val currentCache = elementCache.toList()
-        val index = currentCache.indexOfFirst { it.element == oldChild }
+        // Use given oldIndex if correct. Use old logic as fallback
+        val index = oldIndex.takeIf { currentCache.getOrNull(oldIndex)?.element == oldChild }
+            ?: currentCache.indexOfFirst { it.element == oldChild }
         if (index < 0) return
         
         val removedData = elementCache.removeAt(index)
