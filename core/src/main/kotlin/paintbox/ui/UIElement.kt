@@ -149,11 +149,17 @@ open class UIElement : UIBounds() {
     protected open fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
     }
 
-    fun addChild(child: UIElement): Boolean {
+    /**
+     * Adds the [child] at the given [atIndex] of this [UIElement]'s children list.
+     */
+    fun addChild(atIndex: Int, child: UIElement): Boolean {
         if (child !in children) {
             child.parent.getOrCompute()?.removeChild(child)
             
-            children = children + child
+            val childrenCopy = ArrayList<UIElement>(children.size + 1)
+            childrenCopy.addAll(children)
+            childrenCopy.add(atIndex, child)
+            children = childrenCopy
             child.parent.set(this)
             this.onChildAdded(child)
             child.onAddedToParent(this)
@@ -163,22 +169,49 @@ open class UIElement : UIBounds() {
         return false
     }
 
+    /**
+     * Adds the [child] to the end of this [UIElement]'s children list.
+     */
+    fun addChild(child: UIElement): Boolean {
+        return addChild(children.size, child)
+    }
+
+    /**
+     * Adds the [child] to the beginning of this [UIElement]'s children list.
+     */
+    fun addChildToBeginning(child: UIElement): Boolean {
+        return addChild(0, child)
+    }
+
+    /**
+     * Removes the given [child] from this [UIElement].
+     */
     fun removeChild(child: UIElement): Boolean {
-        if (child in children) {
-            if (child is Focusable) {
-                // Remove focus on this child.
-                val childSceneRoot = child.sceneRoot.getOrCompute()
-                childSceneRoot?.setFocusedElement(null)
-            }
-            
-            children = children - child
-            child.parent.set(null)
-            this.onChildRemoved(child)
-            child.onRemovedFromParent(this)
-            
-            return true
+        return removeChild(children.indexOf(child))
+    }
+
+    /**
+     * Removes the child at the given [index] from this [UIElement].
+     * If the [index] is not in bounds, no action is taken.
+     */
+    fun removeChild(index: Int): Boolean {
+        if (index !in children.indices) return false
+
+        val child = children[index]
+        if (child is Focusable) {
+            // Remove focus on this child.
+            val childSceneRoot = child.sceneRoot.getOrCompute()
+            childSceneRoot?.setFocusedElement(null)
         }
-        return false
+
+        children = children.toMutableList().apply { 
+            removeAt(index)
+        }
+        child.parent.set(null)
+        this.onChildRemoved(child)
+        child.onRemovedFromParent(this)
+
+        return true
     }
     
     fun removeAllChildren() {
