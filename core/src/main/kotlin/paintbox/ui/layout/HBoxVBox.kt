@@ -45,25 +45,31 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
     val spacing: FloatVar = FloatVar(0f)
 
     /**
-     * A flag to disable layouts. When set to true, a layout will be forced.
+     * A flag to disable layouts.
      * This is useful for pausing layout computation until all children have been added.
      */
     val disableLayouts: BooleanVar = BooleanVar(false)
+
+    /**
+     * If true, when [disableLayouts] is set back to false, [reLayout] is called.
+     */
+    val doLayoutIfLayoutsReenabled: BooleanVar = BooleanVar(true)
     
     protected val internalAlignment: Var<InternalAlignment> = Var(InternalAlignment.MIN)
+    private var isDoingLayout: Boolean = false
 
     abstract val align: Var<AlignEnum>
 
     init {
         spacing.addListener {
-            attemptLayout(0)
+            reLayout()
         }
         internalAlignment.addListener {
-            attemptLayout(0)
+            reLayout()
         }
         disableLayouts.addListener {
-            if (!it.getOrCompute()) {
-                attemptLayout(0)
+            if (doLayoutIfLayoutsReenabled.get()) {
+                reLayout()
             }
         }
     }
@@ -84,7 +90,8 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
     protected abstract fun getPositional(element: UIElement): FloatVar
 
     /**
-     * Sets [disableLayouts] to true, runs the [func], then sets [disableLayouts] to false.
+     * Sets [disableLayouts] to true, runs the [func], then sets [disableLayouts] to false
+     * and does a [full layout][reLayout].
      * This is intended as an optimization when adding a set of children to avoid constant layout recomputations.
      */
     @OptIn(ExperimentalContracts::class)
@@ -95,10 +102,22 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
         disableLayouts.set(true)
         func()
         disableLayouts.set(false)
+        if (!doLayoutIfLayoutsReenabled.get()) {
+            reLayout()
+        }
     }
 
+    /**
+     * Attempts to do a full layout.
+     */
+    fun reLayout() {
+        attemptLayout(0)
+    }
+    
     protected fun attemptLayout(index: Int) {
-        if (disableLayouts.get() || index >= elementCache.size) return
+        if (disableLayouts.get() || index >= elementCache.size || isDoingLayout) return
+        
+        isDoingLayout = true
         
         val cache = elementCache
         var acc = if (index > 0) (cache[index - 1].let { it.position + it.dimension + it.nextSpacing }) else 0f
@@ -139,6 +158,8 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
                 pos.set(d.position + offset)
             }
         }
+        
+        isDoingLayout = false
     }
 
     override fun onChildAdded(newChild: UIElement, atIndex: Int) {
