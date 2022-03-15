@@ -152,7 +152,14 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
     }
     
     protected fun attemptLayout(index: Int) {
-        if (isDoingLayout || disableLayouts.get() || index >= elementCache.size) return
+        if (isDoingLayout || disableLayouts.get()) return
+        if (index >= elementCache.size) {
+            // Autosize if necessary
+            if (autoSizeToChildren.get()) {
+                doAutosize()
+            }
+            return
+        }
         
         isDoingLayout = true
         try {
