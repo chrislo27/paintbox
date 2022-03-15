@@ -54,6 +54,21 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
      * If true, when [disableLayouts] is set back to false, [reLayout] is called.
      */
     val doLayoutIfLayoutsReenabled: BooleanVar = BooleanVar(true)
+
+    /**
+     * If true, this box will call [sizeWidthToChildren]/[sizeHeightToChildren] whenever its children's sizes change.
+     */
+    val autoSizeToChildren: BooleanVar = BooleanVar(false)
+
+    /**
+     * The minimum size to use when [autoSizeToChildren] is true. Default zero.
+     */
+    val autoSizeMinimumSize: FloatVar = FloatVar(0f)
+    
+    /**
+     * The maximum size to use when [autoSizeToChildren] is true. Default positive infinity.
+     */
+    val autoSizeMaximumSize: FloatVar = FloatVar(Float.POSITIVE_INFINITY)
     
     protected val internalAlignment: Var<InternalAlignment> = Var(InternalAlignment.MIN)
     private var isDoingLayout: Boolean = false
@@ -70,6 +85,22 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
         disableLayouts.addListener {
             if (doLayoutIfLayoutsReenabled.get()) {
                 reLayout()
+            }
+        }
+        
+        autoSizeToChildren.addListener {
+            if (it.getOrCompute()) {
+                doAutosize()
+            }
+        }
+        autoSizeMinimumSize.addListener { minSize ->
+            if (autoSizeToChildren.get() && this.getThisDimensional().get() < minSize.getOrCompute()) {
+                doAutosize()
+            }
+        }
+        autoSizeMaximumSize.addListener { maxSize ->
+            if (autoSizeToChildren.get() && this.getThisDimensional().get() > maxSize.getOrCompute()) {
+                doAutosize()
             }
         }
     }
@@ -90,8 +121,14 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
     protected abstract fun getPositional(element: UIElement): FloatVar
 
     /**
+     * Called when autosizing is attempted. Should call [sizeWidthToChildren] or [sizeHeightToChildren].
+     */
+    protected abstract fun doAutosize()
+
+    /**
      * Sets [disableLayouts] to true, runs the [func], then sets [disableLayouts] to false
      * and does a [full layout][reLayout].
+     * 
      * This is intended as an optimization when adding a set of children to avoid constant layout recomputations.
      */
     @OptIn(ExperimentalContracts::class)
@@ -115,51 +152,57 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
     }
     
     protected fun attemptLayout(index: Int) {
-        if (disableLayouts.get() || index >= elementCache.size || isDoingLayout) return
+        if (isDoingLayout || disableLayouts.get() || index >= elementCache.size) return
         
         isDoingLayout = true
-        
-        val cache = elementCache
-        var acc = if (index > 0) (cache[index - 1].let { it.position + it.dimension + it.nextSpacing }) else 0f
-        val cacheSize = cache.size
-        val spacingValue = spacing.get()
-        
-        for (i in index until cacheSize) {
-            val d = cache[i]
-            val element = d.element
-            d.position = acc
-            d.dimension = getDimensional(element).get()
-            d.nextSpacing = spacingValue
-            
-            val pos = getPositional(element)
-            pos.set(d.position)
-            
-            acc += d.dimension
-            if (i < cacheSize - 1) {
-                acc += d.nextSpacing
-            }
-        }
-        
-        // Alignment
-        val align = this.internalAlignment.getOrCompute()
-        if (align != InternalAlignment.MIN) {
-            val totalSize = cache.last().let { it.position + it.dimension }
-            val thisSize = getThisDimensional().get()
-            val offset: Float = when (align) {
-                InternalAlignment.MIN -> 0f // Not a possible branch
-                InternalAlignment.MIDDLE -> (thisSize - totalSize) / 2f
-                InternalAlignment.MAX -> (thisSize - totalSize)
+        try {
+            val cache = elementCache
+            var acc = if (index > 0) (cache[index - 1].let { it.position + it.dimension + it.nextSpacing }) else 0f
+            val cacheSize = cache.size
+            val spacingValue = spacing.get()
+
+            for (i in index until cacheSize) {
+                val d = cache[i]
+                val element = d.element
+                d.position = acc
+                d.dimension = getDimensional(element).get()
+                d.nextSpacing = spacingValue
+
+                val pos = getPositional(element)
+                pos.set(d.position)
+
+                acc += d.dimension
+                if (i < cacheSize - 1) {
+                    acc += d.nextSpacing
+                }
             }
 
-            for (i in 0 until cacheSize) {
-                val d = elementCache[i]
-                val element = d.element
-                val pos = getPositional(element)
-                pos.set(d.position + offset)
+            // Alignment
+            val align = this.internalAlignment.getOrCompute()
+            if (align != InternalAlignment.MIN) {
+                val totalSize = cache.last().let { it.position + it.dimension }
+                val thisSize = getThisDimensional().get()
+                val offset: Float = when (align) {
+                    InternalAlignment.MIN -> 0f // Not a possible branch
+                    InternalAlignment.MIDDLE -> (thisSize - totalSize) / 2f
+                    InternalAlignment.MAX -> (thisSize - totalSize)
+                }
+
+                for (i in 0 until cacheSize) {
+                    val d = elementCache[i]
+                    val element = d.element
+                    val pos = getPositional(element)
+                    pos.set(d.position + offset)
+                }
             }
+            
+            // Autosize if necessary
+            if (autoSizeToChildren.get()) {
+                doAutosize()
+            }
+        } finally {
+            isDoingLayout = false
         }
-        
-        isDoingLayout = false
     }
 
     override fun onChildAdded(newChild: UIElement, atIndex: Int) {
@@ -193,7 +236,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
         attemptLayout(index)
     }
 
-    fun sizeWidthToChildren(minimumWidth: Float = 0f) {
+    fun sizeWidthToChildren(minimumWidth: Float = 0f, maximumWidth: Float = Float.POSITIVE_INFINITY) {
         val last = children.lastOrNull()
         var width = 0f
         if (last != null) {
@@ -207,10 +250,10 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
 
         width += borderInsets.leftright() + marginInsets.leftright() + paddingInsets.leftright()
         
-        this.bounds.width.set(width.coerceAtLeast(minimumWidth))
+        this.bounds.width.set(width.coerceIn(minimumWidth, maximumWidth))
     }
     
-    fun sizeHeightToChildren(minimumHeight: Float = 0f) {
+    fun sizeHeightToChildren(minimumHeight: Float = 0f, maximumHeight: Float = Float.POSITIVE_INFINITY) {
         val last = children.lastOrNull()
         var height = 0f
         if (last != null) {
@@ -224,7 +267,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
 
         height += borderInsets.topbottom() + marginInsets.topbottom() + paddingInsets.topbottom()
 
-        this.bounds.height.set(height.coerceAtLeast(minimumHeight))
+        this.bounds.height.set(height.coerceIn(minimumHeight, maximumHeight))
     }
 }
 
@@ -260,6 +303,10 @@ open class HBox : AbstractHVBox<HBox.Align>() {
     override fun getThisDimensional(): ReadOnlyFloatVar {
         return this.contentZone.width
     }
+
+    override fun doAutosize() {
+        sizeWidthToChildren(autoSizeMinimumSize.get(), autoSizeMaximumSize.get())
+    }
 }
 
 /**
@@ -293,5 +340,9 @@ open class VBox : AbstractHVBox<VBox.Align>() {
 
     override fun getThisDimensional(): ReadOnlyFloatVar {
         return this.contentZone.height
+    }
+
+    override fun doAutosize() {
+        sizeHeightToChildren(autoSizeMinimumSize.get(), autoSizeMaximumSize.get())
     }
 }
