@@ -123,7 +123,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
     /**
      * Called when autosizing is attempted. Should call [sizeWidthToChildren] or [sizeHeightToChildren].
      */
-    protected abstract fun doAutosize()
+    abstract fun doAutosize()
 
     /**
      * Sets [disableLayouts] to true, runs the [func], then sets [disableLayouts] to false
