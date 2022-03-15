@@ -108,7 +108,12 @@ class LongVar : ReadOnlyLongVar, Var<Long> {
      */
     override fun get(): Long {
         val result: Long = when (val binding = this.binding) {
-            is LongBinding.Const -> this.currentValue
+            is LongBinding.Const -> {
+                if (invalidated) {
+                    invalidated = false
+                }
+                this.currentValue
+            }
             is LongBinding.Compute -> {
                 if (!invalidated) {
                     currentValue

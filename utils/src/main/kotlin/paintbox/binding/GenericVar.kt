@@ -82,8 +82,12 @@ class GenericVar<T> : Var<T> {
 
     override fun getOrCompute(): T {
         return when (val binding = this.binding) {
-            is GenericBinding.Const ->
+            is GenericBinding.Const -> {
+                if (invalidated) {
+                    invalidated = false
+                }
                 @Suppress("UNCHECKED_CAST") (currentValue as T) // Cannot be currentValue!! since the actual type of T may be nullable
+            }
             is GenericBinding.Compute -> {
                 if (!invalidated) {
                     @Suppress("UNCHECKED_CAST") (currentValue as T)

@@ -108,7 +108,12 @@ class DoubleVar : ReadOnlyDoubleVar, Var<Double> {
      */
     override fun get(): Double {
         val result: Double = when (val binding = this.binding) {
-            is DoubleBinding.Const -> this.currentValue
+            is DoubleBinding.Const -> {
+                if (invalidated) {
+                    invalidated = false
+                }
+                this.currentValue
+            }
             is DoubleBinding.Compute -> {
                 if (!invalidated) {
                     currentValue

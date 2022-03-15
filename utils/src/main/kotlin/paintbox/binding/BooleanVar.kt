@@ -109,7 +109,12 @@ class BooleanVar : ReadOnlyBooleanVar, Var<Boolean> {
      */
     override fun get(): Boolean {
         val result: Boolean = when (val binding = this.binding) {
-            is BooleanBinding.Const -> this.currentValue
+            is BooleanBinding.Const -> {
+                if (invalidated) {
+                    invalidated = false
+                }
+                this.currentValue
+            }
             is BooleanBinding.Compute -> {
                 if (!invalidated) {
                     currentValue

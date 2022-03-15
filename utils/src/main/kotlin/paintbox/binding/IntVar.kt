@@ -108,7 +108,12 @@ class IntVar : ReadOnlyIntVar, Var<Int> {
      */
     override fun get(): Int {
         val result: Int = when (val binding = this.binding) {
-            is IntBinding.Const -> this.currentValue
+            is IntBinding.Const -> {
+                if (invalidated) {
+                    invalidated = false
+                }
+                this.currentValue
+            }
             is IntBinding.Compute -> {
                 if (!invalidated) {
                     currentValue

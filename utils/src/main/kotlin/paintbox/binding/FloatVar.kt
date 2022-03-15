@@ -108,7 +108,12 @@ class FloatVar : ReadOnlyFloatVar, Var<Float> {
      */
     override fun get(): Float {
         val result: Float = when (val binding = this.binding) {
-            is FloatBinding.Const -> this.currentValue
+            is FloatBinding.Const -> {
+                if (invalidated) {
+                    invalidated = false
+                }
+                this.currentValue
+            }
             is FloatBinding.Compute -> {
                 if (!invalidated) {
                     currentValue
