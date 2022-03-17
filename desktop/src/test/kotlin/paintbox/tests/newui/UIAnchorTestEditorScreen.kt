@@ -490,7 +490,6 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
                 this.text.set("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
             }
         }
-        
         bg += RectElement(Color(0f, 0f, 0f, 0.75f)).apply {
             Anchor.TopLeft.configure(this, offsetX = 50f, offsetY = 190f)
             this.bounds.width.set(200f)
@@ -499,6 +498,13 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
                 this.textColor.set(Color(1f, 1f, 1f, 1f))
                 this.padding.set(Insets(2f))
                 this.text.set("Second text field Second text field Second text field")
+            }
+        }
+        bg += RectElement(Color(0f, 0f, 0f, 0.75f)).apply {
+            Anchor.TopLeft.configure(this, offsetX = 50f, offsetY = 230f)
+            this.bounds.width.set(200f)
+            this.bounds.height.set(30f)
+            this += Spinner(0f).apply { 
             }
         }
         
