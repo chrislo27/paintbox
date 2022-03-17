@@ -22,7 +22,7 @@ open class DecimalTextField(
         minimumValue.use() < 0f
     }
     
-    private var updating = false
+    private var updating: Boolean = false
 
     init {
         this.text.set(decimalToStr())

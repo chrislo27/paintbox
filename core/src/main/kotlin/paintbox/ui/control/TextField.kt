@@ -82,13 +82,15 @@ open class TextField(font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
     
     override val focusGroup: Var<FocusGroup?> = Var(null)
     
-    private val glyphLayout: ReadOnlyVar<GlyphLayout> = Var.sideEffecting(GlyphLayout()) { layout ->
+    protected val renderedText: ReadOnlyVar<String> = Var {
+        translateTextToRenderable(text.use(), isPassword.use(), newlineWrapChar.use())
+    }
+    protected val glyphLayout: ReadOnlyVar<GlyphLayout> = Var.sideEffecting(GlyphLayout()) { layout ->
         val paintboxFont = this@TextField.font.use()
         paintboxFont.currentFontNumberVar.use()
         paintboxFont.useFont { bitmapFont ->
             bitmapFont.scaleMul(textScale.use())
-            val originalText = text.use()
-            val translated = translateTextToRenderable(originalText, isPassword.use(), newlineWrapChar.use())
+            val translated = renderedText.use()
             layout.setText(bitmapFont, translated, Color.WHITE, 0f, Align.left, false)
         }
         layout
@@ -625,7 +627,7 @@ open class TextField(font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
                 tmpColor.a *= opacity
                 batch.color = tmpColor
                 bitmapFont.color = tmpColor
-                bitmapFont.draw(batch, layout, rectX - overallOffsetX, rectY - (rectH - layout.height) / 2f)
+                bitmapFont.draw(batch, element.renderedText.getOrCompute(), rectX - overallOffsetX, rectY - (rectH - layout.height) / 2f)
 
                 val emptyHintText = element.emptyHintText.getOrCompute()
                 if (!hasFocusNow && element.text.getOrCompute().isEmpty() && emptyHintText.isNotEmpty()) {

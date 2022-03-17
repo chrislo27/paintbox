@@ -504,7 +504,8 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             Anchor.TopLeft.configure(this, offsetX = 50f, offsetY = 230f)
             this.bounds.width.set(200f)
             this.bounds.height.set(30f)
-            this += Spinner(0f).apply { 
+            this += Spinner(0f).apply {
+                this.textField.textColor.set(Color.WHITE)
             }
         }
         
