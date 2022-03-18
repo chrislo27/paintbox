@@ -98,6 +98,9 @@ open class TextLabel(text: String, font: PaintboxFont = PaintboxGame.gameInstanc
         text.bind(binding)
     }
 
+    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+            : this({ bindable.use() }, font)
+
     fun setScaleXY(scaleXY: Float) {
         this.scaleX.set(scaleXY)
         this.scaleY.set(scaleXY)

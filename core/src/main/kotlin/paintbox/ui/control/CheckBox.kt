@@ -99,6 +99,9 @@ open class CheckBox(text: String, font: PaintboxFont = PaintboxGame.gameInstance
             : this("", font) {
         textLabel.text.bind(binding)
     }
+
+    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+            : this({ bindable.use() }, font)
     
     open fun getTextureRegionForType(type: CheckType, state: Boolean): TextureRegion {
         val spritesheet = PaintboxGame.paintboxSpritesheet

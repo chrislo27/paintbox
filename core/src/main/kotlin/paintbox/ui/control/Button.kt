@@ -71,6 +71,9 @@ open class Button(text: String, font: PaintboxFont = PaintboxGame.gameInstance.d
         text.bind(binding)
     }
     
+    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+            : this({ bindable.use() }, font)
+    
     init {
         this.padding.set(DEFAULT_PADDING)
     }
