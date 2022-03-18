@@ -64,16 +64,16 @@ class BooleanVar : ReadOnlyBooleanVar, Var<Boolean> {
     }
 
     private fun notifyListeners() {
-        var anyNeedToBeDisposed = false
-        listeners.forEach {
+        var anyNeedToBeDisposed = 0
+        val ls = listeners
+        ls.forEach {
             it.onChange(this)
-            if (!anyNeedToBeDisposed && it is DisposableVarChangedListener<*> && it.shouldBeDisposed) {
-                anyNeedToBeDisposed = true
+            if (it is DisposableVarChangedListener<*> && it.shouldBeDisposed) {
+                anyNeedToBeDisposed += 1
             }
         }
-        if (anyNeedToBeDisposed) {
-            @Suppress("SuspiciousCollectionReassignment")
-            listeners -= listeners.filter { it is DisposableVarChangedListener<*> && it.shouldBeDisposed }.toSet()
+        if (anyNeedToBeDisposed > 0) {
+            listeners = ls.filterNotTo(LinkedHashSet(ls.size - anyNeedToBeDisposed)) { it is DisposableVarChangedListener<*> && it.shouldBeDisposed }
         }
     }
 

@@ -12,5 +12,9 @@ fun interface VarChangedListener<in T> {
  * A special kind of [VarChangedListener] that can be flagged as needing to be removed.
  */
 interface DisposableVarChangedListener<in T> : VarChangedListener<T> {
+    /**
+     * True when this listener should be disposed.
+     * Once this is true, it should never be false on subsequent gets.
+     */
     val shouldBeDisposed: Boolean
 }
