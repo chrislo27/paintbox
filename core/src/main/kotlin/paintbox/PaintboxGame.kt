@@ -31,8 +31,10 @@ import java.text.NumberFormat
 import kotlin.system.measureNanoTime
 
 /**
- * This class is the base of all Paintbox games. [ResizeAction] and its other size parameters are behaviours for how
- * resizing works. This is important for fonts that scale up.
+ * This class is the base of all Paintbox games.
+ * 
+ * [ResizeAction] and its other size parameters in [paintboxSettings]
+ * are behaviours for how resizing works, which is is important for fonts that scale up with render size.
  */
 abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
     : GdxGame(), InputProcessor {
@@ -148,7 +150,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
         private set
 
     /**
-     * A camera that represents the emulated size by the [resizeAction].
+     * A camera that represents the emulated size by the [resizeAction][PaintboxSettings.resizeAction].
      */
     val emulatedCamera: OrthographicCamera = OrthographicCamera()
 
