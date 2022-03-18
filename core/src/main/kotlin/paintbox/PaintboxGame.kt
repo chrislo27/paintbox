@@ -1,7 +1,6 @@
 package paintbox
 
 import com.badlogic.gdx.*
-import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.graphics.*
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -21,6 +20,7 @@ import paintbox.i18n.LocalizationBase
 import paintbox.logging.SysOutPiper
 import paintbox.registry.AssetRegistry
 import paintbox.registry.ScreenRegistry
+import paintbox.util.DecimalFormats
 import paintbox.util.MemoryUtils
 import paintbox.util.gdxutils.GdxGame
 import paintbox.util.gdxutils.isShiftDown
@@ -66,13 +66,48 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
     }
 
     inner class DebugInfo {
-        val numberFormat: NumberFormat = NumberFormat.getIntegerInstance()
+        
+        private var lastFrameTime: Long = -1L // Alternative to gdx framerate, which doesn't update when window is resized
+        private var frameCounterStart: Long = 0L
+        private var frameAcc: Int = 0
+        private var mspfAvgAcc: Float = 0f
+        private var mspfMinAcc: Float = -1f
+        private var mspfMaxAcc: Float = -1f
+        
+        var fps: Int = 1
+            private set
+        var mspfAvg: Float = 1f
+            private set
+        var mspfMin: Float = 1f
+            private set
+        var mspfMax: Float = 1f
+            private set
+        val msNumberFormat: NumberFormat = DecimalFormats["0.00"]
+        
+        val memoryNumberFormat: NumberFormat = NumberFormat.getIntegerInstance()
         var memoryDeltaTime: Float = 0f
         var lastMemory: Long = 0L
         var memoryDelta: Long = 0L
+        
         val tmpMatrix: Matrix4 = Matrix4() // Used for rendering debug text
 
-        fun update(delta: Float) {
+        fun frameUpdate() {
+            val time = System.nanoTime()
+            if (lastFrameTime == -1L) {
+                lastFrameTime = time
+            }
+            val delta = (time - lastFrameTime) / 1_000_000_000f
+            val deltaMs = (time - lastFrameTime) / 1_000_000f
+            lastFrameTime = time
+            
+            if (mspfMinAcc < 0f || deltaMs < mspfMinAcc) {
+                mspfMinAcc = deltaMs
+            }
+            if (mspfMaxAcc < 0f || deltaMs > mspfMaxAcc) {
+                mspfMaxAcc = deltaMs
+            }
+            mspfAvgAcc += deltaMs
+            
             memoryDeltaTime += delta
             if (memoryDeltaTime >= 1f) {
                 memoryDeltaTime = 0f
@@ -80,6 +115,21 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
                 memoryDelta = heap - lastMemory
                 lastMemory = heap
             }
+
+            val frameCtrDiff = time - frameCounterStart
+            if (frameCtrDiff >= 1_000_000_000L) {
+                fps = frameAcc
+                mspfAvg = mspfAvgAcc / frameAcc.coerceAtLeast(1)
+                mspfMin = mspfMinAcc
+                mspfMax = mspfMaxAcc
+                
+                mspfAvgAcc = 0f
+                mspfMinAcc = -1f
+                mspfMaxAcc = -1f
+                frameAcc = 0
+                frameCounterStart = time
+            }
+            frameAcc++
         }
     }
 
@@ -220,6 +270,8 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
      */
     final override fun render() {
         try {
+            debugInfo.frameUpdate()
+            
             resetViewportToScreen()
             
             preRender()
@@ -227,7 +279,6 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
             postRender()
 
             resetViewportToScreen()
-            debugInfo.update(Gdx.graphics.deltaTime)
 
             if (Paintbox.debugMode.get()) {
                 debugInfo.tmpMatrix.set(batch.projectionMatrix)
@@ -236,13 +287,14 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
 
                 val paintboxFont = debugFontBoldBordered
                 val font = paintboxFont.begin()
-                val fps = Gdx.graphics.framesPerSecond
-                val numberFormat = debugInfo.numberFormat
+                val fps = this.getFPS()
+                val memNumberFormat = debugInfo.memoryNumberFormat
+                val msNumberFormat = debugInfo.msNumberFormat
                 val string =
-                        """FPS: $fps
+                        """FPS: $fps (mspf min ${msNumberFormat.format(this.debugInfo.mspfMin)}, max ${msNumberFormat.format(this.debugInfo.mspfMax)}, avg ${msNumberFormat.format(this.debugInfo.mspfAvg)})
 Debug mode: ${Paintbox.DEBUG_KEY_NAME} + I - Reload I18N | S(+Shift) - UI outlines: ${Paintbox.stageOutlines} | G - gc
 Version: $versionString | L: ${Gdx.graphics.width}x${Gdx.graphics.height} | P: ${Gdx.graphics.backBufferWidth}x${Gdx.graphics.backBufferHeight} ${Gdx.graphics.backBufferScale}
-Memory: ${numberFormat.format(Gdx.app.nativeHeap / 1024)} / ${numberFormat.format(MemoryUtils.maxMemoryKiB)} KiB (${numberFormat.format(debugInfo.memoryDelta / 1024)} KiB/s)
+Memory: ${memNumberFormat.format(Gdx.app.nativeHeap / 1024)} / ${memNumberFormat.format(MemoryUtils.maxMemoryKiB)} KiB (${memNumberFormat.format(debugInfo.memoryDelta / 1024)} KiB/s)
 Screen: ${screen?.javaClass?.name}
 ${getDebugString()}
 ${(screen as? PaintboxScreen)?.getDebugString() ?: ""}"""
@@ -326,6 +378,8 @@ ${(screen as? PaintboxScreen)?.getDebugString() ?: ""}"""
     fun removeDisposeCall(runnable: Runnable) {
         disposeCalls -= runnable
     }
+    
+    fun getFPS(): Int = debugInfo.fps
 
     fun resetCameras() {
         val resizeAction = paintboxSettings.resizeAction
