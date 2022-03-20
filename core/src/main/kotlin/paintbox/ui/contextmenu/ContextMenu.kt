@@ -85,7 +85,7 @@ open class ContextMenu : Control<ContextMenu>() {
             this.vBar.blockIncrement.set(40f)
         }
         
-        this.addInputEventListener { event ->
+        this.addInputEventListener { _ ->
             true // Accepts any input events so the context menu doesn't get closed
         }
     }

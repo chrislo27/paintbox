@@ -57,6 +57,7 @@ open class ComboBox<T>(startingList: List<T>, selectedItem: T,
     
     val items: Var<List<T>> = Var(startingList)
     val selectedItem: Var<T> = Var(selectedItem)
+    @Suppress("UNCHECKED_CAST")
     val itemStringConverter: Var<StringConverter<T>> = Var(DEFAULT_STRING_CONVERTER as StringConverter<T>)
     
     val backgroundColor: Var<Color> = Var(Color(1f, 1f, 1f, 1f))
