@@ -124,7 +124,6 @@ class LongVar : ReadOnlyLongVar, Var<Long> {
                 if (!invalidated) {
                     currentValue
                 } else {
-                    val oldCurrentValue = currentValue
                     val ctx = Var.Context()
                     val result = binding.computation(ctx)
                     val oldDependencies = dependencies
@@ -133,15 +132,11 @@ class LongVar : ReadOnlyLongVar, Var<Long> {
                     dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
-                    if (oldCurrentValue != currentValue) {
-                        notifyListeners()
-                    }
                     result
                 }
             }
             is LongBinding.SideEffecting -> {
                 if (invalidated) {
-                    val oldCurrentValue = currentValue
                     val ctx = Var.Context()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
                     val oldDependencies = dependencies
@@ -150,9 +145,6 @@ class LongVar : ReadOnlyLongVar, Var<Long> {
                     dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
-                    if (oldCurrentValue != currentValue) {
-                        notifyListeners()
-                    }
                     binding.item = result
                 }
                 binding.item
