@@ -50,6 +50,7 @@ open class Spinner(initialValue: Float, integerMode: Boolean = false,
             : this(initialValue.toFloat(), true, font)
     
     init {
+        textField.integersOnly.set(integerMode)
         buttonPane = Pane().apply { 
             Anchor.TopRight.configure(this)
             this.bindWidthToSelfHeight()
