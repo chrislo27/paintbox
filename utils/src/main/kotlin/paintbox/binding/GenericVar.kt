@@ -27,6 +27,12 @@ class GenericVar<T> : Var<T> {
     constructor(computation: Var.Context.() -> T) {
         binding = GenericBinding.Compute(computation)
     }
+    
+    constructor(eager: Boolean, computation: Var.Context.() -> T) : this(computation) {
+        if (eager) {
+            getOrCompute()
+        }
+    }
 
     constructor(item: T, sideEffecting: Var.Context.(existing: T) -> T) {
         binding = GenericBinding.SideEffecting(item, sideEffecting)
@@ -76,7 +82,7 @@ class GenericVar<T> : Var<T> {
         notifyListeners()
     }
 
-    override fun sideEffecting(sideEffecting: Var.Context.(existing: T) -> T) {
+    override fun sideEffectingAndRetain(sideEffecting: Var.Context.(existing: T) -> T) {
         sideEffecting(getOrCompute(), sideEffecting)
     }
 

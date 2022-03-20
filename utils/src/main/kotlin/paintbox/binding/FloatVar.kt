@@ -51,6 +51,12 @@ class FloatVar : ReadOnlyFloatVar, Var<Float> {
     constructor(computation: Var.Context.() -> Float) {
         binding = FloatBinding.Compute(computation)
     }
+    
+    constructor(eager: Boolean, computation: Var.Context.() -> Float) : this(computation) {
+        if (eager) {
+            get()
+        }
+    }
 
     constructor(item: Float, sideEffecting: Var.Context.(existing: Float) -> Float) {
         binding = FloatBinding.SideEffecting(item, sideEffecting)
@@ -99,7 +105,7 @@ class FloatVar : ReadOnlyFloatVar, Var<Float> {
         notifyListeners()
     }
 
-    override fun sideEffecting(sideEffecting: Var.Context.(existing: Float) -> Float) {
+    override fun sideEffectingAndRetain(sideEffecting: Var.Context.(existing: Float) -> Float) {
         sideEffecting(get(), sideEffecting)
     }
 

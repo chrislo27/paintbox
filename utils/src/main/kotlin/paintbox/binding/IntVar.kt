@@ -51,6 +51,12 @@ class IntVar : ReadOnlyIntVar, Var<Int> {
     constructor(computation: Var.Context.() -> Int) {
         binding = IntBinding.Compute(computation)
     }
+    
+    constructor(eager: Boolean, computation: Var.Context.() -> Int) : this(computation) {
+        if (eager) {
+            get()
+        }
+    }
 
     constructor(item: Int, sideEffecting: Var.Context.(existing: Int) -> Int) {
         binding = IntBinding.SideEffecting(item, sideEffecting)
@@ -99,7 +105,7 @@ class IntVar : ReadOnlyIntVar, Var<Int> {
         notifyListeners()
     }
 
-    override fun sideEffecting(sideEffecting: Var.Context.(existing: Int) -> Int) {
+    override fun sideEffectingAndRetain(sideEffecting: Var.Context.(existing: Int) -> Int) {
         sideEffecting(get(), sideEffecting)
     }
 

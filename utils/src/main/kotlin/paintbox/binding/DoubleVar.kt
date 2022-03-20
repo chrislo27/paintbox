@@ -51,6 +51,12 @@ class DoubleVar : ReadOnlyDoubleVar, Var<Double> {
     constructor(computation: Var.Context.() -> Double) {
         binding = DoubleBinding.Compute(computation)
     }
+    
+    constructor(eager: Boolean, computation: Var.Context.() -> Double) : this(computation) {
+        if (eager) {
+            get()
+        }
+    }
 
     constructor(item: Double, sideEffecting: Var.Context.(existing: Double) -> Double) {
         binding = DoubleBinding.SideEffecting(item, sideEffecting)
@@ -99,7 +105,7 @@ class DoubleVar : ReadOnlyDoubleVar, Var<Double> {
         notifyListeners()
     }
 
-    override fun sideEffecting(sideEffecting: Var.Context.(existing: Double) -> Double) {
+    override fun sideEffectingAndRetain(sideEffecting: Var.Context.(existing: Double) -> Double) {
         sideEffecting(get(), sideEffecting)
     }
 

@@ -53,6 +53,12 @@ class BooleanVar : ReadOnlyBooleanVar, Var<Boolean> {
         binding = BooleanBinding.Compute(computation)
     }
 
+    constructor(eager: Boolean, computation: Var.Context.() -> Boolean) : this(computation) {
+        if (eager) {
+            get()
+        }
+    }
+
     constructor(item: Boolean, sideEffecting: Var.Context.(existing: Boolean) -> Boolean) {
         binding = BooleanBinding.SideEffecting(item, sideEffecting)
     }
@@ -100,7 +106,7 @@ class BooleanVar : ReadOnlyBooleanVar, Var<Boolean> {
         notifyListeners()
     }
 
-    override fun sideEffecting(sideEffecting: Var.Context.(existing: Boolean) -> Boolean) {
+    override fun sideEffectingAndRetain(sideEffecting: Var.Context.(existing: Boolean) -> Boolean) {
         sideEffecting(get(), sideEffecting)
     }
 

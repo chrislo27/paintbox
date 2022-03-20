@@ -5,7 +5,11 @@ package paintbox.binding
  * Represents an immutable var. 
  *
  * The default implementation is [GenericVar]. Note that [GenericVar] is mutable since it also implements the
- * [Var] interface; this is similar to the Kotlin [List] and [MutableList] default implementations that use [ArrayList] which is mutable.
+ * [Var] interface; this is similar to the Kotlin [List] and [MutableList] default implementations that
+ * use [ArrayList] which is mutable.
+ * 
+ * Note that [ReadOnlyVar] dependency tracking is generally lazy. It will not find its dependencies until it is
+ * [getOrCompute]d at least once.
  */
 interface ReadOnlyVar<out T> {
 
@@ -45,10 +49,38 @@ interface Var<T> : ReadOnlyVar<T> {
      * These are default "constructor functions" that will use [GenericVar] as its implementation.
      */
     companion object {
-        
+
+        /**
+         * Creates a [GenericVar] with the given [item] as a constant value.
+         * @see Var.set
+         */
         operator fun <T> invoke(item: T): GenericVar<T> = GenericVar(item)
+
+        /**
+         * Creates a [GenericVar] bound to the given [computation].
+         * @see Var.bind
+         */
         fun <T> bind(computation: Context.() -> T): GenericVar<T> = GenericVar(computation)
+        
+        /**
+         * Creates a [GenericVar] eagerly bound to the given [computation]. 
+         * @see Var.eagerBind
+         */
+        fun <T> eagerBind(computation: Context.() -> T): GenericVar<T> = GenericVar(eager = true, computation)
+        
+        /**
+         * Creates a [GenericVar] bound to the given [computation].
+         * 
+         * This is identical to the [bind][Companion.bind] function.
+         * @see Var.bind
+         */
         operator fun <T> invoke(computation: Context.() -> T): GenericVar<T> = GenericVar(computation)
+
+        /**
+         * Creates a [GenericVar] with the given [item] as the base value and a [sideEffecting] function. 
+         * @see Var.sideEffecting
+         * @see Var.sideEffectingAndRetain
+         */
         fun <T> sideEffecting(item: T, sideEffecting: Context.(existing: T) -> T): GenericVar<T> = GenericVar(item, sideEffecting)
 
         
@@ -89,20 +121,38 @@ interface Var<T> : ReadOnlyVar<T> {
     /**
      * Binds this [Var] to be computed from [computation]. The computation can depend
      * on other [ReadOnlyVar]s by calling [Context.use].
+     * 
+     * @see eagerBind
      */
     fun bind(computation: Context.() -> T)
+    
+    /**
+     * Binds this [Var] to be computed from [computation], exactly like [bind] would.
+     * 
+     * This function will call [getOrCompute] immediately after binding, which is useful
+     * to make sure dependencies from the binding are registered immediately and not lazily.
+     * 
+     * @see bind
+     */
+    fun eagerBind(computation: Context.() -> T): T {
+        bind(computation)
+        return getOrCompute()
+    }
 
     /**
-     * Sets this var to be the value of [item] while being updated/mutated
-     * by [sideEffecting].
+     * Sets this var to be the value of [item] while being updated/mutated by [sideEffecting].
+     * 
+     * @see sideEffectingAndRetain
      */
     fun sideEffecting(item: T, sideEffecting: Context.(existing: T) -> T)
 
     /**
      * Sets this var to be updated/mutated
-     * by [sideEffecting], while retaining the existing value gotten from [getOrCompute].
+     * by [sideEffecting], while *retaining* the existing value gotten from [getOrCompute].
+     * 
+     * @see sideEffecting
      */
-    fun sideEffecting(sideEffecting: Context.(existing: T) -> T) {
+    fun sideEffectingAndRetain(sideEffecting: Context.(existing: T) -> T) {
         sideEffecting(getOrCompute(), sideEffecting)
     }
     

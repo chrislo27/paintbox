@@ -51,6 +51,12 @@ class LongVar : ReadOnlyLongVar, Var<Long> {
     constructor(computation: Var.Context.() -> Long) {
         binding = LongBinding.Compute(computation)
     }
+    
+    constructor(eager: Boolean, computation: Var.Context.() -> Long) : this(computation) {
+        if (eager) {
+            get()
+        }
+    }
 
     constructor(item: Long, sideEffecting: Var.Context.(existing: Long) -> Long) {
         binding = LongBinding.SideEffecting(item, sideEffecting)
@@ -99,7 +105,7 @@ class LongVar : ReadOnlyLongVar, Var<Long> {
         notifyListeners()
     }
 
-    override fun sideEffecting(sideEffecting: Var.Context.(existing: Long) -> Long) {
+    override fun sideEffectingAndRetain(sideEffecting: Var.Context.(existing: Long) -> Long) {
         sideEffecting(get(), sideEffecting)
     }
 
