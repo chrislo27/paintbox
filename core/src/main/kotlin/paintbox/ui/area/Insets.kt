@@ -33,4 +33,7 @@ data class Insets(val top: Float, val bottom: Float, val left: Float, val right:
             Insets(max(this.top, other.top), max(this.bottom, other.bottom), max(this.left, other.left), max(this.right, other.right))
     fun minimize(other: Insets): Insets = 
             Insets(min(this.top, other.top), min(this.bottom, other.bottom), min(this.left, other.left), min(this.right, other.right))
+    
+    fun leftAndRight(): Float = this.left + this.right
+    fun topAndBottom(): Float = this.top + this.bottom
 }

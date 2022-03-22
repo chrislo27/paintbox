@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import paintbox.binding.*
+import paintbox.ui.area.Insets
 import paintbox.ui.area.ReadOnlyBounds
 import paintbox.ui.border.Border
 import paintbox.ui.border.NoBorder
@@ -268,6 +269,38 @@ open class UIElement : UIBounds() {
         if (listener in current) {
             inputListeners.set(current - listener)
         }
+    }
+
+    fun sizeWidthToChildren(minimumWidth: Float = 0f, maximumWidth: Float = Float.POSITIVE_INFINITY) {
+        val last = children.lastOrNull()
+        var width = 0f
+        if (last != null) {
+            width = last.bounds.x.get() + last.bounds.width.get()
+        }
+
+        val borderInsets = this.border.getOrCompute()
+        val marginInsets = this.margin.getOrCompute()
+        val paddingInsets = this.padding.getOrCompute()
+
+        width += borderInsets.leftAndRight() + marginInsets.leftAndRight() + paddingInsets.leftAndRight()
+
+        this.bounds.width.set(width.coerceIn(minimumWidth, maximumWidth))
+    }
+
+    fun sizeHeightToChildren(minimumHeight: Float = 0f, maximumHeight: Float = Float.POSITIVE_INFINITY) {
+        val last = children.lastOrNull()
+        var height = 0f
+        if (last != null) {
+            height = last.bounds.y.get() + last.bounds.height.get()
+        }
+
+        val borderInsets = this.border.getOrCompute()
+        val marginInsets = this.margin.getOrCompute()
+        val paddingInsets = this.padding.getOrCompute()
+
+        height += borderInsets.topAndBottom() + marginInsets.topAndBottom() + paddingInsets.topAndBottom()
+
+        this.bounds.height.set(height.coerceIn(minimumHeight, maximumHeight))
     }
 
     /**

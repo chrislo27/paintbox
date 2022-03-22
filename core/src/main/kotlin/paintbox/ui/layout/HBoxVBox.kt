@@ -242,40 +242,6 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
         }
         attemptLayout(index)
     }
-
-    fun sizeWidthToChildren(minimumWidth: Float = 0f, maximumWidth: Float = Float.POSITIVE_INFINITY) {
-        val last = children.lastOrNull()
-        var width = 0f
-        if (last != null) {
-            width = last.bounds.x.get() + last.bounds.width.get()
-        }
-
-        val borderInsets = this.border.getOrCompute()
-        val marginInsets = this.margin.getOrCompute()
-        val paddingInsets = this.padding.getOrCompute()
-        fun Insets.leftright(): Float = this.left + this.right
-
-        width += borderInsets.leftright() + marginInsets.leftright() + paddingInsets.leftright()
-        
-        this.bounds.width.set(width.coerceIn(minimumWidth, maximumWidth))
-    }
-    
-    fun sizeHeightToChildren(minimumHeight: Float = 0f, maximumHeight: Float = Float.POSITIVE_INFINITY) {
-        val last = children.lastOrNull()
-        var height = 0f
-        if (last != null) {
-            height = last.bounds.y.get() + last.bounds.height.get()
-        }
-
-        val borderInsets = this.border.getOrCompute()
-        val marginInsets = this.margin.getOrCompute()
-        val paddingInsets = this.padding.getOrCompute()
-        fun Insets.topbottom(): Float = this.top + this.bottom
-
-        height += borderInsets.topbottom() + marginInsets.topbottom() + paddingInsets.topbottom()
-
-        this.bounds.height.set(height.coerceIn(minimumHeight, maximumHeight))
-    }
 }
 
 /**
