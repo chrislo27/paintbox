@@ -50,10 +50,7 @@ open class Tooltip
         this.renderBackground.set(true)
         this.doXCompression.set(true)
         this.renderAlign.set(Align.topLeft)
-
-        this.internalTextBlock.addListener {
-            resizeBoundsToContent()
-        }
+        this.autosizeBehavior.set(AutosizeBehavior.WIDTH_AND_HEIGHT)
     }
 
     constructor(text: String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)

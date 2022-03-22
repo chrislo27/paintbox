@@ -48,6 +48,13 @@ open class TextLabel(text: String, font: PaintboxFont = PaintboxGame.gameInstanc
             }
         }
     }
+    
+    enum class AutosizeBehavior {
+        NONE,
+        WIDTH_ONLY,
+        HEIGHT_ONLY,
+        WIDTH_AND_HEIGHT,
+    }
 
     val text: Var<String> = Var(text)
     val font: Var<PaintboxFont> = Var(font)
@@ -86,13 +93,14 @@ open class TextLabel(text: String, font: PaintboxFont = PaintboxGame.gameInstanc
     val textAlign: Var<TextAlign> = Var { TextAlign.fromInt(renderAlign.use()) }
     val doXCompression: BooleanVar = BooleanVar(true)
     val doLineWrapping: BooleanVar = BooleanVar(false)
+    val autosizeBehavior: Var<AutosizeBehavior> = Var(AutosizeBehavior.NONE)
 
     /**
      * Defaults to an auto-generated [TextBlock] with the given [text].
      * If this is overwritten, this [TextLabel]'s [textColor] should be set to have a non-zero opacity.
      */
     val internalTextBlock: Var<TextBlock> by lazy { createInternalTextBlockVar(this) }
-
+    
     constructor(binding: Var.Context.() -> String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
             : this("", font) {
         text.bind(binding)
@@ -101,9 +109,26 @@ open class TextLabel(text: String, font: PaintboxFont = PaintboxGame.gameInstanc
     constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
             : this({ bindable.use() }, font)
 
+    init {
+        val autosizeListener = VarChangedListener<Any> {
+            triggerAutosize()
+        }
+        this.internalTextBlock.addListener(autosizeListener)
+        this.autosizeBehavior.addListener(autosizeListener)
+    }
+    
     fun setScaleXY(scaleXY: Float) {
         this.scaleX.set(scaleXY)
         this.scaleY.set(scaleXY)
+    }
+    
+    fun triggerAutosize() {
+        when (autosizeBehavior.getOrCompute()) {
+            AutosizeBehavior.NONE -> {}
+            AutosizeBehavior.WIDTH_ONLY -> resizeBoundsToContent(affectWidth = true, affectHeight = false)
+            AutosizeBehavior.HEIGHT_ONLY -> resizeBoundsToContent(affectWidth = false, affectHeight = true)
+            AutosizeBehavior.WIDTH_AND_HEIGHT -> resizeBoundsToContent(affectWidth = true, affectHeight = true)
+        }
     }
 
     @Suppress("RemoveRedundantQualifierName")
