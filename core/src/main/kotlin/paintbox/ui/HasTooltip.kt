@@ -3,9 +3,9 @@ package paintbox.ui
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
 import paintbox.PaintboxGame
+import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
 import paintbox.font.PaintboxFont
-import paintbox.font.TextBlock
 import paintbox.ui.area.Insets
 import paintbox.ui.control.TextLabel
 
@@ -61,5 +61,8 @@ open class Tooltip
 
     constructor(binding: Var.Context.() -> String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
             : super(binding, font)
+    
+    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+            : super(bindable, font)
 
 }
