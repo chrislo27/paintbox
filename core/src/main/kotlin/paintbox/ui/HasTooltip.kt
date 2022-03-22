@@ -51,7 +51,7 @@ open class Tooltip
         this.doXCompression.set(true)
         this.renderAlign.set(Align.topLeft)
 
-        this.text.addListener {
+        this.internalTextBlock.addListener {
             resizeBoundsToContent()
         }
     }
