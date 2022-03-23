@@ -5,7 +5,7 @@ package paintbox.binding
  * 
  * Provides the [get] method which is a primitive-type float.
  */
-sealed interface ReadOnlyFloatVar : ReadOnlyVar<Float> {
+interface ReadOnlyFloatVar : ReadOnlyVar<Float> {
 
     /**
      * Gets (and computes if necessary) the value represented by this [ReadOnlyFloatVar].

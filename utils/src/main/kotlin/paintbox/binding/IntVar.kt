@@ -5,7 +5,7 @@ package paintbox.binding
  *
  * Provides the [get] method which is a primitive-type int.
  */
-sealed interface ReadOnlyIntVar : ReadOnlyVar<Int> {
+interface ReadOnlyIntVar : ReadOnlyVar<Int> {
 
     /**
      * Gets (and computes if necessary) the value represented by this [ReadOnlyIntVar].

@@ -5,7 +5,7 @@ package paintbox.binding
  *
  * Provides the [get] method which is a primitive-type long.
  */
-sealed interface ReadOnlyLongVar : ReadOnlyVar<Long> {
+interface ReadOnlyLongVar : ReadOnlyVar<Long> {
 
     /**
      * Gets (and computes if necessary) the value represented by this [ReadOnlyLongVar].

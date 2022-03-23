@@ -5,7 +5,7 @@ package paintbox.binding
  * 
  * Provides the [get] method which is a primitive-type double.
  */
-sealed interface ReadOnlyDoubleVar : ReadOnlyVar<Double> {
+interface ReadOnlyDoubleVar : ReadOnlyVar<Double> {
 
     /**
      * Gets (and computes if necessary) the value represented by this [ReadOnlyDoubleVar].
