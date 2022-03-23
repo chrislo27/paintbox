@@ -2,7 +2,7 @@ package paintbox.binding
 
 
 /**
- * Represents an immutable var. 
+ * Represents an immutable var. For mutable vars, see [Var].
  *
  * The default implementation is [GenericVar]. Note that [GenericVar] is mutable since it also implements the
  * [Var] interface; this is similar to the Kotlin [List] and [MutableList] default implementations that
@@ -10,6 +10,10 @@ package paintbox.binding
  * 
  * Note that [ReadOnlyVar] dependency tracking is generally lazy. It will not find its dependencies until it is
  * [getOrCompute]d at least once.
+ * 
+ * **Listeners:**
+ * Listeners should be fired to signal that the [ReadOnlyVar] has changed in some way, including when invalidated.
+ * They should not be fired again if the [ReadOnlyVar] was invalidated and then updated again because of that.
  */
 interface ReadOnlyVar<out T> {
 

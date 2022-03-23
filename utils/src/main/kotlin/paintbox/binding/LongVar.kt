@@ -29,14 +29,11 @@ interface ReadOnlyLongVar : ReadOnlyVar<Long> {
  *
  * Provides the [get] method which is a primitive-type long.
  */
-class LongVar : ReadOnlyLongVar, Var<Long> {
+class LongVar : ReadOnlyVarBase<Long>, ReadOnlyLongVar, Var<Long> {
 
     private var binding: LongBinding
-    private var invalidated: Boolean = true // Used for Compute and SideEffecting bindings
     private var currentValue: Long = 0L
     private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet() // Cannot be generic since it can depend on any other Var
-
-    private var listeners: Set<VarChangedListener<Long>> = emptySet()
 
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
@@ -66,20 +63,6 @@ class LongVar : ReadOnlyLongVar, Var<Long> {
         dependencies = emptySet()
         invalidated = true
         currentValue = 0L
-    }
-
-    private fun notifyListeners() {
-        var anyNeedToBeDisposed = 0
-        val ls = listeners
-        ls.forEach {
-            it.onChange(this)
-            if (it is DisposableVarChangedListener<*> && it.shouldBeDisposed) {
-                anyNeedToBeDisposed += 1
-            }
-        }
-        if (anyNeedToBeDisposed > 0) {
-            listeners = ls.filterNotTo(LinkedHashSet(ls.size - anyNeedToBeDisposed)) { it is DisposableVarChangedListener<*> && it.shouldBeDisposed }
-        }
     }
 
     override fun set(item: Long) {
@@ -152,32 +135,13 @@ class LongVar : ReadOnlyLongVar, Var<Long> {
         }
         return result
     }
-
-
+    
+    
     @Deprecated("Use LongVar.get() instead to avoid explicit boxing",
             replaceWith = ReplaceWith("this.get()"),
             level = DeprecationLevel.ERROR)
     override fun getOrCompute(): Long {
         return get() // WILL BE BOXED!
-    }
-
-    override fun addListener(listener: VarChangedListener<Long>) {
-        if (listener !in listeners) {
-            listeners = listeners + listener
-        }
-    }
-
-    override fun removeListener(listener: VarChangedListener<Long>) {
-        if (listener in listeners) {
-            listeners = listeners - listener
-        }
-    }
-
-    override fun invalidate() {
-        if (!this.invalidated) {
-            this.invalidated = true
-            this.notifyListeners()
-        }
     }
 
     override fun toString(): String {

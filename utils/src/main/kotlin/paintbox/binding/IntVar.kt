@@ -29,14 +29,11 @@ interface ReadOnlyIntVar : ReadOnlyVar<Int> {
  *
  * Provides the [get] method which is a primitive-type int.
  */
-class IntVar : ReadOnlyIntVar, Var<Int> {
+class IntVar : ReadOnlyVarBase<Int>, ReadOnlyIntVar, Var<Int> {
 
     private var binding: IntBinding
-    private var invalidated: Boolean = true // Used for Compute and SideEffecting bindings
     private var currentValue: Int = 0
     private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet() // Cannot be generic since it can depend on any other Var
-
-    private var listeners: Set<VarChangedListener<Int>> = emptySet()
 
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
@@ -66,20 +63,6 @@ class IntVar : ReadOnlyIntVar, Var<Int> {
         dependencies = emptySet()
         invalidated = true
         currentValue = 0
-    }
-
-    private fun notifyListeners() {
-        var anyNeedToBeDisposed = 0
-        val ls = listeners
-        ls.forEach {
-            it.onChange(this)
-            if (it is DisposableVarChangedListener<*> && it.shouldBeDisposed) {
-                anyNeedToBeDisposed += 1
-            }
-        }
-        if (anyNeedToBeDisposed > 0) {
-            listeners = ls.filterNotTo(LinkedHashSet(ls.size - anyNeedToBeDisposed)) { it is DisposableVarChangedListener<*> && it.shouldBeDisposed }
-        }
     }
 
     override fun set(item: Int) {
@@ -159,25 +142,6 @@ class IntVar : ReadOnlyIntVar, Var<Int> {
             level = DeprecationLevel.ERROR)
     override fun getOrCompute(): Int {
         return get() // WILL BE BOXED!
-    }
-
-    override fun addListener(listener: VarChangedListener<Int>) {
-        if (listener !in listeners) {
-            listeners = listeners + listener
-        }
-    }
-
-    override fun removeListener(listener: VarChangedListener<Int>) {
-        if (listener in listeners) {
-            listeners = listeners - listener
-        }
-    }
-
-    override fun invalidate() {
-        if (!this.invalidated) {
-            this.invalidated = true
-            this.notifyListeners()
-        }
     }
 
     override fun toString(): String {
