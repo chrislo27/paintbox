@@ -48,12 +48,29 @@ open class TextLabel(text: String, font: PaintboxFont = PaintboxGame.gameInstanc
             }
         }
     }
-    
-    enum class AutosizeBehavior {
-        NONE,
-        WIDTH_ONLY,
-        HEIGHT_ONLY,
-        WIDTH_AND_HEIGHT,
+
+    /**
+     * The autosizing behaviour.
+     */
+    sealed class AutosizeBehavior {
+        object None : AutosizeBehavior()
+
+        /**
+         * Autosizing is active.
+         * 
+         * [dimensions] indicates whether width, height, or both should be affected.
+         * 
+         * [triggerOnlyWhenInScene] is true by default; a value of true means the autosize will only happen
+         * if the [TextLabel.sceneRoot] is not null. This works because [TextLabel.internalTextBlock]
+         * is accessed when rendering (and thus updated), and the label must be in the scene graph to be rendered.
+         */
+        class Active(val dimensions: Dimensions, val triggerOnlyWhenInScene: Boolean = true) : AutosizeBehavior()
+        
+        enum class Dimensions(val affectWidth: Boolean, val affectHeight: Boolean) {
+            WIDTH_ONLY(true, false),
+            HEIGHT_ONLY(false, true),
+            WIDTH_AND_HEIGHT(true, true),
+        }
     }
 
     val text: Var<String> = Var(text)
@@ -93,10 +110,11 @@ open class TextLabel(text: String, font: PaintboxFont = PaintboxGame.gameInstanc
     val textAlign: Var<TextAlign> = Var { TextAlign.fromInt(renderAlign.use()) }
     val doXCompression: BooleanVar = BooleanVar(true)
     val doLineWrapping: BooleanVar = BooleanVar(false)
-    val autosizeBehavior: Var<AutosizeBehavior> = Var(AutosizeBehavior.NONE)
+    val autosizeBehavior: Var<AutosizeBehavior> = Var(AutosizeBehavior.None)
 
     /**
      * Defaults to an auto-generated [TextBlock] with the given [text].
+     * 
      * If this is overwritten, this [TextLabel]'s [textColor] should be set to have a non-zero opacity.
      */
     val internalTextBlock: Var<TextBlock> = createInternalTextBlockVar(this)
@@ -110,11 +128,11 @@ open class TextLabel(text: String, font: PaintboxFont = PaintboxGame.gameInstanc
             : this({ bindable.use() }, font)
 
     init {
-        val autosizeListener = VarChangedListener<Any> {
+        val autosizeListener = VarChangedListener<Any?> {
             triggerAutosize()
         }
-        this.internalTextBlock.addListener(autosizeListener)
         this.autosizeBehavior.addListener(autosizeListener)
+        this.internalTextBlock.addListener(autosizeListener)
     }
     
     fun setScaleXY(scaleXY: Float) {
@@ -123,11 +141,13 @@ open class TextLabel(text: String, font: PaintboxFont = PaintboxGame.gameInstanc
     }
     
     fun triggerAutosize() {
-        when (autosizeBehavior.getOrCompute()) {
-            AutosizeBehavior.NONE -> {}
-            AutosizeBehavior.WIDTH_ONLY -> resizeBoundsToContent(affectWidth = true, affectHeight = false)
-            AutosizeBehavior.HEIGHT_ONLY -> resizeBoundsToContent(affectWidth = false, affectHeight = true)
-            AutosizeBehavior.WIDTH_AND_HEIGHT -> resizeBoundsToContent(affectWidth = true, affectHeight = true)
+        when (val b = autosizeBehavior.getOrCompute()) {
+            AutosizeBehavior.None -> {}
+            is AutosizeBehavior.Active -> {
+                if (!b.triggerOnlyWhenInScene || this.sceneRoot.getOrCompute() != null) {
+                    resizeBoundsToContent(affectWidth = b.dimensions.affectWidth, affectHeight = b.dimensions.affectHeight)
+                }
+            }
         }
     }
 
