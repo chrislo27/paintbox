@@ -99,7 +99,7 @@ open class TextLabel(text: String, font: PaintboxFont = PaintboxGame.gameInstanc
      * Defaults to an auto-generated [TextBlock] with the given [text].
      * If this is overwritten, this [TextLabel]'s [textColor] should be set to have a non-zero opacity.
      */
-    val internalTextBlock: Var<TextBlock> by lazy { createInternalTextBlockVar(this) }
+    val internalTextBlock: Var<TextBlock> = createInternalTextBlockVar(this)
     
     constructor(binding: Var.Context.() -> String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
             : this("", font) {
