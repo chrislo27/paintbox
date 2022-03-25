@@ -60,6 +60,10 @@ class ToggleGroup {
                     }
                 }
             }
+        } else {
+            if (_activeToggle.getOrCompute() === toggle) {
+                _activeToggle.set(null)
+            }
         }
     }
 
