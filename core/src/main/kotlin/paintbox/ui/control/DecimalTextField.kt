@@ -60,7 +60,7 @@ open class DecimalTextField(
         integersOnly.addListener {
             if (it.getOrCompute()) {
                 val integralValue = value.get().toInt().toFloat()
-                if (value.get() != integralValue) {
+                if (value.get() != integralValue || this.decimalFormat.getOrCompute().decimalFormatSymbols.decimalSeparator in this.text.getOrCompute()) {
                     this.requestUnfocus()
                     setValue(integralValue)
                     this.text.set(decimalToStr())
