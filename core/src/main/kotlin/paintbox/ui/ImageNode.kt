@@ -120,10 +120,10 @@ open class ImageNode(tex: TextureRegion? = null,
 open class ImageIcon
     : ImageNode, HasTooltip {
 
-    constructor(tex: TextureRegion?, renderingMode: ImageRenderingMode)
+    constructor(tex: TextureRegion?, renderingMode: ImageRenderingMode = ImageRenderingMode.MAINTAIN_ASPECT_RATIO)
             : super(tex, renderingMode)
     
-    constructor(binding: Var.Context.() -> TextureRegion?, renderingMode: ImageRenderingMode)
+    constructor(binding: Var.Context.() -> TextureRegion?, renderingMode: ImageRenderingMode = ImageRenderingMode.MAINTAIN_ASPECT_RATIO)
             : super(binding, renderingMode)
 
     override val tooltipElement: Var<UIElement?> = Var(null)
