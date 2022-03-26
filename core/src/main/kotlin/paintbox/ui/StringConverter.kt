@@ -23,6 +23,10 @@ fun interface StringConverter<T> {
  * A functional interface that converts an object [T] into a string [ReadOnlyVar].
  */
 fun interface StringVarConverter<T> {
+    
+    companion object {
+        val DEFAULT_CONVERTER: StringVarConverter<Any?> = StringConverter.DEFAULT_STRING_CONVERTER.toVarConverter()
+    }
 
     fun toVar(item: T): ReadOnlyVar<String>
     
