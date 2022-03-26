@@ -7,6 +7,14 @@ package paintbox.binding
  */
 interface ReadOnlyFloatVar : ReadOnlyVar<Float> {
 
+    companion object {
+        /**
+         * Returns a constant value [ReadOnlyFloatVar]. The implementation used is memory optimized and doesn't
+         * have dependencies like [FloatVar] would.
+         */
+        fun const(value: Float): ReadOnlyFloatVar = ReadOnlyConstFloatVar(value)
+    }
+
     /**
      * Gets (and computes if necessary) the value represented by this [ReadOnlyFloatVar].
      * Unlike the [ReadOnlyVar.getOrCompute] function, this will always return a primitive float value.
@@ -21,6 +29,12 @@ interface ReadOnlyFloatVar : ReadOnlyVar<Float> {
             level = DeprecationLevel.ERROR)
     override fun getOrCompute(): Float {
         return get() // WILL BE BOXED!
+    }
+}
+
+internal class ReadOnlyConstFloatVar(private val value: Float) : ReadOnlyVarBase<Float>(), ReadOnlyFloatVar {
+    override fun get(): Float {
+        return value
     }
 }
 

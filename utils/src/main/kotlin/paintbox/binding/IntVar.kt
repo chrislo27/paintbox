@@ -7,6 +7,14 @@ package paintbox.binding
  */
 interface ReadOnlyIntVar : ReadOnlyVar<Int> {
 
+    companion object {
+        /**
+         * Returns a constant value [ReadOnlyIntVar]. The implementation used is memory optimized and doesn't
+         * have dependencies like [IntVar] would.
+         */
+        fun const(value: Int): ReadOnlyIntVar = ReadOnlyConstIntVar(value)
+    }
+
     /**
      * Gets (and computes if necessary) the value represented by this [ReadOnlyIntVar].
      * Unlike the [ReadOnlyVar.getOrCompute] function, this will always return a primitive `int` value.
@@ -21,6 +29,12 @@ interface ReadOnlyIntVar : ReadOnlyVar<Int> {
             level = DeprecationLevel.ERROR)
     override fun getOrCompute(): Int {
         return get() // WILL BE BOXED!
+    }
+}
+
+internal class ReadOnlyConstIntVar(private val value: Int) : ReadOnlyVarBase<Int>(), ReadOnlyIntVar {
+    override fun get(): Int {
+        return value
     }
 }
 

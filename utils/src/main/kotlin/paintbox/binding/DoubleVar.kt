@@ -7,6 +7,14 @@ package paintbox.binding
  */
 interface ReadOnlyDoubleVar : ReadOnlyVar<Double> {
 
+    companion object {
+        /**
+         * Returns a constant value [ReadOnlyDoubleVar]. The implementation used is memory optimized and doesn't
+         * have dependencies like [DoubleVar] would.
+         */
+        fun const(value: Double): ReadOnlyDoubleVar = ReadOnlyConstDoubleVar(value)
+    }
+
     /**
      * Gets (and computes if necessary) the value represented by this [ReadOnlyDoubleVar].
      * Unlike the [ReadOnlyVar.getOrCompute] function, this will always return a primitive double value.
@@ -21,6 +29,12 @@ interface ReadOnlyDoubleVar : ReadOnlyVar<Double> {
             level = DeprecationLevel.ERROR)
     override fun getOrCompute(): Double {
         return get() // WILL BE BOXED!
+    }
+}
+
+internal class ReadOnlyConstDoubleVar(private val value: Double) : ReadOnlyVarBase<Double>(), ReadOnlyDoubleVar {
+    override fun get(): Double {
+        return value
     }
 }
 

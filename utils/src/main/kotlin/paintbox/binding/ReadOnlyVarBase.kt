@@ -44,3 +44,12 @@ abstract class ReadOnlyVarBase<T> : ReadOnlyVar<T> {
         }
     }
 }
+
+/**
+ * Used by [ReadOnlyVar.const] as an internal implementation.
+ */
+internal class ReadOnlyConstVar<T>(private val value: T) : ReadOnlyVarBase<T>() {
+    override fun getOrCompute(): T {
+        return value
+    }
+}

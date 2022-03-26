@@ -8,6 +8,14 @@ package paintbox.binding
  */
 interface ReadOnlyBooleanVar : ReadOnlyVar<Boolean> {
 
+    companion object {
+        /**
+         * Returns a constant value [ReadOnlyBooleanVar]. The implementation used is memory optimized and doesn't
+         * have dependencies like [BooleanVar] would.
+         */
+        fun const(value: Boolean): ReadOnlyBooleanVar = ReadOnlyConstBooleanVar(value)
+    }
+
     /**
      * Gets (and computes if necessary) the value represented by this [ReadOnlyBooleanVar].
      * Unlike the [ReadOnlyVar.getOrCompute] function, this will always return a primitive boolean value.
@@ -22,6 +30,12 @@ interface ReadOnlyBooleanVar : ReadOnlyVar<Boolean> {
             level = DeprecationLevel.ERROR)
     override fun getOrCompute(): Boolean {
         return get() // WILL BE BOXED!
+    }
+}
+
+internal class ReadOnlyConstBooleanVar(private val value: Boolean) : ReadOnlyVarBase<Boolean>(), ReadOnlyBooleanVar {
+    override fun get(): Boolean {
+        return value
     }
 }
 

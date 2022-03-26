@@ -6,6 +6,14 @@ package paintbox.binding
  * Provides the [get] method which is a primitive-type long.
  */
 interface ReadOnlyLongVar : ReadOnlyVar<Long> {
+    
+    companion object {
+        /**
+         * Returns a constant value [ReadOnlyLongVar]. The implementation used is memory optimized and doesn't
+         * have dependencies like [LongVar] would.
+         */
+        fun const(value: Long): ReadOnlyLongVar = ReadOnlyConstLongVar(value)
+    }
 
     /**
      * Gets (and computes if necessary) the value represented by this [ReadOnlyLongVar].
@@ -21,6 +29,12 @@ interface ReadOnlyLongVar : ReadOnlyVar<Long> {
             level = DeprecationLevel.ERROR)
     override fun getOrCompute(): Long {
         return get() // WILL BE BOXED!
+    }
+}
+
+internal class ReadOnlyConstLongVar(private val value: Long) : ReadOnlyVarBase<Long>(), ReadOnlyLongVar {
+    override fun get(): Long {
+        return value
     }
 }
 
