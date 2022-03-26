@@ -42,6 +42,7 @@ import java.lang.NumberFormatException
  * carryoverx=true : Defines carryOverOffsetX, should be a boolean
  * carryovery=true : Defines carryOverOffsetY, should be a boolean
  * xadvance=1.0 : Defines xAdvanceEm, should be a float
+ * lineheight=1.0 : Defines lineHeightScale, should be a float
  *
  * Utility tags:
  * b : Defines font=${styles.bold}
