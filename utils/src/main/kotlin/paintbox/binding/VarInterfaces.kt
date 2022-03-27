@@ -101,19 +101,19 @@ interface Var<T> : ReadOnlyVar<T> {
          * Creates a [GenericVar] with the given [item] as a constant value.
          * @see Var.set
          */
-        operator fun <T> invoke(item: T): GenericVar<T> = GenericVar(item)
+        operator fun <T> invoke(item: T): Var<T> = GenericVar(item)
 
         /**
          * Creates a [GenericVar] bound to the given [computation].
          * @see Var.bind
          */
-        fun <T> bind(computation: Context.() -> T): GenericVar<T> = GenericVar(computation)
+        fun <T> bind(computation: Context.() -> T): Var<T> = GenericVar(computation)
         
         /**
          * Creates a [GenericVar] eagerly bound to the given [computation]. 
          * @see Var.eagerBind
          */
-        fun <T> eagerBind(computation: Context.() -> T): GenericVar<T> = GenericVar(eager = true, computation)
+        fun <T> eagerBind(computation: Context.() -> T): Var<T> = GenericVar(eager = true, computation)
         
         /**
          * Creates a [GenericVar] bound to the given [computation].
@@ -121,14 +121,14 @@ interface Var<T> : ReadOnlyVar<T> {
          * This is identical to the [bind][Companion.bind] function.
          * @see Var.bind
          */
-        operator fun <T> invoke(computation: Context.() -> T): GenericVar<T> = GenericVar(computation)
+        operator fun <T> invoke(computation: Context.() -> T): Var<T> = GenericVar(computation)
 
         /**
          * Creates a [GenericVar] with the given [item] as the base value and a [sideEffecting] function. 
          * @see Var.sideEffecting
          * @see Var.sideEffectingAndRetain
          */
-        fun <T> sideEffecting(item: T, sideEffecting: Context.(existing: T) -> T): GenericVar<T> = GenericVar(item, sideEffecting)
+        fun <T> sideEffecting(item: T, sideEffecting: Context.(existing: T) -> T): Var<T> = GenericVar(item, sideEffecting)
 
         
         // Warnings for specialized versions of plain invoke -----------------------------------------------------------
