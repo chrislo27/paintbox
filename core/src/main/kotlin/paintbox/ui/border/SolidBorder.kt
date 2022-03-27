@@ -20,6 +20,9 @@ class SolidBorder(initColor: Color) : Border {
     val roundedCorners: BooleanVar = BooleanVar(false)
     
     constructor() : this(Color.WHITE)
+    constructor(binding: Var.Context.() -> Color) : this() {
+        color.bind(binding)
+    }
 
     override fun renderBorder(originX: Float, originY: Float, batch: SpriteBatch, element: UIElement) {
         val insets = element.border.getOrCompute()
