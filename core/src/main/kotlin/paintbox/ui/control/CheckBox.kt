@@ -9,13 +9,14 @@ import paintbox.font.PaintboxFont
 import paintbox.font.TextAlign
 import paintbox.ui.ImageNode
 import paintbox.ui.ImageRenderingMode
+import paintbox.ui.UIElement
 import paintbox.ui.area.Insets
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
 
 
-open class CheckBox(text: String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont)
     : Control<CheckBox>(), Toggle {
     
     companion object {
@@ -95,12 +96,12 @@ open class CheckBox(text: String, font: PaintboxFont = PaintboxGame.gameInstance
         }
     }
 
-    constructor(binding: Var.Context.() -> String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+    constructor(binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
             : this("", font) {
         textLabel.text.bind(binding)
     }
 
-    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
             : this({ bindable.use() }, font)
     
     open fun getTextureRegionForType(type: CheckType, state: Boolean): TextureRegion {

@@ -18,7 +18,7 @@ import java.util.*
 import kotlin.math.min
 
 
-open class Button(text: String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+open class Button(text: String, font: PaintboxFont = UIElement.defaultFont)
     : Control<Button>() {
 
     companion object {
@@ -66,12 +66,12 @@ open class Button(text: String, font: PaintboxFont = PaintboxGame.gameInstance.d
      */
     val internalTextBlock: Var<TextBlock> by lazy { createInternalTextBlockVar(this) }
 
-    constructor(binding: Var.Context.() -> String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+    constructor(binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
             : this("", font) {
         text.bind(binding)
     }
     
-    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
             : this({ bindable.use() }, font)
     
     init {

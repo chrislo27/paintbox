@@ -4,7 +4,9 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import paintbox.PaintboxGame
 import paintbox.binding.*
+import paintbox.font.PaintboxFont
 import paintbox.ui.area.Insets
 import paintbox.ui.area.ReadOnlyBounds
 import paintbox.ui.border.Border
@@ -20,6 +22,26 @@ open class UIElement : UIBounds() {
     companion object {
         private val DEFAULT_MULTIPLIER_BINDING: Var.Context.() -> Float = { 1f }
         private const val CLIP_RECT_BUFFER: Float = 16f
+        
+        private var defaultFontOverride: PaintboxFont? = null
+
+        /**
+         * The default font to use in various controls.
+         * Defaults to [PaintboxGame.gameInstance.debugFont][PaintboxGame.debugFont], but can be overridden.
+         * @see clearDefaultFontOverride
+         */
+        var defaultFont: PaintboxFont
+            get() = defaultFontOverride ?: PaintboxGame.gameInstance.debugFont
+            set(value) {
+                defaultFontOverride = value
+            }
+
+        /**
+         * Resets the [defaultFont] to not be overridden.
+         */
+        fun clearDefaultFontOverride() {
+            defaultFontOverride = null
+        }
     }
 
     val parent: Var<UIElement?> = Var(null)

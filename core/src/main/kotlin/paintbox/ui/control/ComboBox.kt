@@ -10,6 +10,7 @@ import paintbox.binding.IntVar
 import paintbox.binding.Var
 import paintbox.font.*
 import paintbox.ui.StringConverter
+import paintbox.ui.UIElement
 import paintbox.ui.area.Insets
 import paintbox.ui.border.SolidBorder
 import paintbox.ui.contextmenu.ContextMenu
@@ -24,7 +25,7 @@ import kotlin.math.min
 
 
 open class ComboBox<T>(startingList: List<T>, selectedItem: T, 
-                       font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+                       font: PaintboxFont = UIElement.defaultFont)
     : Control<ComboBox<T>>() {
     
     companion object {

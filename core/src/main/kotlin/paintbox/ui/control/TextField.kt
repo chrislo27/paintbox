@@ -24,7 +24,7 @@ import kotlin.math.min
 /**
  * A single-line text field.
  */
-open class TextField(font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+open class TextField(font: PaintboxFont = UIElement.defaultFont)
     : Control<TextField>(), Focusable {
     companion object {
         const val TEXT_FIELD_SKIN_ID: String = "TextField"

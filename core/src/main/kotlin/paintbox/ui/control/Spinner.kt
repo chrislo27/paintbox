@@ -8,6 +8,7 @@ import paintbox.binding.ReadOnlyFloatVar
 import paintbox.font.PaintboxFont
 import paintbox.ui.Anchor
 import paintbox.ui.Pane
+import paintbox.ui.UIElement
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
@@ -17,7 +18,7 @@ import paintbox.ui.skin.SkinFactory
  * A spinner is a complex control for a [DecimalTextField].
  */
 open class Spinner(initialValue: Float, integerMode: Boolean = false,
-                   font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+                   font: PaintboxFont = UIElement.defaultFont)
     : Control<Spinner>() {
     
     companion object {
@@ -46,7 +47,7 @@ open class Spinner(initialValue: Float, integerMode: Boolean = false,
     val fieldContainer: Pane
     
     
-    constructor(initialValue: Int, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+    constructor(initialValue: Int, font: PaintboxFont = UIElement.defaultFont)
             : this(initialValue.toFloat(), true, font)
     
     init {

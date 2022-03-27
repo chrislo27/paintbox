@@ -8,13 +8,14 @@ import paintbox.binding.*
 import paintbox.font.PaintboxFont
 import paintbox.ui.ImageNode
 import paintbox.ui.ImageRenderingMode
+import paintbox.ui.UIElement
 import paintbox.ui.area.Insets
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
 
 
-open class RadioButton(text: String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+open class RadioButton(text: String, font: PaintboxFont = UIElement.defaultFont)
     : Control<RadioButton>(), Toggle {
 
     companion object {
@@ -83,12 +84,12 @@ open class RadioButton(text: String, font: PaintboxFont = PaintboxGame.gameInsta
         }
     }
 
-    constructor(binding: Var.Context.() -> String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+    constructor(binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
             : this("", font) {
         textLabel.text.bind(binding)
     }
 
-    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
             : this({ bindable.use() }, font)
 
     open fun getTextureRegionForType(state: Boolean): TextureRegion {

@@ -3,6 +3,7 @@ package paintbox.ui.control
 import paintbox.PaintboxGame
 import paintbox.binding.*
 import paintbox.font.PaintboxFont
+import paintbox.ui.UIElement
 import paintbox.util.DecimalFormats
 import java.text.DecimalFormat
 
@@ -10,7 +11,7 @@ import java.text.DecimalFormat
 open class DecimalTextField(
     startingValue: Float,
     decimalFormat: DecimalFormat = DecimalFormats["0.0##"],
-    font: PaintboxFont = PaintboxGame.gameInstance.debugFont
+    font: PaintboxFont = UIElement.defaultFont
 ) : TextField(font) {
 
     val decimalFormat: Var<DecimalFormat> = Var(decimalFormat)

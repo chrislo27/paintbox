@@ -11,6 +11,7 @@ import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
 import paintbox.font.*
+import paintbox.ui.UIElement
 import paintbox.ui.area.Insets
 import paintbox.util.gdxutils.fillRect
 import kotlin.math.min
@@ -19,7 +20,7 @@ import kotlin.math.min
 /**
  * A [TextLabel] is a [Control] that renders a [TextBlock]
  */
-open class TextLabel(text: String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
     : Control<TextLabel>() {
 
     companion object {
@@ -119,12 +120,12 @@ open class TextLabel(text: String, font: PaintboxFont = PaintboxGame.gameInstanc
      */
     val internalTextBlock: Var<TextBlock> = createInternalTextBlockVar(this)
     
-    constructor(binding: Var.Context.() -> String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+    constructor(binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
             : this("", font) {
         text.bind(binding)
     }
 
-    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
             : this({ bindable.use() }, font)
 
     init {

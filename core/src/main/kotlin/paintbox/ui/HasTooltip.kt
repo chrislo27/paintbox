@@ -53,13 +53,13 @@ open class Tooltip
         this.autosizeBehavior.set(AutosizeBehavior.Active(AutosizeBehavior.Dimensions.WIDTH_AND_HEIGHT, true))
     }
 
-    constructor(text: String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+    constructor(text: String, font: PaintboxFont = UIElement.defaultFont)
             : super(text, font)
 
-    constructor(binding: Var.Context.() -> String, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+    constructor(binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
             : super(binding, font)
     
-    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = PaintboxGame.gameInstance.debugFont)
+    constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
             : super(bindable, font)
 
 }
