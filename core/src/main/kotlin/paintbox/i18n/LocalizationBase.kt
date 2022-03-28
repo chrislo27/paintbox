@@ -47,25 +47,47 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val langDefFile: Fil
         }
     }
 
+    /**
+     * Returns the current value for the given key.
+     */
     fun getValue(key: String): String {
         val bundle = currentBundle.getOrCompute() ?: return key
         return bundle.getValue(key)
     }
 
+    /**
+     * Returns the current value for the given key, with substitution arguments provided.
+     */
     fun getValue(key: String, vararg args: Any?): String {
         val bundle = currentBundle.getOrCompute() ?: return key
         return bundle.getValue(key, *args)
     }
-    
+
+    /**
+     * Returns a [ReadOnlyVar] representing the value for the given key.
+     */
     fun getVar(key: String): ReadOnlyVar<String> {
         return Var {
             currentBundle.use()?.getValue(key) ?: key
         }
     }
 
+    /**
+     * Returns a [ReadOnlyVar] representing the value for the given key, with [argsProvider] being a [ReadOnlyVar]
+     * returning the list of arguments.
+     */
     fun getVar(key: String, argsProvider: ReadOnlyVar<List<Any?>>): ReadOnlyVar<String> {
         return Var {
             currentBundle.use()?.getValue(key, *argsProvider.use().toTypedArray()) ?: key
+        }
+    }
+
+    /**
+     * Returns a [ReadOnlyVar] representing the value for the given key with [staticArgs] being static arguments.
+     */
+    fun getVar(key: String, staticArgs: List<Any?>): ReadOnlyVar<String> {
+        return Var {
+            currentBundle.use()?.getValue(key, *staticArgs.toTypedArray()) ?: key
         }
     }
 
