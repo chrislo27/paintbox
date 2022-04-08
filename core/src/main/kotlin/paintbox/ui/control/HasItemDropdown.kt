@@ -5,11 +5,17 @@ import paintbox.ui.ActionablePane
 import paintbox.ui.StringConverter
 import paintbox.ui.contextmenu.ContextMenu
 import paintbox.ui.contextmenu.MenuItem
+import paintbox.ui.contextmenu.SeparatorMenuItem
 import paintbox.ui.contextmenu.SimpleMenuItem
 import kotlin.math.min
 
 
 interface HasItemDropdown<T> {
+
+    /**
+     * Should be implemented by an item to show that it represents a separator in [setDefaultActionToDeployDropdown].
+     */
+    interface Separator
 
     val items: Var<List<T>> 
     @Suppress("UNCHECKED_CAST")
@@ -64,13 +70,17 @@ interface HasItemDropdown<T> {
                         val thisFont = this.font.getOrCompute()
                         val strConverter = this.itemStringConverter.getOrCompute()
                         val menuItems: List<Pair<T, MenuItem>> = itemList.map { item: T ->
-                            val scaleXY: Float = min(scaleX.get(), scaleY.get())
-                            item to (if (thisMarkup != null)
-                                SimpleMenuItem.create(strConverter.convert(item), thisMarkup, scaleXY)
-                            else SimpleMenuItem.create(strConverter.convert(item), thisFont, scaleXY)).also { smi ->
-                                smi.closeMenuAfterAction = true
-                                smi.onAction = {
-                                    menuItemAction(item)
+                            if (item is Separator) {
+                                item to SeparatorMenuItem()
+                            } else {
+                                val scaleXY: Float = min(scaleX.get(), scaleY.get())
+                                item to (if (thisMarkup != null)
+                                    SimpleMenuItem.create(strConverter.convert(item), thisMarkup, scaleXY)
+                                else SimpleMenuItem.create(strConverter.convert(item), thisFont, scaleXY)).also { smi ->
+                                    smi.closeMenuAfterAction = true
+                                    smi.onAction = {
+                                        menuItemAction(item)
+                                    }
                                 }
                             }
                         }
