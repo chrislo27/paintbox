@@ -7,8 +7,8 @@ import paintbox.ui.StringConverter
 import paintbox.ui.UIElement
 
 
-open class MenuButton<T>(startingList: List<T>, text: String, font: PaintboxFont = UIElement.defaultFont) :
-    Button(text, font), HasItemDropdown<T> {
+open class MenuButton<T>(startingList: List<T>, text: String, font: PaintboxFont = UIElement.defaultFont)
+    : Button(text, font), HasItemDropdown<T> {
 
     override val items: Var<List<T>> = Var(startingList)
     @Suppress("UNCHECKED_CAST")
