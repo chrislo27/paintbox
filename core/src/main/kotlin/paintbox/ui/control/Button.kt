@@ -19,7 +19,7 @@ import kotlin.math.min
 
 
 open class Button(text: String, font: PaintboxFont = UIElement.defaultFont)
-    : Control<Button>() {
+    : Control<Button>(), HasLabelComponent {
 
     companion object {
         const val BUTTON_SKIN_ID: String = "Button"
@@ -45,10 +45,10 @@ open class Button(text: String, font: PaintboxFont = UIElement.defaultFont)
         }
     }
 
-    val text: Var<String> = Var(text)
-    val font: Var<PaintboxFont> = Var(font)
-    val scaleX: FloatVar = FloatVar(1f)
-    val scaleY: FloatVar = FloatVar(1f)
+    override val text: Var<String> = Var(text)
+    override val font: Var<PaintboxFont> = Var(font)
+    override val scaleX: FloatVar = FloatVar(1f)
+    override val scaleY: FloatVar = FloatVar(1f)
 
     val renderAlign: IntVar = IntVar(Align.center)
     val textAlign: Var<TextAlign> = Var { TextAlign.fromInt(renderAlign.use()) }
@@ -59,7 +59,7 @@ open class Button(text: String, font: PaintboxFont = UIElement.defaultFont)
      * The [Markup] object to use. If null, no markup parsing is done. If not null,
      * then the markup determines the TextBlock (and other values like [textColor] are ignored).
      */
-    val markup: Var<Markup?> = Var(null)
+    override val markup: Var<Markup?> = Var(null)
 
     /**
      * Defaults to an auto-generated [TextBlock] with the given [text].
@@ -80,11 +80,6 @@ open class Button(text: String, font: PaintboxFont = UIElement.defaultFont)
 
     @Suppress("RemoveRedundantQualifierName")
     override fun getDefaultSkinID(): String = Button.BUTTON_SKIN_ID
-
-    fun setScaleXY(scaleXY: Float) {
-        this.scaleX.set(scaleXY)
-        this.scaleY.set(scaleXY)
-    }
     
 }
 

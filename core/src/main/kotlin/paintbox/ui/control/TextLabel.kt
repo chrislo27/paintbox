@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.Align
-import paintbox.PaintboxGame
 import paintbox.binding.*
 import paintbox.util.ColorStack
 import paintbox.ui.skin.DefaultSkins
@@ -21,7 +20,7 @@ import kotlin.math.min
  * A [TextLabel] is a [Control] that renders a [TextBlock]
  */
 open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
-    : Control<TextLabel>() {
+    : Control<TextLabel>(), HasLabelComponent {
 
     companion object {
         const val TEXTLABEL_SKIN_ID: String = "TextLabel"
@@ -74,14 +73,14 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
         }
     }
 
-    val text: Var<String> = Var(text)
-    val font: Var<PaintboxFont> = Var(font)
+    override val text: Var<String> = Var(text)
+    override val font: Var<PaintboxFont> = Var(font)
 
     /**
      * The [Markup] object to use. If null, no markup parsing is done. If not null,
      * then the markup determines the TextBlock (and other values like [textColor] are ignored).
      */
-    val markup: Var<Markup?> = Var(null)
+    override val markup: Var<Markup?> = Var(null)
 
     /**
      * If the alpha value is 0, the skin controls what text colour is used.
@@ -91,11 +90,11 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
     /**
      * Determines the x-scale the text is rendered at.
      */
-    val scaleX: FloatVar = FloatVar(1f)
+    override val scaleX: FloatVar = FloatVar(1f)
     /**
      * Determines the y-scale the text is rendered at.
      */
-    val scaleY: FloatVar = FloatVar(1f)
+    override val scaleY: FloatVar = FloatVar(1f)
     
     val doesScaleXAffectWrapping: BooleanVar = BooleanVar(true)
 
@@ -134,11 +133,6 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
         }
         this.autosizeBehavior.addListener(autosizeListener)
         this.internalTextBlock.addListener(autosizeListener)
-    }
-    
-    fun setScaleXY(scaleXY: Float) {
-        this.scaleX.set(scaleXY)
-        this.scaleY.set(scaleXY)
     }
     
     fun triggerAutosize() {

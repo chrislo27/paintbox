@@ -1,0 +1,35 @@
+package paintbox.ui.control
+
+import paintbox.binding.ReadOnlyVar
+import paintbox.binding.Var
+import paintbox.font.PaintboxFont
+import paintbox.ui.StringConverter
+import paintbox.ui.UIElement
+
+
+open class MenuButton<T>(startingList: List<T>, text: String, font: PaintboxFont = UIElement.defaultFont) :
+    Button(text, font), HasItemDropdown<T> {
+
+    override val items: Var<List<T>> = Var(startingList)
+    @Suppress("UNCHECKED_CAST")
+    override val itemStringConverter: Var<StringConverter<T>> = Var(ComboBox.DEFAULT_STRING_CONVERTER as StringConverter<T>)
+    override var onItemSelected: (T) -> Unit = {}
+
+    
+    constructor(startingList: List<T>, binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
+            : this(startingList, "", font) {
+        @Suppress("LeakingThis")
+        this.text.bind(binding)
+    }
+
+    constructor(startingList: List<T>, bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
+            : this(startingList, "", font) {
+        @Suppress("LeakingThis")
+        this.text.bind { bindable.use() }
+    }
+
+    init {
+        @Suppress("LeakingThis")
+        HasItemDropdown.setDefaultActionToDeployDropdown(this)
+    }
+}

@@ -4,18 +4,12 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.Align
 import paintbox.PaintboxGame
-import paintbox.binding.BooleanVar
-import paintbox.binding.FloatVar
-import paintbox.binding.IntVar
-import paintbox.binding.Var
+import paintbox.binding.*
 import paintbox.font.*
 import paintbox.ui.StringConverter
 import paintbox.ui.UIElement
 import paintbox.ui.area.Insets
 import paintbox.ui.border.SolidBorder
-import paintbox.ui.contextmenu.ContextMenu
-import paintbox.ui.contextmenu.MenuItem
-import paintbox.ui.contextmenu.SimpleMenuItem
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
@@ -26,7 +20,7 @@ import kotlin.math.min
 
 open class ComboBox<T>(startingList: List<T>, selectedItem: T, 
                        font: PaintboxFont = UIElement.defaultFont)
-    : Control<ComboBox<T>>() {
+    : Control<ComboBox<T>>(), HasLabelComponent, HasItemDropdown<T>, HasSelectedItem<T> {
     
     companion object {
         const val COMBOBOX_SKIN_ID: String = "ComboBox"
@@ -43,32 +37,32 @@ open class ComboBox<T>(startingList: List<T>, selectedItem: T,
         
         fun createInternalTextBlockVar(comboBox: ComboBox<Any?>): Var<TextBlock> {
             return Var {
-                val text = comboBox.itemStringConverter.use().convert(comboBox.selectedItem.use())
+                val text = comboBox.text.use()
                 val markup: Markup? = comboBox.markup.use()
-                if (markup != null) {
-                    markup.parse(text)
-                } else {
-                    TextRun(comboBox.font.use(), text, Color.WHITE,
-                            comboBox.scaleX.use(), comboBox.scaleY.use()).toTextBlock()
-                }
+                markup?.parse(text)
+                    ?: TextRun(comboBox.font.use(), text, Color.WHITE,
+                        comboBox.scaleX.use(), comboBox.scaleY.use()).toTextBlock()
             }
         }
     }
     
     
-    val items: Var<List<T>> = Var(startingList)
-    val selectedItem: Var<T> = Var(selectedItem)
+    override val items: Var<List<T>> = Var(startingList)
+    override val selectedItem: Var<T> = Var(selectedItem)
     @Suppress("UNCHECKED_CAST")
-    val itemStringConverter: Var<StringConverter<T>> = Var(DEFAULT_STRING_CONVERTER as StringConverter<T>)
+    override val itemStringConverter: Var<StringConverter<T>> = Var(DEFAULT_STRING_CONVERTER as StringConverter<T>)
+    override val text: ReadOnlyVar<String> = Var.bind {
+        this@ComboBox.itemStringConverter.use().convert(this@ComboBox.selectedItem.use())
+    }
     
     val backgroundColor: Var<Color> = Var(Color(1f, 1f, 1f, 1f))
     val contrastColor: Var<Color> = Var(Color(0f, 0f, 0f, 1f))
     val textColor: Var<Color> = Var.bind { contrastColor.use() }
     val arrowColor: Var<Color> = Var.bind { contrastColor.use() }
     
-    val font: Var<PaintboxFont> = Var(font)
-    val scaleX: FloatVar = FloatVar(1f)
-    val scaleY: FloatVar = FloatVar(1f)
+    override val font: Var<PaintboxFont> = Var(font)
+    override val scaleX: FloatVar = FloatVar(1f)
+    override val scaleY: FloatVar = FloatVar(1f)
     val renderAlign: IntVar = IntVar(Align.left)
     val textAlign: Var<TextAlign> = Var { TextAlign.fromInt(renderAlign.use()) }
     val doXCompression: BooleanVar = BooleanVar(true)
@@ -77,7 +71,7 @@ open class ComboBox<T>(startingList: List<T>, selectedItem: T,
      * The [Markup] object to use. If null, no markup parsing is done. If not null,
      * then the markup determines the TextBlock (and other values like [textColor] are ignored).
      */
-    val markup: Var<Markup?> = Var(null)
+    override val markup: Var<Markup?> = Var(null)
 
     /**
      * Defaults to an auto-generated [TextBlock] for the given toString representation of the selected item.
@@ -90,7 +84,7 @@ open class ComboBox<T>(startingList: List<T>, selectedItem: T,
     /**
      * Fired whenever an item was selected, even if it was already selected previously.
      */
-    var onItemSelected: (T) -> Unit = {}
+    override var onItemSelected: (T) -> Unit = {}
     
     init {
         this.border.set(Insets(1f))
@@ -98,71 +92,13 @@ open class ComboBox<T>(startingList: List<T>, selectedItem: T,
             border.color.bind { contrastColor.use() }
         })
         this.padding.set(DEFAULT_PADDING)
-        
-        this.setOnAction { 
-            val itemList: List<T> = items.getOrCompute()
-            val root = this.sceneRoot.getOrCompute()
-            if (itemList.isNotEmpty() && root != null) {
-                val ctxMenu = ContextMenu()
-                ctxMenu.defaultWidth.set(this.bounds.width.get())
-                val thisMarkup = this.markup.getOrCompute()
-                val thisFont = this.font.getOrCompute()
-                val strConverter = this.itemStringConverter.getOrCompute()
-                val menuItems: List<Pair<T, MenuItem>> = itemList.map { item: T ->
-                    val scaleXY: Float = min(scaleX.get(), scaleY.get())
-                    item to (if (thisMarkup != null)
-                        SimpleMenuItem.create(strConverter.convert(item), thisMarkup, scaleXY)
-                    else SimpleMenuItem.create(strConverter.convert(item), thisFont, scaleXY)).also { smi ->
-                        smi.closeMenuAfterAction = true
-                        smi.onAction = {
-                            this.selectedItem.set(item)
-                            onItemSelected.invoke(item)
-                        }
-                    }
-                }
-                menuItems.forEach { 
-                    ctxMenu.addMenuItem(it.second)
-                }
-                
-                root.showDropdownContextMenu(ctxMenu)
-                if (ctxMenu.isContentInScrollPane) {
-                    // Scroll the scroll pane down until we see the right one
-                    val currentItem = this.selectedItem.getOrCompute()
-                    val currentPair: Pair<T, MenuItem>? = menuItems.find { it.first === currentItem }
-                    if (currentPair != null) {
-                        ctxMenu.scrollToItem(currentPair.second)
-                    }
-                }
-                
-                // Reposition the context menu
-                val h = ctxMenu.bounds.height.get()
-                val thisRelativePos = this.getPosRelativeToRoot()
-                val thisY = thisRelativePos.y
-                ctxMenu.bounds.x.set(thisRelativePos.x)
-                val rootBounds = sceneRoot.getOrCompute()?.bounds
-                if (rootBounds != null) {
-                    // Attempt to fit entire context menu below the combo box, otherwise put it above
-                    val belowY = thisY + this.bounds.height.get()
-                    if (belowY + h > rootBounds.height.get()) {
-                        ctxMenu.bounds.y.set((thisY - h).coerceAtLeast(0f))
-                    } else {
-                        ctxMenu.bounds.y.set(belowY)
-                    }
 
-                    ctxMenu.bounds.x.set((thisRelativePos.x).coerceAtMost(rootBounds.width.get() - ctxMenu.bounds.width.get()))
-                } else {
-                    ctxMenu.bounds.y.set(this.bounds.y.get() + this.bounds.height.get())
-                }
-            }
-        }
+        @Suppress("LeakingThis")
+        HasItemDropdown.setDefaultActionToDeployDropdown(this)
     }
     
     override fun getDefaultSkinID(): String = COMBOBOX_SKIN_ID
     
-    fun setScaleXY(scaleXY: Float) {
-        this.scaleX.set(scaleXY)
-        this.scaleY.set(scaleXY)
-    }
 }
 
 open class ComboBoxSkin(element: ComboBox<Any?>) : Skin<ComboBox<Any?>>(element) {
