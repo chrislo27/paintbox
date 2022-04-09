@@ -101,7 +101,14 @@ interface Var<T> : ReadOnlyVar<T> {
          * Creates a [GenericVar] with the given [item] as a constant value.
          * @see Var.set
          */
-        operator fun <T> invoke(item: T): Var<T> = GenericVar(item)
+        fun <T> of(item: T): Var<T> = GenericVar(item)
+
+        /**
+         * Creates a [GenericVar] with the given [item] as a constant value.
+         * @see Var.set
+         * @see of
+         */
+        operator fun <T> invoke(item: T): Var<T> = of(item)
 
         /**
          * Creates a [GenericVar] bound to the given [computation].
@@ -121,7 +128,7 @@ interface Var<T> : ReadOnlyVar<T> {
          * This is identical to the [bind][Companion.bind] function.
          * @see Var.bind
          */
-        operator fun <T> invoke(computation: Context.() -> T): Var<T> = GenericVar(computation)
+        operator fun <T> invoke(computation: Context.() -> T): Var<T> = bind(computation)
 
         /**
          * Creates a [GenericVar] with the given [item] as the base value and a [sideEffecting] function. 
