@@ -1,6 +1,11 @@
 package paintbox.ui.control
 
+import paintbox.binding.FloatVar
+import paintbox.binding.ReadOnlyFloatVar
+import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
+import paintbox.font.Markup
+import paintbox.font.PaintboxFont
 import paintbox.ui.ActionablePane
 import paintbox.ui.StringConverter
 import paintbox.ui.contextmenu.ContextMenu
@@ -25,6 +30,11 @@ interface HasItemDropdown<T> {
      * Fired whenever an item was selected, even if it was already selected previously.
      */
     var onItemSelected: (T) -> Unit
+
+    val contextMenuDefaultWidth: FloatVar
+    val contextMenuMarkup: Var<Markup?>
+    val contextMenuFont: Var<PaintboxFont>
+    val contextMenuItemStrConverter: Var<StringConverter<T>>
     
     companion object {
         
@@ -65,10 +75,10 @@ interface HasItemDropdown<T> {
                     val root = this.sceneRoot.getOrCompute()
                     if (itemList.isNotEmpty() && root != null) {
                         val ctxMenu = ContextMenu()
-                        ctxMenu.defaultWidth.set(this.bounds.width.get())
-                        val thisMarkup = this.markup.getOrCompute()
-                        val thisFont = this.font.getOrCompute()
-                        val strConverter = this.itemStringConverter.getOrCompute()
+                        ctxMenu.defaultWidth.set(this.contextMenuDefaultWidth.get())
+                        val thisMarkup = this.contextMenuMarkup.getOrCompute()
+                        val thisFont = this.contextMenuFont.getOrCompute()
+                        val strConverter = this.contextMenuItemStrConverter.getOrCompute()
                         val menuItems: List<Pair<T, MenuItem>> = itemList.map { item: T ->
                             if (item is Separator) {
                                 item to SeparatorMenuItem()

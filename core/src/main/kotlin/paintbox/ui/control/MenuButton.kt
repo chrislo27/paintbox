@@ -1,7 +1,9 @@
 package paintbox.ui.control
 
+import paintbox.binding.FloatVar
 import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
+import paintbox.font.Markup
 import paintbox.font.PaintboxFont
 import paintbox.ui.StringConverter
 import paintbox.ui.UIElement
@@ -14,7 +16,11 @@ open class MenuButton<T>(startingList: List<T>, text: String, font: PaintboxFont
     @Suppress("UNCHECKED_CAST")
     override val itemStringConverter: Var<StringConverter<T>> = Var(ComboBox.DEFAULT_STRING_CONVERTER as StringConverter<T>)
     override var onItemSelected: (T) -> Unit = {}
-
+    
+    override val contextMenuDefaultWidth: FloatVar = FloatVar { this@MenuButton.bounds.width.use() }
+    override val contextMenuMarkup: Var<Markup?> = Var.bind { this@MenuButton.markup.use() }
+    override val contextMenuFont: Var<PaintboxFont> = Var.bind { this@MenuButton.font.use() }
+    override val contextMenuItemStrConverter: Var<StringConverter<T>> = Var.bind { this@MenuButton.itemStringConverter.use() }
     
     constructor(startingList: List<T>, binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
             : this(startingList, "", font) {

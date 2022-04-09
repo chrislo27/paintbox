@@ -85,6 +85,11 @@ open class ComboBox<T>(startingList: List<T>, selectedItem: T,
      * Fired whenever an item was selected, even if it was already selected previously.
      */
     override var onItemSelected: (T) -> Unit = {}
+
+    override val contextMenuDefaultWidth: FloatVar = FloatVar { this@ComboBox.bounds.width.use() }
+    override val contextMenuMarkup: Var<Markup?> = Var.bind { this@ComboBox.markup.use() }
+    override val contextMenuFont: Var<PaintboxFont> = Var.bind { this@ComboBox.font.use() }
+    override val contextMenuItemStrConverter: Var<StringConverter<T>> = Var.bind { this@ComboBox.itemStringConverter.use() }
     
     init {
         this.border.set(Insets(1f))
