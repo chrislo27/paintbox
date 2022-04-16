@@ -130,9 +130,18 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
             if (caretPos.get() > newLength) setCaret(newLength)
             if (selectionStart.get() > newLength) setSelectionStart(newLength)
         }
+        
+        this.apparentDisabledState.addListener {
+            if (it.getOrCompute() && this.hasFocus.get()) {
+                requestUnfocus()
+            }
+        }
 
         this.addInputEventListener { event ->
             var consumed = false
+            if (this.apparentDisabledState.get()) {
+                return@addInputEventListener false
+            }
             when (event) {
                 is ClickPressed -> {
                     if (event.button == Input.Buttons.LEFT) {
