@@ -176,7 +176,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             }
         }
 
-        bg += TextLabel("Test text label.\nNewline.").also { label ->
+        bg += TextLabel("Test text label.\nNewline.\n㈀ ㈁ ㈂ ㈃ ㈄ ㈅ ㈆\n㈇ ㈈ ㈉ ㈊ ㈋ ㈌ ㈍", font = PaintboxGame.gameInstance.unifontFont).also { label ->
             Anchor.TopLeft.configure(label, offsetX = 32f, offsetY = 48f)
             label.bounds.width.set(325f)
             label.bounds.height.set(75f)

@@ -12,10 +12,7 @@ import com.badlogic.gdx.utils.Align
 import paintbox.Paintbox.StageOutlineMode.ALL
 import paintbox.Paintbox.StageOutlineMode.NONE
 import paintbox.Paintbox.StageOutlineMode.ONLY_VISIBLE
-import paintbox.font.FontCache
-import paintbox.font.PaintboxFont
-import paintbox.font.PaintboxFontFreeType
-import paintbox.font.PaintboxFontParams
+import paintbox.font.*
 import paintbox.i18n.LocalizationBase
 import paintbox.logging.SysOutPiper
 import paintbox.registry.AssetRegistry
@@ -177,6 +174,8 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
     protected var reloadableLocalizationInstances: List<LocalizationBase> = emptyList()
     
     
+    val unifontFont: PaintboxFont
+        inline get() = fontCache["UNIFONT"]
     val debugFont: PaintboxFont
         inline get() = fontCache["DEBUG_FONT"]
     val debugFontBordered: PaintboxFont
@@ -575,5 +574,6 @@ ${(screen as? PaintboxScreen)?.getDebugString() ?: ""}"""
                     size = defaultFontSize
                     borderWidth = defaultBorderWidth
                 }).setAfterLoad(afterLoad)
+        cache["UNIFONT"] = PaintboxFontUnifont()
     }
 }

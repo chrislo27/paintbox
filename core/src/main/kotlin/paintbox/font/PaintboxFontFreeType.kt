@@ -16,7 +16,7 @@ import kotlin.math.min
  * 
  * The [params] passed in will be copied with the [ftfParameter]'s font and border size.
  */
-class PaintboxFontFreeType(params: PaintboxFontParams,
+open class PaintboxFontFreeType(params: PaintboxFontParams,
                            val ftfParameter: FreeTypeFontGenerator.FreeTypeFontParameter)
     : PaintboxFont(params.copy(fontSize = ftfParameter.size, borderSize = ftfParameter.borderWidth)) {
 
