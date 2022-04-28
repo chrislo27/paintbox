@@ -139,9 +139,6 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
         disableLayouts.set(true)
         func()
         disableLayouts.set(false)
-        if (!doLayoutIfLayoutsReenabled.get()) {
-            reLayout()
-        }
     }
 
     /**
