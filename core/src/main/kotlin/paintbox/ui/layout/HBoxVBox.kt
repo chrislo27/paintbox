@@ -87,6 +87,11 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
                 reLayout()
             }
         }
+        getThisDimensional().addListener {
+            if (internalAlignment.getOrCompute().ratio > 0f) {
+                reLayout()
+            }
+        }
         
         autoSizeToChildren.addListener {
             if (it.getOrCompute()) {
