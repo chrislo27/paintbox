@@ -16,7 +16,7 @@ abstract class Skin<Element>(open val element: Element) {
     
 }
 
-fun interface SkinFactory<ElementType, S : Skin<ElementType>, SkinnableType : Skinnable<ElementType>> {
+fun interface SkinFactory<ElementType, out S : Skin<ElementType>, in SkinnableType : Skinnable<ElementType>> {
     
     fun createSkin(element: SkinnableType): S
     
