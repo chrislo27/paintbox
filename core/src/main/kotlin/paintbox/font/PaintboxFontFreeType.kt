@@ -143,4 +143,8 @@ open class PaintboxFontFreeType(
     override fun dispose() {
         this.isLoaded = false
     }
+
+    override fun onParamsChanged() {
+        this.isLoaded = false
+    }
 }

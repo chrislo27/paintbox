@@ -64,4 +64,7 @@ class PaintboxFontBitmap(
             font.dispose()
         }
     }
+
+    override fun onParamsChanged() {
+    }
 }

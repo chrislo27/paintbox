@@ -96,7 +96,9 @@ abstract class PaintboxFont(params: PaintboxFontParams)
     
     init {
         this.params.addListener {
-            this.disposeQuietly()
+            Gdx.app.postRunnable { 
+                onParamsChanged()
+            }
         }
     }
     
@@ -141,6 +143,8 @@ abstract class PaintboxFont(params: PaintboxFontParams)
      * unless [LENIENT_BEGIN_END] is true.
      */
     abstract fun end()
+    
+    abstract fun onParamsChanged()
 
     inline fun useFont(cameraWidth: Float, cameraHeight: Float, scope: (font: BitmapFont) -> Unit) {
         val font = begin(cameraWidth, cameraHeight)
