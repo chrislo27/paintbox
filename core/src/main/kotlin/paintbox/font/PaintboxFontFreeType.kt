@@ -4,8 +4,6 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import paintbox.binding.LongVar
 import paintbox.binding.ReadOnlyLongVar
-import paintbox.binding.ReadOnlyVar
-import paintbox.binding.Var
 import paintbox.util.WindowSize
 import paintbox.util.gdxutils.copy
 import kotlin.math.max
@@ -16,9 +14,10 @@ import kotlin.math.min
  * 
  * The [params] passed in will be copied with the [ftfParameter]'s font and border size.
  */
-open class PaintboxFontFreeType(params: PaintboxFontParams,
-                           val ftfParameter: FreeTypeFontGenerator.FreeTypeFontParameter)
-    : PaintboxFont(params.copy(fontSize = ftfParameter.size, borderSize = ftfParameter.borderWidth)) {
+open class PaintboxFontFreeType(
+    params: PaintboxFontParams,
+    val ftfParameter: FreeTypeFontGenerator.FreeTypeFontParameter
+) : PaintboxFont(params.copy(fontSize = ftfParameter.size, borderSize = ftfParameter.borderWidth)) {
 
     companion object {
         init {
@@ -70,10 +69,11 @@ open class PaintboxFontFreeType(params: PaintboxFontParams,
             // If the loadPriority is ALWAYS, this will already have been loaded in resize()
             load()
         }
-        
-        if (this.params.scaleToReferenceSize) {
+
+        val params = this.params.getOrCompute()
+        if (params.scaleToReferenceSize) {
             val font = currentFont!!
-            val referenceSize = this.params.referenceSize
+            val referenceSize = params.referenceSize
             val scaleX = (referenceSize.width / areaWidth)
             val scaleY = (referenceSize.height / areaHeight)
             val scale = max(scaleX, scaleY)
@@ -99,6 +99,7 @@ open class PaintboxFontFreeType(params: PaintboxFontParams,
     override fun resize(width: Int, height: Int) {
         this.dispose()
         lastWindowSize = WindowSize(width, height)
+        val params = this.params.getOrCompute()
         if (params.loadPriority == PaintboxFontParams.LoadPriority.ALWAYS/* || params.scaleToReferenceSize*/) {
             load()
         }
@@ -106,6 +107,7 @@ open class PaintboxFontFreeType(params: PaintboxFontParams,
     
     private fun load() {
         val windowSize = this.lastWindowSize
+        val params = this.params.getOrCompute()
         val referenceSize = params.referenceSize
         val scale: Float = if (!params.scaleToReferenceSize) 1f else min(windowSize.width.toFloat() / referenceSize.width, windowSize.height.toFloat() / referenceSize.height)
         
@@ -116,11 +118,11 @@ open class PaintboxFontFreeType(params: PaintboxFontParams,
             
 
             val newParam = ftfParameter.copy()
-            val params = this.params
-            newParam.size = (params.fontSize * scale).toInt()
-            newParam.borderWidth = params.borderSize * scale
+            val oldParams = params
+            newParam.size = (oldParams.fontSize * scale).toInt()
+            newParam.borderWidth = oldParams.borderSize * scale
 
-            val generator = FreeTypeFontGenerator(params.file)
+            val generator = FreeTypeFontGenerator(oldParams.file)
             val generatedFont = generator.generateFont(newParam)
             this.generator = generator
             this.currentFont = generatedFont

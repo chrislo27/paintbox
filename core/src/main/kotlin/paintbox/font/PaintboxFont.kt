@@ -9,7 +9,9 @@ import com.badlogic.gdx.utils.Disposable
 import paintbox.PaintboxGame
 import paintbox.binding.ReadOnlyLongVar
 import paintbox.binding.ReadOnlyVar
+import paintbox.binding.Var
 import paintbox.util.WindowSize
+import paintbox.util.gdxutils.disposeQuietly
 
 
 /**
@@ -18,7 +20,7 @@ import paintbox.util.WindowSize
  *
  * To use the [BitmapFont], call [useFont] and use the supplied font parameter.
  */
-abstract class PaintboxFont(val params: PaintboxFontParams)
+abstract class PaintboxFont(params: PaintboxFontParams)
     : Disposable {
     
     companion object {
@@ -80,6 +82,8 @@ abstract class PaintboxFont(val params: PaintboxFontParams)
         }
     }
     
+    val params: Var<PaintboxFontParams> = Var(params)
+    
     protected val fontDataInfo: FontDataInfo = FontDataInfo()
 
     /**
@@ -89,6 +93,13 @@ abstract class PaintboxFont(val params: PaintboxFontParams)
      */
     abstract val currentFontNumber: Long
     abstract val currentFontNumberVar: ReadOnlyLongVar
+    
+    init {
+        this.params.addListener {
+            this.disposeQuietly()
+        }
+    }
+    
 
     /**
      * Called by [PaintboxGame] whenever the window gets resized.

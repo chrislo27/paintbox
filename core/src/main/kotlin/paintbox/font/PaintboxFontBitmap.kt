@@ -11,9 +11,10 @@ import paintbox.binding.Var
  * 
  * @param ownsFont If true, this [PaintboxFontBitmap] will dispose the provided [font] when [dispose] is called
  */
-class PaintboxFontBitmap(params: PaintboxFontParams,
-                         private val font: BitmapFont, val ownsFont: Boolean)
-    : PaintboxFont(params) {
+class PaintboxFontBitmap(
+    params: PaintboxFontParams,
+    private val font: BitmapFont, val ownsFont: Boolean
+) : PaintboxFont(params) {
     
     private var isInBegin: Boolean = false
     override val currentFontNumber: Long = 0L // Backing font never changes
@@ -38,9 +39,10 @@ class PaintboxFontBitmap(params: PaintboxFontParams,
         }
         isInBegin = true
         
-        if (this.params.scaleToReferenceSize) {
-            val scaleX = areaWidth / this.params.referenceSize.width
-            val scaleY = areaHeight / this.params.referenceSize.height
+        val params = this.params.getOrCompute()
+        if (params.scaleToReferenceSize) {
+            val scaleX = areaWidth / params.referenceSize.width
+            val scaleY = areaHeight / params.referenceSize.height
             if (scaleX >= 0f && scaleY >= 0f && scaleX.isFinite() && scaleY.isFinite()) {
                 font.data.setScale(scaleX, scaleY)
             }

@@ -20,6 +20,4 @@ class PaintboxFontUnifont
     characters = ""
     hinting = FreeTypeFontGenerator.Hinting.Full
     size = 16
-}) {
-
-}
+})
