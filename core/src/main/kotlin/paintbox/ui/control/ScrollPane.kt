@@ -47,22 +47,22 @@ open class ScrollPane : Control<ScrollPane>() {
     val minThumbSize: FloatVar = FloatVar(20f)
 
     // Used for updating internal state
-    private val currentW: FloatVar = FloatVar {
+    private val currentW: FloatVar = FloatVar(eager = true) {
         currentContent.use()?.bounds?.width?.use() ?: 0f
     }
-    private val currentH: FloatVar = FloatVar {
+    private val currentH: FloatVar = FloatVar(eager = true) {
         currentContent.use()?.bounds?.height?.use() ?: 0f
     }
-    private val contentPaneWidth: FloatVar = FloatVar {
+    private val contentPaneWidth: FloatVar = FloatVar(eager = true) {
         contentPane.contentZone.width.use()
     }
-    private val contentPaneHeight: FloatVar = FloatVar {
+    private val contentPaneHeight: FloatVar = FloatVar(eager = true) {
         contentPane.contentZone.height.use()
     }
-    private val contentWidthDiff: FloatVar = FloatVar {
+    private val contentWidthDiff: FloatVar = FloatVar(eager = true) {
         currentW.use() - contentPaneWidth.use()
     }
-    private val contentHeightDiff: FloatVar = FloatVar {
+    private val contentHeightDiff: FloatVar = FloatVar(eager = true) {
         currentH.use() - contentPaneHeight.use()
     }
 
@@ -89,8 +89,8 @@ open class ScrollPane : Control<ScrollPane>() {
             val policy = hBarPolicy.use()
             if (policy == ScrollBarPolicy.NEVER) 0f else (-barSize.use())
         }
-        contentPane.contentOffsetX.bind { -hBar.value.use() }
-        contentPane.contentOffsetY.bind { -vBar.value.use() }
+        contentPane.contentOffsetX.eagerBind { -hBar.value.use() }
+        contentPane.contentOffsetY.eagerBind { -vBar.value.use() }
 
         hBar.visible.bind {
             when (hBarPolicy.getOrCompute()) {
@@ -108,15 +108,15 @@ open class ScrollPane : Control<ScrollPane>() {
         }
         hBar.minimum.set(0f)
         vBar.minimum.set(0f)
-        hBar.maximum.bind { contentWidthDiff.use().coerceAtLeast(0f) }
-        vBar.maximum.bind { contentHeightDiff.use().coerceAtLeast(0f) }
-        hBar.visibleAmount.bind {
+        hBar.maximum.eagerBind { contentWidthDiff.use().coerceAtLeast(0f) }
+        vBar.maximum.eagerBind { contentHeightDiff.use().coerceAtLeast(0f) }
+        hBar.visibleAmount.eagerBind {
             val barMax = hBar.maximum.use()
             ((contentPaneWidth.use() / currentW.use()) * barMax)
                     .coerceAtMost(barMax)
                     .coerceAtLeast(minThumbSize.use())
         }
-        vBar.visibleAmount.bind {
+        vBar.visibleAmount.eagerBind {
             val barMax = vBar.maximum.use()
             ((contentPaneHeight.use() / currentH.use()) * barMax)
                     .coerceAtMost(barMax)
