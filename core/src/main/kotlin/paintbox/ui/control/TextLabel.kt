@@ -111,6 +111,14 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
     val doXCompression: BooleanVar = BooleanVar(true)
     val doLineWrapping: BooleanVar = BooleanVar(false)
     val autosizeBehavior: Var<AutosizeBehavior> = Var(AutosizeBehavior.None)
+    /**
+     * The maximum width of this label when auto-resized. A value of zero means there is no limit.
+     */
+    val maxWidth: FloatVar = FloatVar(0f)
+    /**
+     * The maximum height of this label when auto-resized. A value of zero means there is no limit.
+     */
+    val maxHeight: FloatVar = FloatVar(0f)
 
     /**
      * Defaults to an auto-generated [TextBlock] with the given [text].
@@ -133,6 +141,14 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
         }
         this.autosizeBehavior.addListener(autosizeListener)
         this.internalTextBlock.addListener(autosizeListener)
+        this.maxWidth.addListener(autosizeListener)
+        this.maxHeight.addListener(autosizeListener)
+        this.sceneRoot.addListener {
+            val behaviour = autosizeBehavior.getOrCompute()
+            if (behaviour is AutosizeBehavior.Active && behaviour.triggerOnlyWhenInScene) {
+                triggerAutosize()
+            }
+        }
     }
     
     fun triggerAutosize() {
@@ -140,7 +156,8 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
             AutosizeBehavior.None -> {}
             is AutosizeBehavior.Active -> {
                 if (!b.triggerOnlyWhenInScene || this.sceneRoot.getOrCompute() != null) {
-                    resizeBoundsToContent(affectWidth = b.dimensions.affectWidth, affectHeight = b.dimensions.affectHeight)
+                    resizeBoundsToContent(limitWidth = maxWidth.get(), limitHeight = maxHeight.get(),
+                            affectWidth = b.dimensions.affectWidth, affectHeight = b.dimensions.affectHeight)
                 }
             }
         }

@@ -75,12 +75,12 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
             val oldValue = currentTooltip
             val newValue = v.getOrCompute()
             if (oldValue != null) {
-                currentElement?.onTooltipEnded(oldValue)
                 root.removeChild(oldValue)
+                currentElement?.onTooltipEnded(oldValue)
             }
             if (newValue != null) {
-                currentElement?.onTooltipStarted(newValue)
                 root.addChild(newValue)
+                currentElement?.onTooltipStarted(newValue)
             }
             currentTooltip = newValue
         }
