@@ -14,6 +14,7 @@ import paintbox.ui.contextmenu.ContextMenu
 import paintbox.util.RectangleStack
 import paintbox.util.viewport.NoOpViewport
 import paintbox.util.gdxutils.drawRect
+import paintbox.util.gdxutils.fillRect
 
 
 /**
@@ -24,6 +25,14 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
     data class MousePosition(val x: FloatVar, val y: FloatVar)
     
     val camera: Camera = viewport.camera
+
+    /**
+     * An optional camera that can be used if the scene root is being rendered to a framebuffer first and then
+     * transformed later with another camera. This is used to make sure input vectors are transformed correctly.
+     * 
+     * This assumes that [applyViewport] is false.
+     */
+    var postRenderCamera: Camera? = null
 
     private val tmpVec3: Vector3 = Vector3()
     private val mouseVector: Vector2 = Vector2()
@@ -45,6 +54,11 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
      */
     val frameUpdateTrigger: ReadOnlyBooleanVar = BooleanVar(false)
     val animations: AnimationHandler = AnimationHandler(this)
+
+    /**
+     * If true, applies the [viewport] during [renderAsRoot]. This should be false if this scene is being rendered
+     * to a framebuffer.
+     */
     val applyViewport: BooleanVar = BooleanVar(true)
 
     val currentElementWithTooltip: ReadOnlyVar<HasTooltip?> = Var(null)
@@ -434,10 +448,20 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
      * @return The mutated [vector]
      */
     fun screenToUI(vector: Vector2): Vector2 {
-        tmpVec3.set(vector, 0f)
-        viewport.unproject(tmpVec3)
-        vector.x = tmpVec3.x
-        vector.y = viewport.worldHeight - tmpVec3.y
+        tmpVec3.set(vector, 0f) // tmpVec3 is top-down, screen width/height
+        
+        val prCamera = this.postRenderCamera
+        if (prCamera != null) {
+            prCamera.unproject(tmpVec3, viewport.screenX.toFloat(), viewport.screenY.toFloat(),
+                    viewport.screenWidth.toFloat(), viewport.screenHeight.toFloat())
+            vector.x = tmpVec3.x
+            vector.y = prCamera.viewportHeight - tmpVec3.y
+        } else {
+            viewport.unproject(tmpVec3) // tmpVec3 is bottom-up, viewport width/height
+            vector.x = tmpVec3.x
+            vector.y = viewport.worldHeight - tmpVec3.y
+        }
+        
         return vector
     }
 
@@ -449,9 +473,20 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
      */
     fun uiToScreen(vector: Vector2): Vector2 {
         tmpVec3.set(vector, 0f)
-        viewport.project(tmpVec3)
+
+        val prCamera = this.postRenderCamera
+        if (prCamera != null) {
+            tmpVec3.y = prCamera.viewportHeight - tmpVec3.y
+            prCamera.project(tmpVec3, viewport.screenX.toFloat(), viewport.screenY.toFloat(),
+                    viewport.screenWidth.toFloat(), viewport.screenHeight.toFloat())
+        } else {
+            tmpVec3.y = viewport.worldHeight - tmpVec3.y
+            viewport.project(tmpVec3)
+        }
+        
         vector.x = tmpVec3.x
-        vector.y = viewport.worldHeight - tmpVec3.y
+        vector.y = Gdx.graphics.height - tmpVec3.y
+        
         return vector
     }
 
