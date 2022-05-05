@@ -4,11 +4,9 @@ import com.badlogic.gdx.assets.AssetLoaderParameters
 import com.badlogic.gdx.assets.AssetManager
 import com.badlogic.gdx.assets.loaders.TextureLoader
 import com.badlogic.gdx.audio.Sound
-import com.badlogic.gdx.graphics.Pixmap
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.Disposable
-import paintbox.Paintbox
 import paintbox.lazysound.LazySound
 import paintbox.lazysound.LazySoundLoader
 import paintbox.packing.PackedSheet
@@ -41,6 +39,10 @@ open class AssetRegistryInstance : Disposable {
         })
     }
 
+    /**
+     * Creates a mapping from [key] to the filename [file].
+     * @throws IllegalArgumentException If the key has already been bound
+     */
     fun bindAsset(key: String, file: String): Pair<String, String> {
         if (assetMap.containsKey(key)) {
             throw IllegalArgumentException("$key has already been bound to ${assetMap[key]}")
@@ -50,12 +52,36 @@ open class AssetRegistryInstance : Disposable {
         return key to file
     }
 
+    /**
+     * Loads an asset and binds [key] to [file].
+     */
     inline fun <reified T> loadAsset(key: String, file: String, params: AssetLoaderParameters<T>? = null) {
         manager.load(bindAsset(key, file).second, T::class.java, params)
     }
-    
+
+    /**
+     * Loads an asset where the key is also the filename.
+     */
     inline fun <reified T> loadAssetNoFile(key: String, params: AssetLoaderParameters<T>?) {
         manager.load(bindAsset(key, key).second, T::class.java, params)
+    }
+
+    /**
+     * Unloads the asset by the key. If the asset doesn't exist or isn't loaded, nothing happens.
+     */
+    fun unloadAsset(key: String) {
+        val filename = assetMap[key]
+        if (filename != null) {
+            (assetMap as MutableMap).remove(key)
+            if (unmanagedAssets.containsKey(key)) {
+                val item = unmanagedAssets.remove(key)
+                if (item != null) {
+                    (item as? Disposable)?.dispose()
+                }
+            } else if (manager.isLoaded(filename)) {
+                manager.unload(filename)
+            }
+        }
     }
 
     fun addAssetLoader(loader: IAssetLoader) {
@@ -116,9 +142,13 @@ open class AssetRegistryInstance : Disposable {
         return manager.get(assetMap[key], T::class.java)
     }
 
+    /**
+     * Gets an asset by its [key] without doing type checking.
+     */
     fun fastGet(key: String): Any? {
-        if (unmanagedAssets[assetMap[key]] != null) return unmanagedAssets[key]
-        return manager.get(assetMap[key])
+        val mappedKey = assetMap[key] ?: return null
+        if (unmanagedAssets[mappedKey] != null) return unmanagedAssets[key]
+        return manager.get(mappedKey)
     }
 
     /**
@@ -128,8 +158,16 @@ open class AssetRegistryInstance : Disposable {
         unmanagedAssets.values.filterIsInstance(Disposable::class.java).forEach(Disposable::dispose)
         unmanagedAssets.clear()
         manager.clear()
+        (assetMap as MutableMap).clear()
         loadingState = LoadState.NONE
     }
+
+    override fun dispose() {
+        disposed = true
+        unloadAllAssets()
+        manager.dispose()
+    }
+    
 
     fun stopAllSounds() {
         manager.getAll(Sound::class.java, Array()).toList().forEach(Sound::stop)
@@ -145,13 +183,6 @@ open class AssetRegistryInstance : Disposable {
         manager.getAll(Sound::class.java, Array()).toList().forEach(Sound::resume)
         manager.getAll(LazySound::class.java, Array()).toList().filter(LazySound::isLoaded).forEach { it.sound.resume() }
     }
-
-    override fun dispose() {
-        disposed = true
-        unloadAllAssets()
-        manager.dispose()
-    }
-    
 }
 
 /**
