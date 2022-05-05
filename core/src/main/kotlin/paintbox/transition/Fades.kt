@@ -2,37 +2,20 @@ package paintbox.transition
 
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.math.Interpolation
 import paintbox.util.gdxutils.fillRect
 
 
-/**
- * Fades TO the specified colour from transparent to opaque.
- */
-class FadeOut(duration: Float, val color: Color) : Transition(duration) {
+abstract class SolidColorFade(
+    duration: Float, color: Color, val direction: Direction, val interpolation: Interpolation = Interpolation.linear
+) : Transition(duration) {
 
-    override fun render(transitionScreen: TransitionScreen, screenRender: () -> Unit) {
-        screenRender()
-
-        val camera = transitionScreen.main.nativeCamera
-        val batch = transitionScreen.main.batch
-        transitionScreen.main.resetViewportToScreen()
-        batch.begin()
-        batch.setColor(color.r, color.g, color.b, color.a * transitionScreen.percentageCurrent)
-        batch.fillRect(0f, 0f, camera.viewportWidth * 1f, camera.viewportHeight * 1f)
-        batch.setColor(1f, 1f, 1f, 1f)
-        batch.end()
+    enum class Direction {
+        BECOME_OPAQUE, BECOME_TRANSPARENT
     }
 
-    override fun dispose() {
-    }
-
-}
-
-/**
- * Fades AWAY from the specified colour to transparent
- */
-class FadeIn(duration: Float, val color: Color) : Transition(duration) {
-
+    val color: Color = color.cpy()
+    
     override fun render(transitionScreen: TransitionScreen, screenRender: () -> Unit) {
         screenRender()
 
@@ -41,7 +24,11 @@ class FadeIn(duration: Float, val color: Color) : Transition(duration) {
         transitionScreen.main.resetViewportToScreen()
         batch.projectionMatrix = camera.combined
         batch.begin()
-        batch.setColor(color.r, color.g, color.b, color.a * (1f - transitionScreen.percentageCurrent))
+        val alphaMultiplier = interpolation.apply(0f, 1f, when (direction) {
+            Direction.BECOME_OPAQUE -> transitionScreen.percentageCurrent
+            Direction.BECOME_TRANSPARENT -> 1f - transitionScreen.percentageCurrent
+        }.coerceIn(0f, 1f))
+        batch.setColor(color.r, color.g, color.b, color.a * alphaMultiplier)
         batch.fillRect(0f, 0f, camera.viewportWidth * 1f, camera.viewportHeight * 1f)
         batch.setColor(1f, 1f, 1f, 1f)
         batch.end()
@@ -49,5 +36,16 @@ class FadeIn(duration: Float, val color: Color) : Transition(duration) {
 
     override fun dispose() {
     }
-
 }
+
+
+class FadeToOpaque(duration: Float, color: Color, interpolation: Interpolation = Interpolation.linear)
+    : SolidColorFade(duration, color, Direction.BECOME_OPAQUE, interpolation)
+class FadeToTransparent(duration: Float, color: Color, interpolation: Interpolation = Interpolation.linear)
+    : SolidColorFade(duration, color, Direction.BECOME_TRANSPARENT, interpolation)
+
+
+@Deprecated("Deprecated in favour of FadeToOpaque", replaceWith = ReplaceWith("FadeToOpaque"))
+typealias FadeOut = FadeToOpaque
+@Deprecated("Deprecated in favour of FadeToTransparent", replaceWith = ReplaceWith("FadeToTransparent"))
+typealias FadeIn = FadeToTransparent
