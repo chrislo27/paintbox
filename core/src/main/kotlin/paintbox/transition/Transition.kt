@@ -6,15 +6,7 @@ import com.badlogic.gdx.utils.Disposable
 abstract class Transition(val duration: Float) : Disposable {
 
     companion object {
-        val EMPTY: Transition = object : Transition(0f) {
-            override fun dispose() {
-                // NO-OP
-            }
-
-            override fun render(transitionScreen: TransitionScreen, screenRender: () -> Unit) {
-                // NO-OP
-            }
-        }
+        val EMPTY: EmptyTransition = EmptyTransition
     }
 
     var overrideDone: Boolean = false
@@ -22,4 +14,14 @@ abstract class Transition(val duration: Float) : Disposable {
 
     abstract fun render(transitionScreen: TransitionScreen, screenRender: () -> Unit)
 
+}
+
+object EmptyTransition : Transition(0f) {
+    override fun dispose() {
+        // NO-OP
+    }
+
+    override fun render(transitionScreen: TransitionScreen, screenRender: () -> Unit) {
+        // NO-OP
+    }
 }
