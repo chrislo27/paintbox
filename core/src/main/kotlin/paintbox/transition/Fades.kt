@@ -24,10 +24,10 @@ abstract class SolidColorFade(
         transitionScreen.main.resetViewportToScreen()
         batch.projectionMatrix = camera.combined
         batch.begin()
-        val alphaMultiplier = interpolation.apply(0f, 1f, when (direction) {
-            Direction.BECOME_OPAQUE -> transitionScreen.percentageCurrent
-            Direction.BECOME_TRANSPARENT -> 1f - transitionScreen.percentageCurrent
-        }.coerceIn(0f, 1f))
+        var alphaMultiplier = interpolation.apply(0f, 1f, transitionScreen.percentageCurrent.coerceIn(0f, 1f))
+        if (direction == Direction.BECOME_TRANSPARENT) {
+            alphaMultiplier = 1f - alphaMultiplier
+        }
         batch.setColor(color.r, color.g, color.b, color.a * alphaMultiplier)
         batch.fillRect(0f, 0f, camera.viewportWidth * 1f, camera.viewportHeight * 1f)
         batch.setColor(1f, 1f, 1f, 1f)
