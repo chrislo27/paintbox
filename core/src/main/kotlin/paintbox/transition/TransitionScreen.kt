@@ -1,5 +1,6 @@
 package paintbox.transition
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Screen
 import paintbox.PaintboxGame
 import paintbox.PaintboxScreen
@@ -94,6 +95,7 @@ open class TransitionScreen(override val main: PaintboxGame,
         if (substate == Substate.DURING_ENTRY) {
             if (doneEntry) {
                 this.substate = Substate.DURING_DEST
+                destScreen?.resize(Gdx.graphics.width, Gdx.graphics.height)
                 onEntryEnd.invoke()
                 onDestStart.invoke()
             }
@@ -139,4 +141,12 @@ open class TransitionScreen(override val main: PaintboxGame,
         destTransition.dispose()
     }
 
+    override fun getDebugString(): String? {
+        return """entryScreen: ${entryScreen?.javaClass?.name}
+destScreen: ${destScreen?.javaClass?.name}
+
+entryTransition: ${entryTransition.javaClass.name}
+destTransition: ${destTransition.javaClass.name}
+"""
+    }
 }
