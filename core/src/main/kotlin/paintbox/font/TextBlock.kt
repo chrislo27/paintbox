@@ -399,27 +399,45 @@ data class TextBlock(val runs: List<TextRun>) {
 
                 val runCount = layout.runs.size
                 if (requiresTinting) {
-                    for (i in 0 until runCount) {
-                        val run = layout.runs[i]
-                        ColorStack.getAndPush().set(run.color)
-                        if (run.color.r == 1f && run.color.g == 1f && run.color.b == 1f) {
-                            run.color.mul(tint)
+                    // IntArray pair of ints of start index and ABGR8888 color (Color#toIntBits)
+                    val colors = layout.colors
+                    val numColors = colors.size / 2
+                    val tmpColor = ColorStack.getAndPush()
+                    
+                    // For each new colour, push it to ColorStack, then tint it.
+                    for (i in 0 until numColors) {
+                        val colorsIndex = i * 2 + 1
+                        Color.argb8888ToColor(tmpColor, colors[colorsIndex])
+                        ColorStack.getAndPush().set(tmpColor)
+                        
+                        if (tmpColor.r == 1f && tmpColor.g == 1f && tmpColor.b == 1f) {
+                            tmpColor.mul(tint)
                         } else {
-                            run.color.a *= tint.a // Ignore RGB
+                            tmpColor.a *= tint.a // Ignore RGB
                         }
+                        
+                        colors[colorsIndex] = tmpColor.toIntBits()
                     }
-                }
 
-                font.draw(batch, layout,
+                    
+                    // Same as else block
+                    font.draw(batch, layout,
                         x + (glyphRunInfo.posX) * globalScaleX + alignXOffset,
                         y + (glyphRunInfo.posY) * globalScaleY)
 
-                if (requiresTinting) {
+                    
+                    // Reset colors from ColorStack
                     for (index in runCount - 1 downTo 0) {
                         val popped = ColorStack.pop() ?: continue
-                        val run = layout.runs[index]
-                        run.color.set(popped)
+                        colors[index * 2 + 1] = popped.toIntBits()
                     }
+                    
+                    // Pop tmpColor
+                    ColorStack.pop()
+                } else {
+                    font.draw(batch, layout,
+                        x + (glyphRunInfo.posX) * globalScaleX + alignXOffset,
+                        y + (glyphRunInfo.posY) * globalScaleY)
                 }
 
                 if (shouldScaleX) {
