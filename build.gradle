@@ -16,9 +16,9 @@ allprojects {
 
     ext {
         appName = "Paintbox"
-        gdxVersion = '1.10.0'
+        gdxVersion = '1.11.0'
         gdxControllersVersion = '2.2.1'
-        paintboxVersion = "0.5.4"
+        paintboxVersion = "0.6.0"
     }
     version = ext.paintboxVersion
     archivesBaseName = "Paintbox-${project.name}"
@@ -110,6 +110,7 @@ project(":desktop") {
 
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+//        api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion"
 //        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
     }
     
