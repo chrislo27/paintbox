@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.Align
 import paintbox.binding.BooleanVar
 import paintbox.binding.FloatVar
 import paintbox.util.ColorStack
+import paintbox.util.gdxutils.copy
 import paintbox.util.gdxutils.scaleMul
 
 
@@ -41,15 +42,23 @@ data class TextBlock(val runs: List<TextRun>) {
         val width: Float = glyphLayout.width
         val height: Float = glyphLayout.height
         val glyphRunInfo: List<GlyphRunInfo> = glyphLayout.runs.map { glyphRun ->
-            GlyphRunInfo(this, glyphRun)
+            // Note: as of libGDX 1.11, GlyphLayout runs are cached and shouldn't be used outside of GlyphLayout#setText
+            GlyphRunInfo(this, glyphRun.copy())
         }
     }
 
     data class GlyphRunInfo(val textRunInfo: TextRunInfo, val glyphRun: GlyphLayout.GlyphRun) {
         val glyphRunAsLayout: GlyphLayout = GlyphLayout().also { l ->
+            // NOTE: height is intentionally not computed since it isn't used for rendering.
             l.runs.clear()
             l.runs.setSize(1)
             l.runs[0] = glyphRun
+            
+            l.glyphCount = glyphRun.glyphs.size
+            l.width = glyphRun.width
+
+            l.colors.add(0) // Start glyph
+            l.colors.add(textRunInfo.run.color)
         }
         var lineIndex: Int = 0
         var posX: Float = 0f
