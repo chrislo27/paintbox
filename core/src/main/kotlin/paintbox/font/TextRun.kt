@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.Color
 data class TextRun(
         val font: PaintboxFont,
         val text: String,
-        val color: Int, // argb8888
+        /** argb8888 */val color: Int,
         val scaleX: Float = 1f,
         val scaleY: Float = 1f,
         val offsetXEm: Float = 0f,

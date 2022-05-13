@@ -58,7 +58,10 @@ data class TextBlock(val runs: List<TextRun>) {
             l.width = glyphRun.width
 
             l.colors.add(0) // Start glyph
-            l.colors.add(textRunInfo.run.color)
+            val argb = textRunInfo.run.color
+            // Convert ARGB to ABGR
+            val runColorAbgr = (argb and 0xFF00FF00u.toInt() /* A and G stay */) or ((argb and 0xFF) shl 16 /* B */) or ((argb and 0x00FF0000) ushr 16 /* R */)
+            l.colors.add(runColorAbgr)
         }
         var lineIndex: Int = 0
         var posX: Float = 0f
@@ -416,7 +419,7 @@ data class TextBlock(val runs: List<TextRun>) {
                     // For each new colour, push it to ColorStack, then tint it.
                     for (i in 0 until numColors) {
                         val colorsIndex = i * 2 + 1
-                        Color.argb8888ToColor(tmpColor, colors[colorsIndex])
+                        Color.abgr8888ToColor(tmpColor, colors[colorsIndex])
                         ColorStack.getAndPush().set(tmpColor)
                         
                         if (tmpColor.r == 1f && tmpColor.g == 1f && tmpColor.b == 1f) {
