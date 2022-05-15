@@ -15,6 +15,9 @@ abstract class ResourceStack<T> {
     val numInStack: Int
         get() = stack.size
 
+    /**
+     * Gets a new object from the pool and returns it. This puts it on the resource stack.
+     */
     fun getAndPush(): T {
         val obtained = pool.obtain()
         resetBeforePushed(obtained)
@@ -37,6 +40,15 @@ abstract class ResourceStack<T> {
     protected abstract fun newObject(): T
     protected abstract fun resetBeforePushed(obj: T)
     protected abstract fun resetWhenFreed(obj: T?)
+
+    /**
+     * Uses a pooled resource inside the [action] block. This automatically frees the obtained resource.
+     */
+    inline fun use(action: (obj: T) -> Unit) {
+        val obj = getAndPush()
+        action(obj)
+        pop()
+    }
 
     private inner class InternalPool : Pool<T>(64) {
         override fun newObject(): T {
