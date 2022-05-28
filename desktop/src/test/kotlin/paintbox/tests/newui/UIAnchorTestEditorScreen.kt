@@ -402,6 +402,8 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             this.bounds.width.set(200f)
             this.bounds.height.set(200f)
 
+            (this.skin.getOrCompute() as ScrollPaneSkin).bgColor.getOrCompute().a = 1f
+
             setContent(Pane().also { outerPane ->
                 outerPane.bounds.width.set(300f)
                 outerPane.bounds.height.set(500f)

@@ -172,7 +172,7 @@ open class ScrollPane : Control<ScrollPane>() {
 }
 
 open class ScrollPaneSkin(element: ScrollPane) : Skin<ScrollPane>(element) {
-    val bgColor: Var<Color> = Var(Color(0.94f, 0.94f, 0.94f, 1f))
+    val bgColor: Var<Color> = Var(Color(0.94f, 0.94f, 0.94f, 0f))
 
     override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
         val contentBounds = element.contentZone
