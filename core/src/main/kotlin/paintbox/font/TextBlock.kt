@@ -162,14 +162,19 @@ data class TextBlock(val runs: List<TextRun>) {
                             val firstRunWidth = gl.runs.first().width
                             if (firstRunWidth > continuationLineWidth) {
                                 // The contiguous block does NOT fit! Find the wrap point and inject a newline.
-                                gl.setText(font, textRun.text, color, continuationLineWidth, Align.left, true)
-                                if (gl.runs.size >= 2) {
-                                    // Inject the newline where the new run was added. The new run will always be
-                                    // the second one, since the first original run will have been split.    
-                                    val first = gl.runs[0]
-                                    val wrapIndex = first.glyphs.size + 1
-                                    if (wrapIndex in 0 until text.length) {
-                                        text = text.substring(0, wrapIndex) + "\n" + text.substring(wrapIndex).trimStart()
+                                if (continuationLineWidth < font.data.spaceXadvance * 3) {
+                                    // Minimum wrap length in GlyphLayout. We should just put a newline immediately, otherwise we'll get very fragmented words
+                                    text = " \n" + text.trimStart() // Space required to not trigger blankLineScale
+                                } else {
+                                    gl.setText(font, textRun.text, color, continuationLineWidth, Align.left, true)
+                                    if (gl.runs.size >= 2) {
+                                        // Inject the newline where the new run was added. The new run will always be
+                                        // the second one, since the first original run will have been split.    
+                                        val first = gl.runs[0]
+                                        val wrapIndex = first.glyphs.size + 1
+                                        if (wrapIndex in 0 until text.length) {
+                                            text = text.substring(0, wrapIndex) + "\n" + text.substring(wrapIndex).trimStart()
+                                        }
                                     }
                                 }
                             }
