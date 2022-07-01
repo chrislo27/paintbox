@@ -426,6 +426,40 @@ open class UIElement : UIBounds() {
             thisBounds.width.use() * multiplierBinding() + adjustBinding()
         }
     }
+    
+    @Suppress("SimpleRedundantLet")
+    fun bindXToParentWidth(adjust: Float = 0f, multiplier: Float = 1f) {
+        val thisBounds = this.bounds
+        thisBounds.x.bind {
+            (this@UIElement.parent.use()?.let { p -> p.contentZone.width.use() } ?: 0f) * multiplier + adjust
+        }
+    }
+
+    @Suppress("SimpleRedundantLet")
+    fun bindYToParentHeight(adjust: Float = 0f, multiplier: Float = 1f) {
+        val thisBounds = this.bounds
+        thisBounds.y.bind {
+            (this@UIElement.parent.use()?.let { p -> p.contentZone.height.use() } ?: 0f) * multiplier + adjust
+        }
+    }
+
+    @Suppress("SimpleRedundantLet")
+    fun bindXToParentWidth(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+        val thisBounds = this.bounds
+        thisBounds.x.bind {
+            (this@UIElement.parent.use()?.let { p -> p.contentZone.width.use() }
+                ?: 0f) * multiplierBinding() + adjustBinding()
+        }
+    }
+
+    @Suppress("SimpleRedundantLet")
+    fun bindYToParentHeight(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+        val thisBounds = this.bounds
+        thisBounds.y.bind {
+            (this@UIElement.parent.use()?.let { p -> p.contentZone.height.use() }
+                ?: 0f) * multiplierBinding() + adjustBinding()
+        }
+    }
 
     protected inline fun renderOptionallyWithClip(originX: Float, originY: Float, batch: SpriteBatch, clip: Boolean,
                                                   renderFunc: (originX: Float, originY: Float, batch: SpriteBatch) -> Unit) {
