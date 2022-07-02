@@ -364,101 +364,113 @@ open class UIElement : UIBounds() {
             RectangleStack.pop()
         }
     }
+    
 
     @Suppress("SimpleRedundantLet")
-    fun bindWidthToParent(adjust: Float = 0f, multiplier: Float = 1f) {
-        val thisBounds = this.bounds
-        thisBounds.width.bind {
+    fun bindVarToParentWidth(varr: FloatVar, adjust: Float = 0f, multiplier: Float = 1f) {
+        varr.bind {
             (this@UIElement.parent.use()?.let { p -> p.contentZone.width.use() } ?: 0f) * multiplier + adjust
         }
     }
 
     @Suppress("SimpleRedundantLet")
-    fun bindHeightToParent(adjust: Float = 0f, multiplier: Float = 1f) {
-        val thisBounds = this.bounds
-        thisBounds.height.bind {
+    fun bindVarToParentHeight(varr: FloatVar, adjust: Float = 0f, multiplier: Float = 1f) {
+        varr.bind {
             (this@UIElement.parent.use()?.let { p -> p.contentZone.height.use() } ?: 0f) * multiplier + adjust
         }
     }
 
     @Suppress("SimpleRedundantLet")
-    fun bindWidthToParent(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
-        val thisBounds = this.bounds
-        thisBounds.width.bind {
+    fun bindVarToParentWidth(varr: FloatVar, multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+        varr.bind {
             (this@UIElement.parent.use()?.let { p -> p.contentZone.width.use() }
-                    ?: 0f) * multiplierBinding() + adjustBinding()
+                ?: 0f) * multiplierBinding() + adjustBinding()
         }
     }
 
     @Suppress("SimpleRedundantLet")
-    fun bindHeightToParent(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
-        val thisBounds = this.bounds
-        thisBounds.height.bind {
+    fun bindVarToParentHeight(varr: FloatVar, multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+        varr.bind {
             (this@UIElement.parent.use()?.let { p -> p.contentZone.height.use() }
-                    ?: 0f) * multiplierBinding() + adjustBinding()
+                ?: 0f) * multiplierBinding() + adjustBinding()
         }
     }
-
-    fun bindWidthToSelfHeight(adjust: Float = 0f, multiplier: Float = 1f) {
+    
+    fun bindVarToSelfHeight(varr: FloatVar, adjust: Float = 0f, multiplier: Float = 1f) {
         val thisBounds = this.bounds
-        thisBounds.width.bind {
+        varr.bind {
             thisBounds.height.use() * multiplier + adjust
         }
     }
 
-    fun bindHeightToSelfWidth(adjust: Float = 0f, multiplier: Float = 1f) {
+    fun bindVarToSelfWidth(varr: FloatVar, adjust: Float = 0f, multiplier: Float = 1f) {
         val thisBounds = this.bounds
-        thisBounds.height.bind {
+        varr.bind {
             thisBounds.width.use() * multiplier + adjust
         }
     }
 
-    fun bindWidthToSelfHeight(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+    fun bindVarToSelfHeight(varr: FloatVar, multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
         val thisBounds = this.bounds
-        thisBounds.width.bind {
+        varr.bind {
             thisBounds.height.use() * multiplierBinding() + adjustBinding()
         }
     }
 
-    fun bindHeightToSelfWidth(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+    fun bindVarToSelfWidth(varr: FloatVar, multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
         val thisBounds = this.bounds
-        thisBounds.height.bind {
+        varr.bind {
             thisBounds.width.use() * multiplierBinding() + adjustBinding()
         }
     }
+
     
-    @Suppress("SimpleRedundantLet")
+    fun bindWidthToParent(adjust: Float = 0f, multiplier: Float = 1f) {
+        bindVarToParentWidth(this.bounds.width, adjust, multiplier)
+    }
+
+    fun bindHeightToParent(adjust: Float = 0f, multiplier: Float = 1f) {
+        bindVarToParentHeight(this.bounds.height, adjust, multiplier)
+    }
+
+    fun bindWidthToParent(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+        bindVarToParentWidth(this.bounds.width, multiplierBinding, adjustBinding)
+    }
+
+    fun bindHeightToParent(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+        bindVarToParentHeight(this.bounds.height, multiplierBinding, adjustBinding)
+    }
+
+    fun bindWidthToSelfHeight(adjust: Float = 0f, multiplier: Float = 1f) {
+        bindVarToSelfHeight(this.bounds.width, adjust, multiplier)
+    }
+
+    fun bindHeightToSelfWidth(adjust: Float = 0f, multiplier: Float = 1f) {
+        bindVarToSelfWidth(this.bounds.height, adjust, multiplier)
+    }
+
+    fun bindWidthToSelfHeight(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+        bindVarToSelfHeight(this.bounds.width, multiplierBinding, adjustBinding)
+    }
+
+    fun bindHeightToSelfWidth(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+        bindVarToSelfWidth(this.bounds.height, multiplierBinding, adjustBinding)
+    }
+    
     fun bindXToParentWidth(adjust: Float = 0f, multiplier: Float = 1f) {
-        val thisBounds = this.bounds
-        thisBounds.x.bind {
-            (this@UIElement.parent.use()?.let { p -> p.contentZone.width.use() } ?: 0f) * multiplier + adjust
-        }
+        bindVarToParentWidth(this.bounds.x, adjust, multiplier)
     }
 
-    @Suppress("SimpleRedundantLet")
     fun bindYToParentHeight(adjust: Float = 0f, multiplier: Float = 1f) {
-        val thisBounds = this.bounds
-        thisBounds.y.bind {
-            (this@UIElement.parent.use()?.let { p -> p.contentZone.height.use() } ?: 0f) * multiplier + adjust
-        }
+        bindVarToParentHeight(this.bounds.y, adjust, multiplier)
     }
 
-    @Suppress("SimpleRedundantLet")
     fun bindXToParentWidth(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
-        val thisBounds = this.bounds
-        thisBounds.x.bind {
-            (this@UIElement.parent.use()?.let { p -> p.contentZone.width.use() }
-                ?: 0f) * multiplierBinding() + adjustBinding()
-        }
+        bindVarToParentWidth(this.bounds.x, multiplierBinding, adjustBinding)
     }
 
-    @Suppress("SimpleRedundantLet")
     fun bindYToParentHeight(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
-        val thisBounds = this.bounds
-        thisBounds.y.bind {
-            (this@UIElement.parent.use()?.let { p -> p.contentZone.height.use() }
-                ?: 0f) * multiplierBinding() + adjustBinding()
-        }
+        bindVarToParentHeight(this.bounds.y, multiplierBinding, adjustBinding)
     }
 
     protected inline fun renderOptionallyWithClip(originX: Float, originY: Float, batch: SpriteBatch, clip: Boolean,
