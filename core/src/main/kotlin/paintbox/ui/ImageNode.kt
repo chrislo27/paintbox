@@ -45,11 +45,19 @@ open class ImageNode(tex: TextureRegion? = null,
     val rotationPointX: FloatVar = FloatVar(0.5f)
     val rotationPointY: FloatVar = FloatVar(0.5f)
     val renderAlign: IntVar = IntVar(Align.center)
+    val scale: FloatVar = FloatVar(1f)
+    val scaleX: FloatVar = FloatVar { scale.use() }
+    val scaleY: FloatVar = FloatVar { scale.use() }
 
     constructor(binding: Var.Context.() -> TextureRegion?,
                 renderingMode: ImageRenderingMode = ImageRenderingMode.MAINTAIN_ASPECT_RATIO)
             : this(null, renderingMode) {
         textureRegion.bind(binding)
+    }
+    
+    fun useOneScaleForBothAxes() {
+        scaleX.bind { scale.use() }
+        scaleY.bind { scale.use() }
     }
 
     override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
@@ -67,6 +75,8 @@ open class ImageNode(tex: TextureRegion? = null,
             val renderBounds = this.contentZone
             val x = renderBounds.x.get() + originX
             val y = originY - renderBounds.y.get()
+            val scaleX = this.scaleX.get()
+            val scaleY = this.scaleY.get()
             val w = renderBounds.width.get()
             val h = renderBounds.height.get()
 
@@ -77,7 +87,7 @@ open class ImageNode(tex: TextureRegion? = null,
                 ImageRenderingMode.FULL -> {
                     batch.draw(tex, x, y - h,
                             rotPointX * w, rotPointY * h,
-                            w, h, 1f, 1f, rot)
+                            w, h, scaleX, scaleY, rot)
                 }
                 ImageRenderingMode.MAINTAIN_ASPECT_RATIO, ImageRenderingMode.OVERSIZE -> {
                     val aspectWidth = w / tex.regionWidth
@@ -105,7 +115,7 @@ open class ImageNode(tex: TextureRegion? = null,
                     batch.draw(tex, x + rx, y + ry - h,
                             rotPointX * rw, rotPointY * rh,
                             rw, rh,
-                            1f, 1f,
+                            scaleX, scaleY,
                             rot)
                 }
             }
