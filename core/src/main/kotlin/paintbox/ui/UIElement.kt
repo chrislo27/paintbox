@@ -145,8 +145,14 @@ open class UIElement : UIBounds() {
             this.renderSelfAfterChildren(originX, originY, batch)
 
             val borderStyle = this.borderStyle.getOrCompute()
-            borderStyle.renderBorder(originX, originY, batch, this)
+            if (shouldRenderBorder(borderStyle)) {
+                borderStyle.renderBorder(originX, originY, batch, this)
+            }
         }
+    }
+    
+    protected open fun shouldRenderBorder(borderStyle: Border): Boolean {
+        return true
     }
 
     protected open fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
