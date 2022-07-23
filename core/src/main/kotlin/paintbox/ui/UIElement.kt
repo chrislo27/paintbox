@@ -151,7 +151,7 @@ open class UIElement : UIBounds() {
         }
     }
     
-    protected open fun shouldRenderBorder(borderStyle: Border): Boolean {
+    open fun shouldRenderBorder(borderStyle: Border): Boolean {
         return true
     }
 

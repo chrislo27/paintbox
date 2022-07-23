@@ -12,6 +12,7 @@ import paintbox.ui.skin.SkinFactory
 import paintbox.font.*
 import paintbox.ui.UIElement
 import paintbox.ui.area.Insets
+import paintbox.ui.border.Border
 import paintbox.util.gdxutils.fillRect
 import kotlin.math.min
 
@@ -150,7 +151,12 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
             }
         }
     }
-    
+
+    override fun shouldRenderBorder(borderStyle: Border): Boolean {
+        val text = this.internalTextBlock.getOrCompute()
+        return text.runs.isNotEmpty()
+    }
+
     fun triggerAutosize() {
         when (val b = autosizeBehavior.getOrCompute()) {
             AutosizeBehavior.None -> {}
