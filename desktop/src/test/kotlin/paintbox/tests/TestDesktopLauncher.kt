@@ -20,6 +20,7 @@ import paintbox.tests.newui.UITextLabelAlignTestScreen
 
 internal object TestDesktopLauncher {
 
+    @Suppress("UNUSED_VARIABLE")
     @JvmStatic
     fun main(args: Array<String>) {
         // https://github.com/chrislo27/RhythmHeavenRemixEditor/issues/273

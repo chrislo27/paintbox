@@ -255,16 +255,14 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             button.bounds.width.set(150f)
             button.bounds.height.set(50f)
 
-            button.setOnRightClick { event ->
+            button.setOnRightClick { _ ->
                 val root = button.sceneRoot.getOrCompute()
-                if (root != null) {
-                    root.showRootContextMenu(ContextMenu().apply {
-                        this.addMenuItem(SimpleMenuItem.create("First SimpleMenuItem", main.debugFont))
-                        this.addMenuItem(SimpleMenuItem.create("Second SimpleMenuItem", main.debugFont))
-                        this.addMenuItem(SeparatorMenuItem())
-                        this.addMenuItem(SimpleMenuItem.create("Third SimpleMenuItem", main.debugFont))
-                    })
-                }
+                root?.showRootContextMenu(ContextMenu().apply {
+                    this.addMenuItem(SimpleMenuItem.create("First SimpleMenuItem", main.debugFont))
+                    this.addMenuItem(SimpleMenuItem.create("Second SimpleMenuItem", main.debugFont))
+                    this.addMenuItem(SeparatorMenuItem())
+                    this.addMenuItem(SimpleMenuItem.create("Third SimpleMenuItem", main.debugFont))
+                })
             }
         }
         bg += CheckBox("Check box test", font = main.debugFont).also { button ->
@@ -463,7 +461,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             this[0].addChild(RectElement(Color.RED))
             this[1].addChild(RectElement(Color.GREEN))
             this[2].addChild(RectElement(Color.BLUE))
-            this.setAllSpacers { idx ->
+            this.setAllSpacers { _ ->
                 RectElement(Color.WHITE)
             }
         }
@@ -477,7 +475,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             this[0].addChild(RectElement(Color.RED))
             this[1].addChild(RectElement(Color.GREEN))
             this[2].addChild(RectElement(Color.BLUE))
-            this.setAllSpacers { idx ->
+            this.setAllSpacers { _ ->
                 RectElement(Color.WHITE)
             }
         }
