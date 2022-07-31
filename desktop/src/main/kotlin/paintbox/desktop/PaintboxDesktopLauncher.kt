@@ -5,6 +5,9 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
 import paintbox.Paintbox
 import paintbox.PaintboxGame
 import paintbox.util.CloseListener
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 
 /**
@@ -31,7 +34,11 @@ class PaintboxDesktopLauncher(val game: PaintboxGame, val arguments: PaintboxArg
         }
     }
 
+    @OptIn(ExperimentalContracts::class)
     inline fun editConfig(func: Lwjgl3ApplicationConfiguration.() -> Unit): PaintboxDesktopLauncher {
+        contract {
+            callsInPlace(func, InvocationKind.EXACTLY_ONCE)
+        }
         config.func()
         return this
     }

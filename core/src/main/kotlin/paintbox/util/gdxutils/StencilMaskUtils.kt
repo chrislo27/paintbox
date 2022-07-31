@@ -4,13 +4,23 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 /**
  * Call this with the function to draw primitives, then draw sprites with [useStencilMask]
  */
-inline fun ShapeRenderer.prepareStencilMask(batch: SpriteBatch, clearDepthBuffer: Boolean = true,
-                                            inverted: Boolean = false,
-                                            drawing: ShapeRenderer.() -> Unit): SpriteBatch {
+@OptIn(ExperimentalContracts::class)
+inline fun ShapeRenderer.prepareStencilMask(
+    batch: SpriteBatch, clearDepthBuffer: Boolean = true,
+    inverted: Boolean = false,
+    drawing: ShapeRenderer.() -> Unit
+): SpriteBatch {
+    contract {
+        callsInPlace(drawing, InvocationKind.AT_MOST_ONCE)
+    }
+
     if (batch.isDrawing)
         batch.end()
 
@@ -34,10 +44,13 @@ inline fun ShapeRenderer.prepareStencilMask(batch: SpriteBatch, clearDepthBuffer
     return batch
 }
 
+@OptIn(ExperimentalContracts::class)
 inline fun SpriteBatch.useStencilMask(drawing: () -> Unit) {
+    contract {
+        callsInPlace(drawing, InvocationKind.EXACTLY_ONCE)
+    }
+    
     drawing()
-
     this.flush()
     Gdx.gl.glDisable(GL20.GL_DEPTH_TEST)
 }
-

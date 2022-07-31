@@ -7,6 +7,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.math.Rectangle
 import paintbox.PaintboxGame
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 fun SpriteBatch.fillRect(x: Float, y: Float, width: Float, height: Float) {
     this.draw(PaintboxGame.fillTexture, x, y, width, height)
@@ -117,7 +120,12 @@ fun SpriteBatch.drawQuad(x1: Float, y1: Float, color1: Float,
     this.draw(texture, quadVerts, 0, 20)
 }
 
+@OptIn(ExperimentalContracts::class)
 inline fun SpriteBatch.batchCall(projection: Matrix4 = this.projectionMatrix, drawFunction: SpriteBatch.() -> Unit) {
+    contract {
+        callsInPlace(drawFunction, InvocationKind.EXACTLY_ONCE)
+    }
+    
     val oldProjection = this.projectionMatrix
     val oldColor = this.packedColor
 

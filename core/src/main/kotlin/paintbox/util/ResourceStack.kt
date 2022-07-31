@@ -6,6 +6,9 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.Pool
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 
 abstract class ResourceStack<T> {
@@ -44,7 +47,11 @@ abstract class ResourceStack<T> {
     /**
      * Uses a pooled resource inside the [action] block. This automatically frees the obtained resource.
      */
+    @OptIn(ExperimentalContracts::class)
     inline fun use(action: (obj: T) -> Unit) {
+        contract {
+            callsInPlace(action, InvocationKind.EXACTLY_ONCE)
+        }
         val obj = getAndPush()
         action(obj)
         pop()

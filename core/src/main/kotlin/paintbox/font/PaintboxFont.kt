@@ -12,6 +12,9 @@ import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
 import paintbox.util.WindowSize
 import paintbox.util.gdxutils.disposeQuietly
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 
 
 /**
@@ -146,19 +149,31 @@ abstract class PaintboxFont(params: PaintboxFontParams)
     
     abstract fun onParamsChanged()
 
+    @OptIn(ExperimentalContracts::class)
     inline fun useFont(cameraWidth: Float, cameraHeight: Float, scope: (font: BitmapFont) -> Unit) {
+        contract {
+            callsInPlace(scope, InvocationKind.EXACTLY_ONCE)
+        }
         val font = begin(cameraWidth, cameraHeight)
         scope.invoke(font)
         end()
     }
 
+    @OptIn(ExperimentalContracts::class)
     inline fun useFont(camera: OrthographicCamera, scope: (font: BitmapFont) -> Unit) {
+        contract {
+            callsInPlace(scope, InvocationKind.EXACTLY_ONCE)
+        }
         val font = begin(camera)
         scope.invoke(font)
         end()
     }
 
+    @OptIn(ExperimentalContracts::class)
     inline fun useFont(scope: (font: BitmapFont) -> Unit) {
+        contract {
+            callsInPlace(scope, InvocationKind.EXACTLY_ONCE)
+        }
         val font = begin()
         scope.invoke(font)
         end()
