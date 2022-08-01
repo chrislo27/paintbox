@@ -9,6 +9,7 @@ import paintbox.font.PaintboxFont
 import paintbox.font.TextAlign
 import paintbox.ui.ImageNode
 import paintbox.ui.ImageRenderingMode
+import paintbox.ui.RenderAlign
 import paintbox.ui.UIElement
 import paintbox.ui.area.Insets
 import paintbox.ui.skin.DefaultSkins
@@ -41,8 +42,10 @@ open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont)
     }
     
     val color: Var<Color> = Var(Color(0f, 0f, 0f, 1f))
+    val disabledColor: Var<Color> = Var(Color(0.5f, 0.5f, 0.5f, 1f))
     val textLabel: TextLabel = TextLabel(text, font)
     val imageNode: ImageNode = ImageNode(null, ImageRenderingMode.MAINTAIN_ASPECT_RATIO)
+    val currentColor: ReadOnlyVar<Color> = Var.bind { if (apparentDisabledState.use()) disabledColor.use() else color.use() }
 
     val checkType: Var<CheckType> = Var(CheckType.CHECKMARK)
     val checkedState: BooleanVar = BooleanVar(false)
@@ -71,11 +74,11 @@ open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont)
         }
         imageNode.margin.set(Insets(2f))
         
-        textLabel.renderAlign.bind { if (boxAlignment.use() == BoxAlign.LEFT) com.badlogic.gdx.utils.Align.left else com.badlogic.gdx.utils.Align.right }
+        textLabel.renderAlign.bind { if (boxAlignment.use() == BoxAlign.LEFT) RenderAlign.left else RenderAlign.right }
         textLabel.textAlign.bind { if (boxAlignment.use() == BoxAlign.LEFT) TextAlign.LEFT else TextAlign.RIGHT }
         
-        textLabel.textColor.bind { color.use() }
-        imageNode.tint.bind { color.use() }
+        textLabel.textColor.bind { currentColor.use() }
+        imageNode.tint.bind { currentColor.use() }
         
         this.addChild(textLabel)
         this.addChild(imageNode)
