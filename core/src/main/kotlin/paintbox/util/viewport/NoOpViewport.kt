@@ -12,7 +12,7 @@ import com.badlogic.gdx.utils.viewport.Viewport
 /**
  * A [Viewport] that doesn't adjust the camera nor glViewport at all.
  */
-class NoOpViewport(val camera: OrthographicCamera) : Viewport() {
+class NoOpViewport(val camera: OrthographicCamera, val shouldResetViewportToScreen: Boolean = false) : Viewport() {
     
     init {
         setCamera(camera)
@@ -22,7 +22,9 @@ class NoOpViewport(val camera: OrthographicCamera) : Viewport() {
     
     override fun apply(centerCamera: Boolean) {
         setScreenBounds()
-        HdpiUtils.glViewport(0, 0, Gdx.graphics.width, Gdx.graphics.height)
+        if (shouldResetViewportToScreen) {
+            HdpiUtils.glViewport(0, 0, Gdx.graphics.width, Gdx.graphics.height)
+        }
     }
 
     override fun update(screenWidth: Int, screenHeight: Int, centerCamera: Boolean) {
