@@ -78,6 +78,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
     
     init {
         (sceneRoot as Var).set(this)
+        this.doClipping.bind { applyViewport.use() }
 
         val width = camera.viewportWidth
         val height = camera.viewportHeight
