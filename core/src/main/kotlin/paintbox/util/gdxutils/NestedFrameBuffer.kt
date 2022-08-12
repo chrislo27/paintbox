@@ -23,20 +23,20 @@ class NestedFrameBuffer : FrameBuffer {
         private val INT_BUFFER: IntBuffer = ByteBuffer.allocateDirect(16 * Int.SIZE_BYTES).order(ByteOrder.nativeOrder()).asIntBuffer()
 
         /**
-         * Returns currently bound framebuffer handle.
+         * Returns the currently bound framebuffer handle.
          */
         @Synchronized
-        private fun getBoundFBOHandle(): Int {
+        fun getBoundFBOHandle(): Int {
             val buf = INT_BUFFER
             Gdx.gl.glGetIntegerv(GL20.GL_FRAMEBUFFER_BINDING, buf)
             return buf.get(0)
         }
 
         /**
-         * Returns x, y, width, height coordinates of the viewport.
+         * Stores x, y, width, height coordinates of the viewport into [rect].
          */
         @Synchronized
-        private fun getViewport(rect: MutIntRect) {
+        fun getViewport(rect: MutIntRect) {
             val buf = INT_BUFFER
             Gdx.gl.glGetIntegerv(GL20.GL_VIEWPORT, buf)
             

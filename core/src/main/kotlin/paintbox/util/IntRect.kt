@@ -1,6 +1,6 @@
 package paintbox.util
 
 
-data class IntRect(val x: Int, val y: Int, val width: Int, val height: Int)
+open class IntRect(open val x: Int, open val y: Int, open val width: Int, open val height: Int)
 
-data class MutIntRect(var x: Int, var y: Int, var width: Int, var height: Int)
+data class MutIntRect(override var x: Int, override var y: Int, override var width: Int, override var height: Int) : IntRect(x, y, width, height)
