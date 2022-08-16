@@ -53,7 +53,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
      * A var that is always updated at the start of [renderAsRoot].
      */
     val frameUpdateTrigger: ReadOnlyBooleanVar = BooleanVar(false)
-    val animations: AnimationHandler = AnimationHandler(this)
+    val animations: AnimationHandler = AnimationHandler()
 
     /**
      * If true, applies the [viewport] during [renderAsRoot]. This should be false if this scene is being rendered

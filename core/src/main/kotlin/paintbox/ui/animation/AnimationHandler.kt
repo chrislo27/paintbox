@@ -6,7 +6,7 @@ import paintbox.ui.SceneRoot
 import java.util.concurrent.ConcurrentHashMap
 
 
-class AnimationHandler(val sceneRoot: SceneRoot) {
+class AnimationHandler {
 
     private data class AnimationTuple(val animation: Animation, val varr: FloatVar, var accumulatedSeconds: Float,
                                       var alpha: Float = 0f, var brandNew: Boolean = true)
