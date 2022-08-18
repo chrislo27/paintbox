@@ -8,10 +8,19 @@ import java.util.concurrent.ConcurrentHashMap
 
 class AnimationHandler {
 
-    private data class AnimationTuple(val animation: Animation, val varr: FloatVar, var accumulatedSeconds: Float,
-                                      var alpha: Float = 0f, var brandNew: Boolean = true) {
+    private data class AnimationTuple(
+        val animation: Animation, val varr: FloatVar, var accumulatedSeconds: Float, var alpha: Float = 0f
+    ) {
+
+        private var onStartCalled: Boolean = false
+        private var onCompleteCalled: Boolean = false
         
-        var onCompleteCalled: Boolean = false
+        fun callOnStart() {
+            if (!onStartCalled) {
+                onStartCalled = true
+                animation.onStart?.invoke()
+            }
+        }
         
         fun callOnComplete() {
             if (!onCompleteCalled) {
@@ -40,14 +49,10 @@ class AnimationHandler {
             tuple.accumulatedSeconds += delta
             
             if (tuple.accumulatedSeconds >= 0f) {
-                val brandNew = tuple.brandNew
-                if (brandNew) {
-                    tuple.brandNew = false
-                    tuple.animation.onStart?.invoke()
-                }
+                tuple.callOnStart()
 
                 val newAlpha = if (isInstant || animation.duration <= 0f) 1f
-                else (tuple.accumulatedSeconds / animation.duration).coerceIn(0f, 1f)
+                else ((tuple.accumulatedSeconds * speed) / animation.duration).coerceIn(0f, 1f)
                 tuple.alpha = newAlpha
 
                 val newValue = tuple.animation.applyFunc(newAlpha)
