@@ -37,7 +37,7 @@ class AnimationHandler {
      */
     val animationSpeed: FloatVar = FloatVar(1f)
 
-    private val removeList: MutableSet<FloatVar> = mutableSetOf()
+    private val removeList: MutableSet<AnimationTuple> = mutableSetOf()
     
     fun frameUpdate() {
         val delta = Gdx.graphics.deltaTime
@@ -60,13 +60,13 @@ class AnimationHandler {
 
                 if (newAlpha >= 1f) {
                     tuple.callOnComplete()
-                    removeList.add(tuple.varr)
+                    removeList.add(tuple)
                 }
             }
         }
         
         if (removeList.isNotEmpty()) {
-            removeList.forEach { animations.remove(it) }
+            removeList.forEach { tuple -> animations.remove(tuple.varr, tuple) }
             removeList.clear()
         }
     }
