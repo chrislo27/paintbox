@@ -9,7 +9,17 @@ import java.util.concurrent.ConcurrentHashMap
 class AnimationHandler {
 
     private data class AnimationTuple(val animation: Animation, val varr: FloatVar, var accumulatedSeconds: Float,
-                                      var alpha: Float = 0f, var brandNew: Boolean = true)
+                                      var alpha: Float = 0f, var brandNew: Boolean = true) {
+        
+        var onCompleteCalled: Boolean = false
+        
+        fun callOnComplete() {
+            if (!onCompleteCalled) {
+                onCompleteCalled = true
+                animation.onComplete?.invoke()
+            }
+        }
+    }
 
     private val animations: MutableMap<FloatVar, AnimationTuple> = ConcurrentHashMap()
 
@@ -44,7 +54,7 @@ class AnimationHandler {
                 tuple.varr.set(newValue)
 
                 if (newAlpha >= 1f) {
-                    tuple.animation.onComplete?.invoke()
+                    tuple.callOnComplete()
                     removeList.add(tuple.varr)
                 }
             }
@@ -60,7 +70,7 @@ class AnimationHandler {
         val existing = animations.remove(varr)
         if (existing != null) {
             existing.varr.set(existing.animation.applyFunc(1f))
-            existing.animation.onComplete?.invoke()
+            existing.callOnComplete()
         }
         animations[varr] = AnimationTuple(animation, varr, -animation.delay)
     }
@@ -76,7 +86,7 @@ class AnimationHandler {
         val existing = animations.remove(varr)
         if (existing != null) {
             existing.varr.set(existing.animation.applyFunc(1f))
-            existing.animation.onComplete?.invoke()
+            existing.callOnComplete()
         }
         return existing?.animation
     }
