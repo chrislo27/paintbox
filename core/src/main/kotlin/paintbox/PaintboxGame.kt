@@ -7,24 +7,23 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.glutils.HdpiUtils
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.Align
 import paintbox.Paintbox.StageOutlineMode.ALL
 import paintbox.Paintbox.StageOutlineMode.NONE
 import paintbox.Paintbox.StageOutlineMode.ONLY_VISIBLE
+import paintbox.debug.DebugInfo
+import paintbox.debug.DebugOverlay
 import paintbox.font.*
 import paintbox.i18n.LocalizationBase
 import paintbox.logging.SysOutPiper
 import paintbox.registry.AssetRegistry
 import paintbox.registry.ScreenRegistry
-import paintbox.util.DecimalFormats
 import paintbox.util.MemoryUtils
 import paintbox.util.gdxutils.GdxGame
 import paintbox.util.gdxutils.isShiftDown
 import paintbox.util.Version
 import paintbox.util.WindowSize
 import paintbox.util.gdxutils.drawCompressed
-import java.text.NumberFormat
 import kotlin.system.measureNanoTime
 
 /**
@@ -64,74 +63,6 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
         var vsync: Boolean? = null
     }
 
-    inner class DebugInfo {
-        
-        private var lastFrameTime: Long = -1L // Alternative to gdx framerate, which doesn't update when window is resized
-        private var frameCounterStart: Long = 0L
-        private var frameAcc: Int = 0
-        private var mspfAvgAcc: Float = 0f
-        private var mspfMinAcc: Float = -1f
-        private var mspfMaxAcc: Float = -1f
-        
-        var fps: Int = 1
-            private set
-        var mspfAvg: Float = 1f
-            private set
-        var mspfMin: Float = 1f
-            private set
-        var mspfMax: Float = 1f
-            private set
-        val msNumberFormat: NumberFormat = DecimalFormats["0.00"]
-        
-        val memoryNumberFormat: NumberFormat = NumberFormat.getIntegerInstance()
-        var memoryDeltaTime: Float = 0f
-        var lastMemory: Long = 0L
-        var memoryDelta: Long = 0L
-        
-        val tmpMatrix: Matrix4 = Matrix4() // Used for rendering debug text
-
-        fun frameUpdate() {
-            val time = System.nanoTime()
-            if (lastFrameTime == -1L) {
-                lastFrameTime = time
-            }
-            val delta = (time - lastFrameTime) / 1_000_000_000f
-            val deltaMs = (time - lastFrameTime) / 1_000_000f
-            lastFrameTime = time
-            
-            if (mspfMinAcc < 0f || deltaMs < mspfMinAcc) {
-                mspfMinAcc = deltaMs
-            }
-            if (mspfMaxAcc < 0f || deltaMs > mspfMaxAcc) {
-                mspfMaxAcc = deltaMs
-            }
-            mspfAvgAcc += deltaMs
-            
-            memoryDeltaTime += delta
-            if (memoryDeltaTime >= 1f) {
-                memoryDeltaTime = 0f
-                val heap = Gdx.app.nativeHeap
-                memoryDelta = heap - lastMemory
-                lastMemory = heap
-            }
-
-            val frameCtrDiff = time - frameCounterStart
-            if (frameCtrDiff >= 1_000_000_000L) {
-                fps = frameAcc
-                mspfAvg = mspfAvgAcc / frameAcc.coerceAtLeast(1)
-                mspfMin = mspfMinAcc
-                mspfMax = mspfMaxAcc
-                
-                mspfAvgAcc = 0f
-                mspfMinAcc = -1f
-                mspfMaxAcc = -1f
-                frameAcc = 0
-                frameCounterStart = time
-            }
-            frameAcc++
-        }
-    }
-
     init {
         @Suppress("RedundantCompanionReference")
         PaintboxGame.Companion.launchArguments = paintboxSettings.launchArguments
@@ -142,7 +73,9 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
     val versionString: String = version.toString()
     val launcherSettings: LauncherSettings = LauncherSettings()
 
-    protected val debugInfo: DebugInfo = DebugInfo()
+    val debugInfo: DebugInfo = DebugInfo()
+    var debugOverlay: DebugOverlay = DebugOverlay(this)
+        protected set
     lateinit var originalResolution: WindowSize
         private set
 
@@ -282,31 +215,17 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
             resetViewportToScreen()
 
             if (Paintbox.debugMode.get()) {
-                debugInfo.tmpMatrix.set(batch.projectionMatrix)
+                val batch = this.batch
+                val tmpMatrix = debugOverlay.tmpMatrix
+                
+                tmpMatrix.set(batch.projectionMatrix)
                 batch.projectionMatrix = nativeCamera.combined
                 batch.begin()
-
-                val paintboxFont = debugFontBoldBordered
-                val font = paintboxFont.begin()
-                val fps = this.getFPS()
-                val memNumberFormat = debugInfo.memoryNumberFormat
-                val msNumberFormat = debugInfo.msNumberFormat
-                val string =
-                        """FPS: $fps (mspf min ${msNumberFormat.format(this.debugInfo.mspfMin)}, max ${msNumberFormat.format(this.debugInfo.mspfMax)}, avg ${msNumberFormat.format(this.debugInfo.mspfAvg)})
-Debug mode: ${Paintbox.DEBUG_KEY_NAME} + I - Reload I18N | S(+Shift) - UI outlines: ${Paintbox.stageOutlines} | G - gc
-Version: $versionString | L: ${Gdx.graphics.width}x${Gdx.graphics.height} | P: ${Gdx.graphics.backBufferWidth}x${Gdx.graphics.backBufferHeight} ${Gdx.graphics.backBufferScale}
-Memory: ${memNumberFormat.format(Gdx.app.nativeHeap / 1024)} / ${memNumberFormat.format(MemoryUtils.maxMemoryKiB)} KiB (${memNumberFormat.format(debugInfo.memoryDelta / 1024)} KiB/s)
-Screen: ${screen?.javaClass?.name}
-${getDebugString()}
-${(screen as? PaintboxScreen)?.getDebugString() ?: ""}"""
-
-                font.setColor(1f, 1f, 1f, 1f)
-                font.drawCompressed(batch, string, 8f, nativeCamera.viewportHeight - 8f, nativeCamera.viewportWidth - 16f,
-                        Align.left)
-                paintboxFont.end()
+                
+                debugOverlay.render()
 
                 batch.end()
-                batch.projectionMatrix = debugInfo.tmpMatrix
+                batch.projectionMatrix = tmpMatrix
             }
         } catch (t: Throwable) {
             t.printStackTrace()
