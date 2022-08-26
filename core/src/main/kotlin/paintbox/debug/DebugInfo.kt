@@ -1,8 +1,5 @@
 package paintbox.debug
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.math.Matrix4
-import paintbox.PaintboxGame
 import paintbox.util.DecimalFormats
 import java.text.NumberFormat
 
@@ -26,11 +23,8 @@ class DebugInfo {
     val msNumberFormat: NumberFormat = DecimalFormats["0.00"]
     
     val memoryNumberFormat: NumberFormat = NumberFormat.getIntegerInstance()
-    var memoryDeltaTime: Float = 0f
-        private set
-    var lastMemory: Long = 0L
-        private set
-    var memoryDelta: Long = 0L
+    private val allocationTracker: MemoryAllocationTracker = MemoryAllocationTracker()
+    var lastAllocationRateB: Long = 0L
         private set
 
     fun frameUpdate() {
@@ -38,7 +32,6 @@ class DebugInfo {
         if (lastFrameTime == -1L) {
             lastFrameTime = time
         }
-        val delta = (time - lastFrameTime) / 1_000_000_000f
         val deltaMs = (time - lastFrameTime) / 1_000_000f
         lastFrameTime = time
         
@@ -50,13 +43,7 @@ class DebugInfo {
         }
         mspfAvgAcc += deltaMs
         
-        memoryDeltaTime += delta
-        if (memoryDeltaTime >= 1f) {
-            memoryDeltaTime = 0f
-            val heap = Gdx.app.nativeHeap
-            memoryDelta = heap - lastMemory
-            lastMemory = heap
-        }
+        lastAllocationRateB = allocationTracker.getBytesAllocatedPerSec()
 
         val frameCtrDiff = time - frameCounterStart
         if (frameCtrDiff >= 1_000_000_000L) {

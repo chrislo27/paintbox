@@ -1,7 +1,6 @@
 package paintbox.debug
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Matrix4
 import com.badlogic.gdx.utils.Align
 import paintbox.Paintbox
@@ -29,7 +28,7 @@ open class DebugOverlay(val paintboxGame: PaintboxGame) {
             """FPS: $fps (mspf min ${msNumberFormat.format(this.debugInfo.mspfMin)}, max ${msNumberFormat.format(this.debugInfo.mspfMax)}, avg ${msNumberFormat.format(this.debugInfo.mspfAvg)})
 Debug mode: ${Paintbox.DEBUG_KEY_NAME} + i: Reload I18N | + s (+Shift): UI outlines (${Paintbox.stageOutlines}) | +g: gc
 Version: ${paintboxGame.versionString} | Buffer: Logical ${Gdx.graphics.width}x${Gdx.graphics.height}, back buf.: ${Gdx.graphics.backBufferWidth}x${Gdx.graphics.backBufferHeight} (scale ${Gdx.graphics.backBufferScale})
-Memory: ${memNumberFormat.format(Gdx.app.nativeHeap / 1024)} / ${memNumberFormat.format(MemoryUtils.maxMemoryKiB)} KiB (${memNumberFormat.format(debugInfo.memoryDelta / 1024)} KiB/s)
+Memory: ${memNumberFormat.format(Gdx.app.nativeHeap / 1024)} / ${memNumberFormat.format(MemoryUtils.maxMemoryKiB)} KiB (${memNumberFormat.format(debugInfo.lastAllocationRateB / 1024)} KiB/s)
 Screen: ${screen?.javaClass?.name}
 ${paintboxGame.getDebugString()}
 ${(screen as? PaintboxScreen)?.getDebugString() ?: ""}"""
