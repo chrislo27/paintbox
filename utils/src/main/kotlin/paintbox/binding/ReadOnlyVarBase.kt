@@ -2,6 +2,43 @@ package paintbox.binding
 
 
 /**
+ * Returns a constant value [ReadOnlyVar]. The implementation used is memory optimized and doesn't
+ * have dependencies like [GenericVar] would.
+ */
+fun <T> T.asReadOnlyVar(): ReadOnlyVar<T> = ReadOnlyConstVar(this)
+
+/**
+ * Returns a constant value [ReadOnlyBooleanVar]. This directly calls [ReadOnlyBooleanVar.Companion.const].
+ * @see ReadOnlyBooleanVar.Companion.const
+ */
+fun Boolean.asReadOnlyVar(): ReadOnlyBooleanVar = ReadOnlyBooleanVar.const(this)
+
+/**
+ * Returns a constant value [ReadOnlyDoubleVar]. This directly calls [ReadOnlyDoubleVar.Companion.const].
+ * @see ReadOnlyDoubleVar.Companion.const
+ */
+fun Double.asReadOnlyVar(): ReadOnlyDoubleVar = ReadOnlyDoubleVar.const(this)
+
+/**
+ * Returns a constant value [ReadOnlyFloatVar]. This directly calls [ReadOnlyFloatVar.Companion.const].
+ * @see ReadOnlyFloatVar.Companion.const
+ */
+fun Float.asReadOnlyVar(): ReadOnlyFloatVar = ReadOnlyFloatVar.const(this)
+
+/**
+ * Returns a constant value [ReadOnlyIntVar]. This directly calls [ReadOnlyIntVar.Companion.const].
+ * @see ReadOnlyIntVar.Companion.const
+ */
+fun Int.asReadOnlyVar(): ReadOnlyIntVar = ReadOnlyIntVar.const(this)
+
+/**
+ * Returns a constant value [ReadOnlyLongVar]. This directly calls [ReadOnlyLongVar.Companion.const].
+ * @see ReadOnlyLongVar.Companion.const
+ */
+fun Long.asReadOnlyVar(): ReadOnlyLongVar = ReadOnlyLongVar.const(this)
+
+
+/**
  * An abstract class that implements [ReadOnlyVar]'s listener and invalidation support.
  */
 abstract class ReadOnlyVarBase<T> : ReadOnlyVar<T> {
