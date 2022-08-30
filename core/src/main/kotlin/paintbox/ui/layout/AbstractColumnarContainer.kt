@@ -11,49 +11,72 @@ import paintbox.util.ListOfOnes
  * An abstract pane that can have 1 or more columns or rows.
  * 
  * @param columnAllotment A list of positive integers indicating how many logical columns each real column takes up
+ * @param useRows Whether to use rows instead of columns
+ * @param putSpacersInBetweenLogicalCols If true, spacers are put inside each logical column. Otherwise, only between real columns. Recommended value is false
  */
 abstract class AbstractColumnarContainer<Container : UIElement>(
-    val columnAllotment: List<Int>, val useRows: Boolean
+    val columnAllotment: List<Int>, val useRows: Boolean, val putSpacersInBetweenLogicalCols: Boolean = false,
 ) : Pane() {
 
     val numLogicalColumns: Int
     val numRealColumns: Int get() = columnAllotment.size
     val numSpacers: Int get() = (columnAllotment.size - 1).coerceAtLeast(0)
+
+    /**
+     * The amount of usable area for columns, excluding [spacing].
+     */
     protected val usableWidth: ReadOnlyFloatVar
     protected val logicalColumnsTally: List<Int> // Represents logical columns taken for each real column, used for spacer information
+    
     val spacing: FloatVar = FloatVar(0f)
     val columnBoxes: List<Container>
-    protected val spacersList: MutableList<UIElement?>
+    protected val spacersList: MutableList<UIElement?> = MutableList(numSpacers) { null }
     val spacers: List<UIElement?> get() = spacersList
+    protected val spacerPositions: List<ReadOnlyFloatVar>
 
     init {
         columnAllotment.forEachIndexed { index, item ->
+            // Check if any columns are less than or equal to zero
             if (item <= 0) {
                 error("columnAllotment[$index] = $item was less than or equal to zero, must be positive")
             }
         }
         numLogicalColumns = columnAllotment.sum()
         
-        spacersList = MutableList(numSpacers) { null }
-        
         usableWidth = FloatVar {
             val spacing = spacing.use()
             val thisDimension = getThisDimensional().use()
-            (thisDimension - (spacing * (numLogicalColumns - 1))).coerceAtLeast(1f)
+            if (putSpacersInBetweenLogicalCols) {
+                (thisDimension - (spacing * (numLogicalColumns - 1))).coerceAtLeast(1f)
+            } else {
+                (thisDimension - (spacing * (numRealColumns - 1))).coerceAtLeast(1f)
+            }
         }
+        
         val proportion = 1f / numLogicalColumns
         var colAccumulator = 0
         logicalColumnsTally = mutableListOf()
-        columnBoxes = columnAllotment.mapIndexed { index, logicalCols ->
+        columnBoxes = columnAllotment.mapIndexed { realColIndex, logicalCols ->
             val box = createBox().also { newBox ->
                 val colsSoFar = colAccumulator
-                getDimensional(newBox).bind {
-                    (usableWidth.use() * proportion * logicalCols) + (spacing.use() * (logicalCols - 1))
+                
+                if (putSpacersInBetweenLogicalCols) {
+                    getDimensional(newBox).bind {
+                        (usableWidth.use() * proportion * logicalCols) + (spacing.use() * (logicalCols - 1))
+                    }
+                    getPositional(newBox).bind {
+                        (usableWidth.use() * proportion + spacing.use()) * colsSoFar
+                    }
+                } else {
+                    getDimensional(newBox).bind {
+                        (usableWidth.use() * proportion * logicalCols)
+                    }
+                    getPositional(newBox).bind {
+                        (usableWidth.use() * proportion) * colsSoFar + (spacing.use() * realColIndex)
+                    }
                 }
-                getPositional(newBox).bind {
-                    (usableWidth.use() * proportion + spacing.use()) * colsSoFar
-                }
-                onCreate(newBox, colsSoFar, index)
+                
+                onContainerCreate(newBox, colsSoFar, realColIndex)
                 
                 colAccumulator += logicalCols
             }
@@ -63,11 +86,23 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
         columnBoxes.forEach { 
             addChild(it)
         }
+        spacerPositions = List(numSpacers) { spacerIndex ->
+            FloatVar {
+                val logicalCols = logicalColumnsTally[spacerIndex]
+                if (putSpacersInBetweenLogicalCols) {
+                    (usableWidth.use() * logicalCols / numLogicalColumns) + (spacing.use() * (logicalCols - 1))
+                } else {
+                    val box = columnBoxes[spacerIndex]
+                    getPositional(box).use() + getDimensional(box).use()
+                }
+            }
+        }
     }
     
-    constructor(numColumns: Int, useRows: Boolean) : this(ListOfOnes(numColumns), useRows)
+    constructor(numColumns: Int, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
+            : this(ListOfOnes(numColumns), useRows, putSpacersInBetweenLogicalCols)
 
-    protected abstract fun onCreate(newBox: Container, logicalIndex: Int, realIndex: Int)
+    protected abstract fun onContainerCreate(newBox: Container, logicalIndex: Int, realIndex: Int)
 
     protected abstract fun createBox(): Container
 
@@ -89,10 +124,7 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
         if (element != null) {
             addChild(element)
             getDimensional(element).bind { spacing.use() }
-            getPositional(element).bind {
-                val logicalCols = logicalColumnsTally[spacerIndex]
-                (usableWidth.use() * logicalCols / numLogicalColumns) + (spacing.use() * (logicalCols - 1))
-            }
+            getPositional(element).bind { spacerPositions[spacerIndex].use() }
         }
         
         spacersList[spacerIndex] = element
@@ -141,21 +173,25 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
 abstract class ColumnarBox<Box : AbstractHVBox<AlignEnum>, AlignEnum : AbstractHVBox.BoxAlign>
     : AbstractColumnarContainer<Box> {
     
-    constructor(columnAllotment: List<Int>, useRows: Boolean) : super(columnAllotment, useRows)
-    constructor(numColumns: Int, useRows: Boolean) : super(numColumns, useRows)
+    constructor(columnAllotment: List<Int>, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
+            : super(columnAllotment, useRows, putSpacersInBetweenLogicalCols)
+    constructor(numColumns: Int, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
+            : super(numColumns, useRows, putSpacersInBetweenLogicalCols)
 
 
     protected abstract fun getDefaultAlignment(logicalIndex: Int, realIndex: Int, logicalCols: Int, totalCols: Int): AlignEnum
 
-    override fun onCreate(newBox: Box, logicalIndex: Int, realIndex: Int) {
+    override fun onContainerCreate(newBox: Box, logicalIndex: Int, realIndex: Int) {
         newBox.align.set(getDefaultAlignment(logicalIndex, realIndex, numLogicalColumns, numRealColumns))
     }
 }
 
 open class ColumnarHBox : ColumnarBox<HBox, HBox.Align> {
     
-    constructor(columnAllotment: List<Int>, useRows: Boolean) : super(columnAllotment, useRows)
-    constructor(numColumns: Int, useRows: Boolean) : super(numColumns, useRows)
+    constructor(columnAllotment: List<Int>, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
+            : super(columnAllotment, useRows, putSpacersInBetweenLogicalCols)
+    constructor(numColumns: Int, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
+            : super(numColumns, useRows, putSpacersInBetweenLogicalCols)
 
     override fun createBox(): HBox {
         return HBox()
@@ -172,8 +208,10 @@ open class ColumnarHBox : ColumnarBox<HBox, HBox.Align> {
 
 open class ColumnarVBox : ColumnarBox<VBox, VBox.Align> {
     
-    constructor(columnAllotment: List<Int>, useRows: Boolean) : super(columnAllotment, useRows)
-    constructor(numColumns: Int, useRows: Boolean) : super(numColumns, useRows)
+    constructor(columnAllotment: List<Int>, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
+            : super(columnAllotment, useRows, putSpacersInBetweenLogicalCols)
+    constructor(numColumns: Int, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
+            : super(numColumns, useRows, putSpacersInBetweenLogicalCols)
     
     override fun createBox(): VBox {
         return VBox()
@@ -189,10 +227,13 @@ open class ColumnarVBox : ColumnarBox<VBox, VBox.Align> {
 }
 
 open class ColumnarPane : AbstractColumnarContainer<Pane> {
-    constructor(columnAllotment: List<Int>, useRows: Boolean) : super(columnAllotment, useRows)
-    constructor(numColumns: Int, useRows: Boolean) : super(numColumns, useRows)
+    
+    constructor(columnAllotment: List<Int>, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
+            : super(columnAllotment, useRows, putSpacersInBetweenLogicalCols)
+    constructor(numColumns: Int, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
+            : super(numColumns, useRows, putSpacersInBetweenLogicalCols)
 
-    override fun onCreate(newBox: Pane, logicalIndex: Int, realIndex: Int) {
+    override fun onContainerCreate(newBox: Pane, logicalIndex: Int, realIndex: Int) {
     }
 
     override fun createBox(): Pane {
