@@ -42,7 +42,7 @@ data class GdxRunnableTransition(
         if (!complete) {
             complete = true
             if (setToEndValue) {
-                onUpdate(endValue, 1f)
+                onUpdate(interpolation.apply(startValue, endValue, 1f), 1f)
             }
         }
     }
@@ -56,7 +56,7 @@ data class GdxRunnableTransition(
             this.started = true
             this.app = Gdx.app
             this.graphics = Gdx.graphics
-            onUpdate(startValue, 0f)
+            onUpdate(interpolation.apply(startValue, endValue, 0f), 0f)
         } else {
             timeElapsed += this.graphics.deltaTime
         }
