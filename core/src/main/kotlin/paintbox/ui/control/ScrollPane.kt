@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import paintbox.binding.FloatVar
+import paintbox.binding.ReadOnlyFloatVar
 import paintbox.binding.Var
 import paintbox.ui.*
 import paintbox.ui.skin.DefaultSkins
@@ -45,24 +46,43 @@ open class ScrollPane : Control<ScrollPane>() {
     val vBarPolicy: Var<ScrollBarPolicy> = Var(ScrollBarPolicy.AS_NEEDED)
     val barSize: FloatVar = FloatVar(15f)
     val minThumbSize: FloatVar = FloatVar(20f)
-
-    // Used for updating internal state
-    private val currentW: FloatVar = FloatVar(eager = true) {
+    
+    /**
+     * The current width of the content UI element.
+     */
+    val currentW: ReadOnlyFloatVar = FloatVar(eager = true) {
         currentContent.use()?.bounds?.width?.use() ?: 0f
     }
-    private val currentH: FloatVar = FloatVar(eager = true) {
+    /**
+     * The current height of the content UI element.
+     */
+    val currentH: ReadOnlyFloatVar = FloatVar(eager = true) {
         currentContent.use()?.bounds?.height?.use() ?: 0f
     }
-    private val contentPaneWidth: FloatVar = FloatVar(eager = true) {
+    /**
+     * The current height of the content pane (visible area).
+     */
+    val contentPaneWidth: ReadOnlyFloatVar = FloatVar(eager = true) {
         contentPane.contentZone.width.use()
     }
-    private val contentPaneHeight: FloatVar = FloatVar(eager = true) {
+    /**
+     * The current height of the content pane (visible area).
+     */
+    val contentPaneHeight: ReadOnlyFloatVar = FloatVar(eager = true) {
         contentPane.contentZone.height.use()
     }
-    private val contentWidthDiff: FloatVar = FloatVar(eager = true) {
+    /**
+     * The difference between the width of the content and the width of the visible area.
+     * Effectively this is how much you can scroll horizontally.
+     */
+    val contentWidthDiff: ReadOnlyFloatVar = FloatVar(eager = true) {
         currentW.use() - contentPaneWidth.use()
     }
-    private val contentHeightDiff: FloatVar = FloatVar(eager = true) {
+    /**
+     * The difference between the height of the content and the height of the visible area.
+     * Effectively this is how much you can scroll vertically.
+     */
+    val contentHeightDiff: ReadOnlyFloatVar = FloatVar(eager = true) {
         currentH.use() - contentPaneHeight.use()
     }
 
