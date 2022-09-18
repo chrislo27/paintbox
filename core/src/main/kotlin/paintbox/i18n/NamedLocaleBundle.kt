@@ -19,12 +19,12 @@ data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundl
     val caughtIAEs: MutableSet<String> = mutableSetOf()
     
     fun getValue(key: String): String {
-        if (checkMissing(key)) return key
+        if (isKeyMissing(key)) return key
         return bundle[key]
     }
 
     fun getValue(key: String, vararg args: Any?): String {
-        if (checkMissing(key)) return key
+        if (isKeyMissing(key)) return key
         return try {
             bundle.format(key, *args)
         } catch (iae: IllegalArgumentException) {
@@ -37,7 +37,7 @@ data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundl
         }
     }
     
-    fun checkMissing(key: String): Boolean {
+    fun isKeyMissing(key: String): Boolean {
         if (key in missingKeys) return true
         try {
             bundle[key]
@@ -48,5 +48,7 @@ data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundl
         }
         return false
     }
+    
+    operator fun contains(key: String): Boolean = !isKeyMissing(key)
     
 }

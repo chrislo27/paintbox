@@ -6,6 +6,8 @@ import com.badlogic.gdx.utils.I18NBundle
 import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.ObjectMap
 import paintbox.Paintbox
+import paintbox.binding.BooleanVar
+import paintbox.binding.ReadOnlyBooleanVar
 import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
 import java.util.*
@@ -89,6 +91,19 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val langDefFile: Fil
         return Var {
             currentBundle.use()?.getValue(key, *staticArgs.toTypedArray()) ?: key
         }
+    }
+
+    /**
+     * Returns true if the given [key] is missing from [currentBundle].
+     * If [currentBundle] is null, returns true (no bundle = no keys).
+     */
+    fun isKeyMissingInCurrentBundle(key: String): Boolean = currentBundle.getOrCompute()?.isKeyMissing(key) ?: true
+
+    /**
+     * @see isKeyMissingInCurrentBundle
+     */
+    fun getKeyMissingInCurrentBundleVar(key: String): ReadOnlyBooleanVar = BooleanVar {
+        currentBundle.use()?.isKeyMissing(key) ?: true
     }
 
     protected fun createNamedLocaleBundle(locale: NamedLocale, baseHandle: FileHandle): NamedLocaleBundle {
