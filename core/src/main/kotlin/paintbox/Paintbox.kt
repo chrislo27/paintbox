@@ -16,9 +16,9 @@ object Paintbox {
     const val DEBUG_KEY: Int = Input.Keys.F8
     val DEBUG_KEY_NAME: String = Input.Keys.toString(DEBUG_KEY)
     val debugMode: BooleanVar = BooleanVar(false)
-    var stageOutlines: Var<StageOutlineMode> = Var(StageOutlineMode.NONE)
+    var uiDebugOutlines: Var<UIDebugOutlineMode> = Var(UIDebugOutlineMode.NONE)
 
-    enum class StageOutlineMode {
+    enum class UIDebugOutlineMode {
         NONE, ALL, ONLY_VISIBLE
     }
 

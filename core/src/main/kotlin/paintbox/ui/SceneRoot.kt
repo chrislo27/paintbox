@@ -14,7 +14,6 @@ import paintbox.ui.contextmenu.ContextMenu
 import paintbox.util.RectangleStack
 import paintbox.util.viewport.NoOpViewport
 import paintbox.util.gdxutils.drawRect
-import paintbox.util.gdxutils.fillRect
 
 
 /**
@@ -158,11 +157,11 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
             RectangleStack.pop()
         }
 
-        val drawOutlines = Paintbox.stageOutlines.getOrCompute()
-        if (drawOutlines != Paintbox.StageOutlineMode.NONE) {
+        val drawOutlines = Paintbox.uiDebugOutlines.getOrCompute()
+        if (drawOutlines != Paintbox.UIDebugOutlineMode.NONE) {
             val lastPackedColor = batch.packedColor
             batch.setColor(0f, 1f, 0f, 1f)
-            val useOutlines = drawOutlines == Paintbox.StageOutlineMode.ONLY_VISIBLE
+            val useOutlines = drawOutlines == Paintbox.UIDebugOutlineMode.ONLY_VISIBLE
             val isDialogPresent = this.rootDialogElement != null
             for (layer in allLayers) {
                 if (isDialogPresent && layer == mainLayer) continue

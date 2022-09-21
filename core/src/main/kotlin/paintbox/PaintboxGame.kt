@@ -7,10 +7,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.glutils.HdpiUtils
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import com.badlogic.gdx.utils.Align
-import paintbox.Paintbox.StageOutlineMode.ALL
-import paintbox.Paintbox.StageOutlineMode.NONE
-import paintbox.Paintbox.StageOutlineMode.ONLY_VISIBLE
+import paintbox.Paintbox.UIDebugOutlineMode.ALL
+import paintbox.Paintbox.UIDebugOutlineMode.NONE
+import paintbox.Paintbox.UIDebugOutlineMode.ONLY_VISIBLE
 import paintbox.debug.DebugInfo
 import paintbox.debug.DebugOverlay
 import paintbox.font.*
@@ -18,12 +17,10 @@ import paintbox.i18n.LocalizationBase
 import paintbox.logging.SysOutPiper
 import paintbox.registry.AssetRegistry
 import paintbox.registry.ScreenRegistry
-import paintbox.util.MemoryUtils
 import paintbox.util.gdxutils.GdxGame
 import paintbox.util.gdxutils.isShiftDown
 import paintbox.util.Version
 import paintbox.util.WindowSize
-import paintbox.util.gdxutils.drawCompressed
 import kotlin.system.measureNanoTime
 
 /**
@@ -365,13 +362,13 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
                     }
                 }
                 Input.Keys.S -> {
-                    val old = Paintbox.stageOutlines.getOrCompute()
-                    Paintbox.stageOutlines.set(when (old) {
+                    val old = Paintbox.uiDebugOutlines.getOrCompute()
+                    Paintbox.uiDebugOutlines.set(when (old) {
                         NONE -> if (Gdx.input.isShiftDown()) ALL else ONLY_VISIBLE
                         ALL -> if (Gdx.input.isShiftDown()) ONLY_VISIBLE else NONE
                         ONLY_VISIBLE -> if (Gdx.input.isShiftDown()) ALL else NONE
                     })
-                    Paintbox.LOGGER.debug("Toggled stage outlines to ${Paintbox.stageOutlines}")
+                    Paintbox.LOGGER.debug("Toggled UI debug outlines to ${Paintbox.uiDebugOutlines}")
                 }
                 Input.Keys.G -> System.gc()
                 else -> {
