@@ -353,9 +353,15 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
                                 loc.logMissingLocalizations()
                             }
                         }
-                        Paintbox.LOGGER.debug("Reloaded I18N (${locs.size} instance(s)) from files in ${nano / 1_000_000.0} ms")
+                        Paintbox.LOGGER.debug("Reloaded I18N (${locs.size} instance(s)) from files in ${nano / 1_000_000.0} ms", tag = "I18N")
+                        
+                        val uniqueKeys = mutableSetOf<String>()
+                        locs.flatMap { it.bundles.getOrCompute() }.forEach { 
+                            uniqueKeys.addAll(it.allKeys)
+                        }
+                        Paintbox.LOGGER.debug("Total of ${uniqueKeys.size} unique keys across all instances for first bundle respectively", tag = "I18N")
                     } else {
-                        Paintbox.LOGGER.debug("No I18N to reload, PaintboxGame#reloadableLocalizationInstances was empty")
+                        Paintbox.LOGGER.debug("No I18N to reload, PaintboxGame#reloadableLocalizationInstances was empty", tag = "I18N")
                     }
                 }
                 Input.Keys.S -> {

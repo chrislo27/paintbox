@@ -121,19 +121,15 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val langDefFile: Fil
     @Suppress("UNCHECKED_CAST")
     fun logMissingLocalizations() {
         val bundles = bundles.getOrCompute()
-        val keys: List<String> = bundles.firstOrNull()?.bundle?.let { bundle ->
-            val field = bundle::class.java.getDeclaredField("properties")
-            field.isAccessible = true
-            val map = field.get(bundle) as ObjectMap<String, String>
-            map.keys().toList()
-        } ?: return
+        val keys: List<String> = bundles.firstOrNull()?.allKeys?.toList() ?: return
         val missing: List<Pair<NamedLocaleBundle, List<String>>> = bundles.drop(1).map { tbundle ->
             val bundle = tbundle.bundle
             val field = bundle::class.java.getDeclaredField("properties")
             field.isAccessible = true
-            val map = (field.get(bundle) as ObjectMap<String, String>).associate { it.key to it.value }
+            val objMap = field.get(bundle) as ObjectMap<String, String>
+            val normalMap = objMap.associate { it.key to it.value }
 
-            tbundle to (keys.filter { key -> map.getOrDefault(key, "").isNotBlank() }).sorted()
+            tbundle to (keys.filter { key -> normalMap.getOrDefault(key, "").isNotBlank() }).sorted()
         }
 
         missing.filter { it.second.isNotEmpty() }.forEach {

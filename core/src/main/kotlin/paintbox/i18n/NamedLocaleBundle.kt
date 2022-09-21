@@ -1,12 +1,26 @@
 package paintbox.i18n
 
 import com.badlogic.gdx.utils.I18NBundle
+import com.badlogic.gdx.utils.ObjectMap
 import paintbox.Paintbox
+import java.lang.reflect.InaccessibleObjectException
 import java.util.*
 
 
 data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundle, val bundleName: String) {
 
+    val allKeys: Set<String> by lazy {
+        try {
+            val field = bundle::class.java.getDeclaredField("properties")
+            field.isAccessible = true
+            @Suppress("UNCHECKED_CAST")
+            val map = field.get(bundle) as ObjectMap<String, String>
+            map.keys().toSet()
+        } catch (e: InaccessibleObjectException) {
+            emptySet()
+        }
+    }
+    
     /**
      * Keys with missing information.
      */
