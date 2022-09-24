@@ -3,50 +3,44 @@ package paintbox.i18n
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.I18NBundle
-import com.badlogic.gdx.utils.Json
 import com.badlogic.gdx.utils.ObjectMap
 import paintbox.Paintbox
 import paintbox.binding.BooleanVar
 import paintbox.binding.ReadOnlyBooleanVar
 import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
-import java.util.*
 
 
 /**
  * Base class for a localization helper. Recommended to create an `object` extension of this class.
  */
-abstract class LocalizationBase(val baseHandle: FileHandle, val langDefFile: FileHandle) {
+abstract class LocalizationBase(val baseHandle: FileHandle, val localePicker: LocalePickerBase) {
 
     companion object {
         val DEFAULT_BASE_HANDLE: FileHandle by lazy {
             Gdx.files.internal("localization/default")
         }
-        val DEFAULT_LANG_DEFINITION_FILE: FileHandle by lazy {
-            Gdx.files.internal("localization/langs.json")
-        }
     }
 
     val bundles: ReadOnlyVar<List<NamedLocaleBundle>> = Var(listOf())
-    val currentBundle: Var<NamedLocaleBundle?> = Var(null)
+    val bundlesMap: ReadOnlyVar<Map<NamedLocale, NamedLocaleBundle>> = Var.bind { 
+        bundles.use().associateBy { it.namedLocale }
+    }
+    val currentBundle: ReadOnlyVar<NamedLocaleBundle?> = Var.eagerBind { 
+        bundlesMap.use()[localePicker.currentLocale.use()]
+    }
     
     init {
         loadBundles()
-        currentBundle.set(bundles.getOrCompute().firstOrNull())
     }
     
     protected fun loadBundles() {
-        val list = getBundlesFromLangFile(langDefFile, baseHandle)
+        val list = loadBundlesFromLocalePicker(baseHandle)
         (bundles as Var).set(list)
     }
 
     open fun reloadAll() {
-        val lastBundle = currentBundle.getOrCompute()
         loadBundles()
-        if (lastBundle != null) {
-            val bundles = bundles.getOrCompute()
-            currentBundle.set(bundles.find { it.namedLocale == lastBundle.namedLocale })
-        }
     }
 
     /**
@@ -110,12 +104,10 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val langDefFile: Fil
         return NamedLocaleBundle(locale, I18NBundle.createBundle(baseHandle, locale.locale, "UTF-8"), baseHandle.pathWithoutExtension())
     }
 
-    protected fun getBundlesFromLangFile(langDefFile: FileHandle, baseHandle: FileHandle): List<NamedLocaleBundle> {
-        return Json().fromJson(Array<LanguageObject>::class.java, langDefFile)
-                .map(LanguageObject::toNamedLocale)
-                .map {
-                    createNamedLocaleBundle(it, baseHandle)
-                }
+    protected fun loadBundlesFromLocalePicker(basePropertiesHandle: FileHandle): List<NamedLocaleBundle> {
+        return localePicker.namedLocales.map {
+            createNamedLocaleBundle(it, basePropertiesHandle)
+        }
     }
 
     @Suppress("UNCHECKED_CAST")

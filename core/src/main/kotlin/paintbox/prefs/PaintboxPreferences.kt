@@ -9,7 +9,7 @@ import paintbox.binding.Var
 import paintbox.util.Version
 
 
-@Suppress("PrivatePropertyName", "PropertyName", "MemberVisibilityCanBePrivate")
+@Suppress("MemberVisibilityCanBePrivate")
 abstract class PaintboxPreferences<Game : PaintboxGame>(val main: Game, val prefs: Preferences) : Disposable {
 
     companion object {
@@ -88,8 +88,11 @@ abstract class PaintboxPreferences<Game : PaintboxGame>(val main: Game, val pref
         prefs.flush()
     }
 
+    /**
+     * Can be called by the implementation of [PaintboxGame] when initializing this instance.
+     * This should be overridden by the implementation of [PaintboxPreferences].
+     */
     open fun setStartupSettings(game: Game) {
-        
     }
     
     protected open fun setFpsAndVsync(game: Game, maxFramerate: Var<Int>, vsyncEnabled: Var<Boolean>) {
