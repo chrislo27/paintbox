@@ -111,7 +111,7 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val localePicker: Lo
     }
 
     @Suppress("UNCHECKED_CAST")
-    fun logMissingLocalizations() {
+    fun logMissingLocalizations(showAllKeys: Boolean = true) {
         val bundles = bundles.getOrCompute()
         val keys: List<String> = bundles.firstOrNull()?.allKeys?.toList() ?: return
         val missing: List<Pair<NamedLocaleBundle, List<String>>> = bundles.drop(1).map { tbundle ->
@@ -125,7 +125,7 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val localePicker: Lo
         }
 
         missing.filter { it.second.isNotEmpty() }.forEach {
-            Paintbox.LOGGER.warn("Missing ${it.second.size} keys for bundle ${it.first.namedLocale}:${it.second.joinToString(separator = "") { i -> "\n  * $i" }}")
+            Paintbox.LOGGER.warn("Missing ${it.second.size} keys for bundle \"${it.first.bundleName}\" for language ${it.first.namedLocale}${if (showAllKeys) ":${it.second.joinToString(separator = "") { i -> "\n  * $i" }}" else ""}")
         }
     }
 

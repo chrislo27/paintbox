@@ -347,7 +347,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
                         val nano = measureNanoTime {
                             locs.forEach { loc ->
                                 loc.reloadAll()
-                                loc.logMissingLocalizations()
+                                loc.logMissingLocalizations(true)
                             }
                         }
                         Paintbox.LOGGER.debug("Reloaded I18N (${locs.size} instance(s)) from files in ${nano / 1_000_000.0} ms", tag = "I18N")
