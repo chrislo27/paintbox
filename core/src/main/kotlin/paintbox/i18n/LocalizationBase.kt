@@ -3,7 +3,6 @@ package paintbox.i18n
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.utils.I18NBundle
-import com.badlogic.gdx.utils.ObjectMap
 import paintbox.Paintbox
 import paintbox.binding.BooleanVar
 import paintbox.binding.ReadOnlyBooleanVar
@@ -110,18 +109,12 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val localePicker: Lo
         }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun logMissingLocalizations(showAllKeys: Boolean = true) {
         val bundles = bundles.getOrCompute()
         val keys: List<String> = bundles.firstOrNull()?.allKeys?.toList() ?: return
-        val missing: List<Pair<NamedLocaleBundle, List<String>>> = bundles.drop(1).map { tbundle ->
-            val bundle = tbundle.bundle
-            val field = bundle::class.java.getDeclaredField("properties")
-            field.isAccessible = true
-            val objMap = field.get(bundle) as ObjectMap<String, String>
-            val normalMap = objMap.associate { it.key to it.value }
-
-            tbundle to (keys.filter { key -> normalMap.getOrDefault(key, "").isNotBlank() }).sorted()
+        val missing: List<Pair<NamedLocaleBundle, List<String>>> = bundles.drop(1).map { bundle ->
+            val props = bundle.internalProperties
+            bundle to keys.filter { key -> props.getOrDefault(key, "").isBlank() }.sorted()
         }
 
         missing.filter { it.second.isNotEmpty() }.forEach {

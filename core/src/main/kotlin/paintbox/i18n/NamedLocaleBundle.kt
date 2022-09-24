@@ -25,7 +25,7 @@ data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundl
     
     val allKeys: Set<String> by lazy {
         val map = internalProperties
-        map.keys.filter { !map[it].isNullOrBlank() }.toSet()
+        map.keys.toSet()
     }
     
     /**
