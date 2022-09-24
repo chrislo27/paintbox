@@ -3,6 +3,7 @@ package paintbox.i18n
 import com.badlogic.gdx.utils.I18NBundle
 import com.badlogic.gdx.utils.ObjectMap
 import paintbox.Paintbox
+import paintbox.logging.Logger
 import java.lang.reflect.InaccessibleObjectException
 import java.util.*
 
@@ -40,8 +41,10 @@ data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundl
     
     init {
         val actualLocale = bundle.locale
-        if (actualLocale != namedLocale.locale) {
-            Paintbox.LOGGER.warn("NamedLocaleBundle \"$bundleName\" (${namedLocale}) isn't using the same locale as requested. Requested: '${namedLocale.locale}', actual: '$actualLocale'")
+        val requestedLocale = namedLocale.locale
+        if (actualLocale != requestedLocale) {
+            Paintbox.LOGGER.log(if (actualLocale.language != requestedLocale.language) Logger.LogLevel.ERROR else Logger.LogLevel.WARN,
+                    "NamedLocaleBundle \"$bundleName\" (${namedLocale}) isn't using the same locale as requested. Requested: '$requestedLocale', actual: '$actualLocale'")
         }
     }
     
