@@ -9,16 +9,22 @@ import java.util.*
 
 data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundle, val bundleName: String) {
 
-    val allKeys: Set<String> by lazy {
+    val internalProperties: Map<String, String> by lazy {
         try {
             val field = bundle::class.java.getDeclaredField("properties")
             field.isAccessible = true
             @Suppress("UNCHECKED_CAST")
             val map = field.get(bundle) as ObjectMap<String, String>
-            map.keys().toSet()
+            map.associate { it.key to it.value }
         } catch (e: InaccessibleObjectException) {
-            emptySet()
+            e.printStackTrace()
+            emptyMap()
         }
+    }
+    
+    val allKeys: Set<String> by lazy {
+        val map = internalProperties
+        map.keys.filter { !map[it].isNullOrBlank() }.toSet()
     }
     
     /**
@@ -31,6 +37,13 @@ data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundl
      * Future IAEs are suppressed.
      */
     val caughtIAEs: MutableSet<String> = mutableSetOf()
+    
+    init {
+        val actualLocale = bundle.locale
+        if (actualLocale != namedLocale.locale) {
+            Paintbox.LOGGER.warn("NamedLocaleBundle \"$bundleName\" (${namedLocale}) isn't using the same locale as requested. Requested: '${namedLocale.locale}', actual: '$actualLocale'")
+        }
+    }
     
     fun getValue(key: String): String {
         if (isKeyMissing(key)) return key
