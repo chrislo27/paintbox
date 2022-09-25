@@ -54,9 +54,10 @@ import java.lang.NumberFormatException
  * scale=1.0 : Multiplies both the scalex and scaley tags by the given value
  * ```
  */
-class Markup(fontMapping: Map<String, PaintboxFont>, val defaultTextRun: TextRun,
-             val styles: FontStyles = FontStyles.ALL_USING_DEFAULT_FONT,
-             val lenientMode: Boolean = false,
+class Markup(
+    fontMapping: Map<String, PaintboxFont>, val defaultTextRun: TextRun,
+    val styles: FontStyles = FontStyles.ALL_USING_DEFAULT_FONT,
+    val lenientMode: Boolean = false,
 ) {
 
     companion object {
@@ -64,6 +65,8 @@ class Markup(fontMapping: Map<String, PaintboxFont>, val defaultTextRun: TextRun
         val FONT_NAME_BOLD: String = "bold"
         val FONT_NAME_ITALIC: String = "italic"
         val FONT_NAME_BOLDITALIC: String = "bolditalic"
+        val FONT_NAME_LIGHT: String = "light"
+        val FONT_NAME_LIGHTITALIC: String = "lightitalic"
 
         val TAG_NOINHERIT: String = "noinherit"
         val TAG_FONT: String = "font"
