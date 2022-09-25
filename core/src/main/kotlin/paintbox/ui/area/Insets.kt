@@ -19,15 +19,27 @@ data class Insets(val top: Float, val bottom: Float, val left: Float, val right:
                 }
             }
         }
-
-        operator fun invoke(all: Float): Insets {
+        
+        private fun getCachedOrNew(all: Float): Insets {
             val toInt = all.toInt()
             if (floor(all) == all && toInt in intCache.indices) {
                 return intCache[toInt]
             }
             return Insets(all, all, all, all)
         }
+
+        operator fun invoke(all: Float): Insets {
+            return getCachedOrNew(all)
+        }
+        
+        operator fun invoke(topAndBottom: Float, leftAndRight: Float): Insets {
+            if (topAndBottom == leftAndRight) {
+                return getCachedOrNew(topAndBottom)
+            }
+            return Insets(topAndBottom, topAndBottom, leftAndRight, leftAndRight)
+        }
     }
+    
     
     fun maximize(other: Insets): Insets =
             Insets(max(this.top, other.top), max(this.bottom, other.bottom), max(this.left, other.left), max(this.right, other.right))
