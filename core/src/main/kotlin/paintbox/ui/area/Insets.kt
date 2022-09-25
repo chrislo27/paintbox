@@ -46,6 +46,11 @@ data class Insets(val top: Float, val bottom: Float, val left: Float, val right:
     fun minimize(other: Insets): Insets = 
             Insets(min(this.top, other.top), min(this.bottom, other.bottom), min(this.left, other.left), min(this.right, other.right))
     
+    operator fun plus(other: Insets): Insets = Insets(this.top + other.top, this.bottom + other.bottom, this.left + other.left, this.right + other.right)
+    operator fun minus(other: Insets): Insets = Insets(this.top - other.top, this.bottom - other.bottom, this.left - other.left, this.right - other.right)
+    operator fun times(other: Insets): Insets = Insets(this.top * other.top, this.bottom * other.bottom, this.left * other.left, this.right * other.right)
+    operator fun times(multiplier: Float): Insets = Insets(this.top * multiplier, this.bottom * multiplier, this.left * multiplier, this.right * multiplier)
+    
     fun leftAndRight(): Float = this.left + this.right
     fun topAndBottom(): Float = this.top + this.bottom
 }
