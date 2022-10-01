@@ -38,11 +38,11 @@ abstract class ResourceStack<T>(initialCapacity: Int = 64) {
      * Pops the last resource off the stack.
      * @return True if something was popped off the stack, false otherwise
      */
-    fun pop(): T? {
-        if (stack.isEmpty()) return null
+    fun pop(): Boolean {
+        if (stack.isEmpty()) return false
         val last = stack.removeLast() ?: error("[Thread ${Thread.currentThread().name}] Stack's last item from stack.removeLast() was null. This could be a threading issue. numFree: ${pool.free} ResourceStack: ${this.javaClass.name}")
         pool.free(last)
-        return last
+        return true
     }
 
     protected abstract fun newObject(): T & Any

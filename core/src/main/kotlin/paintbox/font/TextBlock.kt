@@ -75,6 +75,7 @@ data class TextBlock(val runs: List<TextRun>) {
     )
     
     private val layoutInfoNeedsRefresh: BooleanVar = BooleanVar(true)
+    private val tmpColorStack: MutableList<Color> = mutableListOf()
 
     /**
      * If positive, [computeLayouts] will apply line wrapping.
@@ -414,18 +415,19 @@ data class TextBlock(val runs: List<TextRun>) {
                     }
                 }
 
-                val runCount = layout.runs.size
                 if (requiresTinting) {
                     // IntArray pair of ints of start index and ABGR8888 color (Color#toIntBits)
                     val colors = layout.colors
                     val numColors = colors.size / 2
                     val tmpColor = ColorStack.getAndPush()
                     
+                    val colorStack: MutableList<Color> = tmpColorStack
+                    
                     // For each new colour, push it to ColorStack, then tint it.
                     for (i in 0 until numColors) {
                         val colorsIndex = i * 2 + 1
                         Color.abgr8888ToColor(tmpColor, colors[colorsIndex])
-                        ColorStack.getAndPush().set(tmpColor)
+                        colorStack += ColorStack.getAndPush().set(tmpColor)
                         
                         if (tmpColor.r == 1f && tmpColor.g == 1f && tmpColor.b == 1f) {
                             tmpColor.mul(tint)
@@ -444,10 +446,12 @@ data class TextBlock(val runs: List<TextRun>) {
 
                     
                     // Reset colors from ColorStack
-                    for (index in runCount - 1 downTo 0) {
-                        val popped = ColorStack.pop() ?: continue
+                    for (index in numColors - 1 downTo 0) {
+                        val popped = colorStack[index]
                         colors[index * 2 + 1] = popped.toIntBits()
+                        ColorStack.pop()
                     }
+                    colorStack.clear()
                     
                     // Pop tmpColor
                     ColorStack.pop()
