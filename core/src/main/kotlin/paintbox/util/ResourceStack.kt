@@ -6,43 +6,48 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.Pool
+import java.util.LinkedList
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 
-abstract class ResourceStack<T> {
+abstract class ResourceStack<T>(initialCapacity: Int = 64) {
 
-    private val pool: InternalPool = InternalPool()
-    private val stack: ArrayDeque<T> = ArrayDeque()
-    val numInStack: Int
-        get() = stack.size
-
+    private val pool: InternalPool = InternalPool(initialCapacity)
+    private val stack: LinkedList<T & Any> = LinkedList()
+    
+    val numInStack: Int get() = stack.size
+    var peakCount: Int = 0
+        private set
+    
+    
     /**
      * Gets a new object from the pool and returns it. This puts it on the resource stack.
      */
-    fun getAndPush(): T {
-        val obtained = pool.obtain()
-        resetBeforePushed(obtained)
+    fun getAndPush(): T & Any {
+        val obtained = pool.obtain() ?: error("[Thread ${Thread.currentThread().name}] pool.obtain returned null. This could be a threading issue. numFree: ${pool.free} ResourceStack: ${this.javaClass.name}")
         stack.add(obtained)
+        if (peakCount < stack.size) {
+            peakCount = stack.size
+        }
         return obtained
     }
 
     /**
-     * Pops the last resource off the stack. If there is nothing on the stack, null is returned.
-     * The resource that is returned will not be reset but may mutate or be reused later from
-     * another invocation of [getAndPush].
+     * Pops the last resource off the stack.
+     * @return True if something was popped off the stack, false otherwise
      */
     fun pop(): T? {
         if (stack.isEmpty()) return null
-        val last = stack.removeLast()
+        val last = stack.removeLast() ?: error("[Thread ${Thread.currentThread().name}] Stack's last item from stack.removeLast() was null. This could be a threading issue. numFree: ${pool.free} ResourceStack: ${this.javaClass.name}")
         pool.free(last)
         return last
     }
 
-    protected abstract fun newObject(): T
-    protected abstract fun resetBeforePushed(obj: T)
-    protected abstract fun resetWhenFreed(obj: T?)
+    protected abstract fun newObject(): T & Any
+    
+    protected abstract fun resetWhenFreed(obj: T & Any)
 
     /**
      * Uses a pooled resource inside the [action] block. This automatically frees the obtained resource.
@@ -56,14 +61,22 @@ abstract class ResourceStack<T> {
         action(obj)
         pop()
     }
+    
+    fun resetPeakCount(): Int {
+        val old = peakCount
+        peakCount = 0
+        return old
+    }
 
-    private inner class InternalPool : Pool<T>(64) {
-        override fun newObject(): T {
+    private inner class InternalPool(initialCapacity: Int) : Pool<T>(initialCapacity) {
+        override fun newObject(): T & Any {
             return this@ResourceStack.newObject()
         }
 
         override fun reset(`object`: T?) {
-            this@ResourceStack.resetWhenFreed(`object`)
+            if (`object` != null) {
+                this@ResourceStack.resetWhenFreed(`object`)
+            }
         }
     }
 }
@@ -76,11 +89,7 @@ object ColorStack : ResourceStack<Color>() {
         return Color(1f, 1f, 1f, 1f)
     }
 
-    override fun resetWhenFreed(obj: Color?) {
-        // Intentional: don't do a reset. The popped colour is returned so the information may be required temporarily
-    }
-
-    override fun resetBeforePushed(obj: Color) {
+    override fun resetWhenFreed(obj: Color) {
         obj.set(1f, 1f, 1f, 1f)
     }
 }
@@ -90,12 +99,8 @@ object RectangleStack : ResourceStack<Rectangle>() {
         return Rectangle()
     }
 
-    override fun resetBeforePushed(obj: Rectangle) {
+    override fun resetWhenFreed(obj: Rectangle) {
         obj.set(0f, 0f, 0f, 0f)
-    }
-
-    override fun resetWhenFreed(obj: Rectangle?) {
-        // Intentional: don't do a reset. The popped rectangle is returned so the information may be required temporarily
     }
 }
 
@@ -104,12 +109,8 @@ object Vector2Stack : ResourceStack<Vector2>() {
         return Vector2()
     }
 
-    override fun resetBeforePushed(obj: Vector2) {
+    override fun resetWhenFreed(obj: Vector2) {
         obj.set(0f, 0f)
-    }
-
-    override fun resetWhenFreed(obj: Vector2?) {
-        // Intentional: don't do a reset. The popped vec2 is returned so the information may be required temporarily
     }
 }
 
@@ -118,12 +119,8 @@ object Vector3Stack : ResourceStack<Vector3>() {
         return Vector3()
     }
 
-    override fun resetBeforePushed(obj: Vector3) {
+    override fun resetWhenFreed(obj: Vector3) {
         obj.set(0f, 0f, 0f)
-    }
-
-    override fun resetWhenFreed(obj: Vector3?) {
-        // Intentional: don't do a reset. The popped vec3 is returned so the information may be required temporarily
     }
 }
 
@@ -132,10 +129,6 @@ object Matrix4Stack : ResourceStack<Matrix4>() {
         return Matrix4()
     }
 
-    override fun resetBeforePushed(obj: Matrix4) {
-    }
-
-    override fun resetWhenFreed(obj: Matrix4?) {
-        // Intentional: don't do a reset. The popped mat4 is returned so the information may be required temporarily
+    override fun resetWhenFreed(obj: Matrix4) {
     }
 }
