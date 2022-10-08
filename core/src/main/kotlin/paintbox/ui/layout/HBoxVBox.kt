@@ -282,6 +282,24 @@ open class HBox : AbstractHVBox<HBox.Align>() {
     override fun doAutosize() {
         sizeWidthToChildren(autoSizeMinimumSize.get(), autoSizeMaximumSize.get())
     }
+    
+    override fun sizeWidthToChildren(minimumWidth: Float, maximumWidth: Float): Float {
+        val last = children.lastOrNull() // In an HBox, the last child determines the width (flows left to right)
+        var width = 0f
+        if (last != null) {
+            width = last.bounds.x.get() + last.bounds.width.get()
+        }
+
+        val borderInsets = this.border.getOrCompute()
+        val marginInsets = this.margin.getOrCompute()
+        val paddingInsets = this.padding.getOrCompute()
+
+        width += borderInsets.leftAndRight() + marginInsets.leftAndRight() + paddingInsets.leftAndRight()
+
+        val computedWidth = width.coerceIn(minimumWidth, maximumWidth)
+        this.bounds.width.set(computedWidth)
+        return computedWidth
+    }
 }
 
 /**
@@ -319,5 +337,23 @@ open class VBox : AbstractHVBox<VBox.Align>() {
 
     override fun doAutosize() {
         sizeHeightToChildren(autoSizeMinimumSize.get(), autoSizeMaximumSize.get())
+    }
+    
+    override fun sizeHeightToChildren(minimumHeight: Float, maximumHeight: Float): Float {
+        val last = children.lastOrNull() // In a VBox, the last child determines the height (flows top to bottom)
+        var height = 0f
+        if (last != null) {
+            height = last.bounds.y.get() + last.bounds.height.get()
+        }
+
+        val borderInsets = this.border.getOrCompute()
+        val marginInsets = this.margin.getOrCompute()
+        val paddingInsets = this.padding.getOrCompute()
+
+        height += borderInsets.topAndBottom() + marginInsets.topAndBottom() + paddingInsets.topAndBottom()
+
+        val computedHeight = height.coerceIn(minimumHeight, maximumHeight)
+        this.bounds.height.set(computedHeight)
+        return computedHeight
     }
 }

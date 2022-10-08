@@ -299,8 +299,11 @@ open class UIElement : UIBounds() {
         }
     }
 
-    fun sizeWidthToChildren(minimumWidth: Float = 0f, maximumWidth: Float = Float.POSITIVE_INFINITY) {
-        val last = children.lastOrNull()
+    open fun sizeWidthToChildren(minimumWidth: Float = 0f, maximumWidth: Float = Float.POSITIVE_INFINITY): Float {
+        // Use the farthest-right (X+) child based on right edge
+        val last = children.maxByOrNull { child ->
+            child.bounds.x.get() + child.bounds.width.get()
+        }
         var width = 0f
         if (last != null) {
             width = last.bounds.x.get() + last.bounds.width.get()
@@ -312,11 +315,16 @@ open class UIElement : UIBounds() {
 
         width += borderInsets.leftAndRight() + marginInsets.leftAndRight() + paddingInsets.leftAndRight()
 
-        this.bounds.width.set(width.coerceIn(minimumWidth, maximumWidth))
+        val computedWidth = width.coerceIn(minimumWidth, maximumWidth)
+        this.bounds.width.set(computedWidth)
+        return computedWidth
     }
 
-    fun sizeHeightToChildren(minimumHeight: Float = 0f, maximumHeight: Float = Float.POSITIVE_INFINITY) {
-        val last = children.lastOrNull()
+    open fun sizeHeightToChildren(minimumHeight: Float = 0f, maximumHeight: Float = Float.POSITIVE_INFINITY): Float {
+        // Use the farthest-down (Y+) child based on bottom edge
+        val last = children.maxByOrNull { child ->
+            child.bounds.y.get() + child.bounds.height.get()
+        }
         var height = 0f
         if (last != null) {
             height = last.bounds.y.get() + last.bounds.height.get()
@@ -328,7 +336,9 @@ open class UIElement : UIBounds() {
 
         height += borderInsets.topAndBottom() + marginInsets.topAndBottom() + paddingInsets.topAndBottom()
 
-        this.bounds.height.set(height.coerceIn(minimumHeight, maximumHeight))
+        val computedHeight = height.coerceIn(minimumHeight, maximumHeight)
+        this.bounds.height.set(computedHeight)
+        return computedHeight
     }
 
     /**
