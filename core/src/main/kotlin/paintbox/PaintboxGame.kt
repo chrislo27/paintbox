@@ -105,24 +105,36 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
     
     
     val unifontFont: PaintboxFont
-        inline get() = fontCache["UNIFONT"]
+        get() = fontCache["UNIFONT"]
     val debugFont: PaintboxFont
-        inline get() = fontCache["DEBUG_FONT"]
+        get() = fontCache["DEBUG_FONT"]
     val debugFontBordered: PaintboxFont
-        inline get() = fontCache["DEBUG_FONT_BORDERED"]
+        get() = fontCache["DEBUG_FONT_BORDERED"]
     val debugFontBold: PaintboxFont
-        inline get() = fontCache["DEBUG_FONT_BOLD"]
+        get() = fontCache["DEBUG_FONT_BOLD"]
     val debugFontBoldBordered: PaintboxFont
-        inline get() = fontCache["DEBUG_FONT_BOLD_BORDERED"]
+        get() = fontCache["DEBUG_FONT_BOLD_BORDERED"]
     val debugFontItalic: PaintboxFont
-        inline get() = fontCache["DEBUG_FONT_ITALIC"]
+        get() = fontCache["DEBUG_FONT_ITALIC"]
     val debugFontItalicBordered: PaintboxFont
-        inline get() = fontCache["DEBUG_FONT_ITALIC_BORDERED"]
+        get() = fontCache["DEBUG_FONT_ITALIC_BORDERED"]
     val debugFontBoldItalic: PaintboxFont
-        inline get() = fontCache["DEBUG_FONT_BOLD_ITALIC"]
+        get() = fontCache["DEBUG_FONT_BOLD_ITALIC"]
     val debugFontBoldItalicBordered: PaintboxFont
-        inline get() = fontCache["DEBUG_FONT_BOLD_ITALIC_BORDERED"]
+        get() = fontCache["DEBUG_FONT_BOLD_ITALIC_BORDERED"]
+    
+    val debugMarkup: Markup by lazy { Markup(mapOf(
+            Markup.FONT_NAME_BOLD to debugFontBold,
+            Markup.FONT_NAME_ITALIC to debugFontItalic,
+            Markup.FONT_NAME_BOLDITALIC to debugFontBoldItalic
+    ), TextRun(debugFont, ""), Markup.FontStyles.ALL_USING_BOLD_ITALIC) }
+    val debugMarkupBordered: Markup by lazy { Markup(mapOf(
+            Markup.FONT_NAME_BOLD to debugFontBoldBordered, 
+            Markup.FONT_NAME_ITALIC to debugFontItalicBordered, 
+            Markup.FONT_NAME_BOLDITALIC to debugFontBoldItalicBordered
+    ), TextRun(debugFontBoldBordered, ""), Markup.FontStyles.ALL_USING_BOLD_ITALIC) }
 
+    
     /**
      * Should include the version.
      */
