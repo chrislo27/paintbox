@@ -123,16 +123,8 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings)
     val debugFontBoldItalicBordered: PaintboxFont
         get() = fontCache["DEBUG_FONT_BOLD_ITALIC_BORDERED"]
     
-    val debugMarkup: Markup by lazy { Markup(mapOf(
-            Markup.FONT_NAME_BOLD to debugFontBold,
-            Markup.FONT_NAME_ITALIC to debugFontItalic,
-            Markup.FONT_NAME_BOLDITALIC to debugFontBoldItalic
-    ), TextRun(debugFont, ""), Markup.FontStyles.ALL_USING_BOLD_ITALIC) }
-    val debugMarkupBordered: Markup by lazy { Markup(mapOf(
-            Markup.FONT_NAME_BOLD to debugFontBoldBordered, 
-            Markup.FONT_NAME_ITALIC to debugFontItalicBordered, 
-            Markup.FONT_NAME_BOLDITALIC to debugFontBoldItalicBordered
-    ), TextRun(debugFontBoldBordered, ""), Markup.FontStyles.ALL_USING_BOLD_ITALIC) }
+    val debugMarkup: Markup by lazy { Markup.createWithBoldItalic(debugFont, debugFontBold, debugFontItalic, debugFontBoldItalic) }
+    val debugMarkupBordered: Markup by lazy { Markup.createWithBoldItalic(debugFontBordered, debugFontBoldBordered, debugFontItalicBordered, debugFontBoldItalicBordered) }
 
     
     /**

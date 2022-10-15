@@ -29,7 +29,7 @@ import java.lang.NumberFormatException
  * ```
  * Special tags:
  * noinherit : Indicates that this tag shall not copy the attributes from the previous tag in the stack. This tag is not inherited
- * 
+ *
  * Core tags:
  * font=font_name : Defines the font for the text run. The font_name has to be pre-defined as part of the Markup object.
  * color=#RRGGBBAA : Defines the text run color.
@@ -53,6 +53,8 @@ import java.lang.NumberFormatException
  * exp : Exponent. Defines offsety=1.333, carryovery=false, scalex=0.58, scaley=0.58
  * scale=1.0 : Multiplies both the scalex and scaley tags by the given value
  * ```
+ *
+ * @param lenientMode If false, missing fonts are logged
  */
 class Markup(
     fontMapping: Map<String, PaintboxFont>, val defaultTextRun: TextRun,
@@ -88,6 +90,27 @@ class Markup(
         val TAG_EXPONENT: String = "exp"
         val TAG_SCALE: String = "scale"
 
+
+        fun createWithSingleFont(font: PaintboxFont, lenientMode: Boolean = false): Markup {
+            return Markup(emptyMap(), TextRun(font, ""), FontStyles.ALL_USING_DEFAULT_FONT, lenientMode)
+        }
+
+        fun createWithBoldItalic(
+            normalFont: PaintboxFont, boldFont: PaintboxFont?, italicFont: PaintboxFont?,
+            boldItalicFont: PaintboxFont?, lenientMode: Boolean = false
+        ): Markup {
+            val mapping = mutableMapOf<String, PaintboxFont>()
+            if (boldFont != null) mapping[FONT_NAME_BOLD] = boldFont
+            if (italicFont != null) mapping[FONT_NAME_ITALIC] = italicFont
+            if (boldItalicFont != null) mapping[FONT_NAME_BOLDITALIC] = boldItalicFont
+            
+            val styles = FontStyles(if (boldFont != null) FONT_NAME_BOLD else DEFAULT_FONT_NAME,
+                    if (italicFont != null) FONT_NAME_ITALIC else DEFAULT_FONT_NAME,
+                    if (boldItalicFont != null) FONT_NAME_BOLDITALIC else DEFAULT_FONT_NAME)
+            
+            return Markup(mapping, TextRun(normalFont, ""), styles, lenientMode)
+        }
+
 //        @JvmStatic
 //        fun main(args: Array<String>) {
 //            val markup = Markup()
@@ -104,21 +127,21 @@ class Markup(
 
     val fontMapping: Map<String, PaintboxFont> = mapOf((DEFAULT_FONT_NAME to defaultTextRun.font)) + fontMapping
     private val missingFontLog: MutableSet<String> = mutableSetOf()
-    
+
     private fun logMissingFont(key: String) {
         if (key !in missingFontLog) {
             Paintbox.LOGGER.warn("[Markup] Font with key $key was not found in the fontMapping (${fontMapping.keys}).")
             missingFontLog += key
         }
     }
-    
+
     fun parse(markup: String): TextBlock {
         return parse(parseSymbolsToTags(parseIntoSymbols(markup)))
     }
 
     private fun parse(tags: List<Tag>): TextBlock {
         val runs = mutableListOf<TextRun>()
-        
+
         val defaultFont = fontMapping.getValue(DEFAULT_FONT_NAME)
 
         tags.forEach { tag ->
@@ -151,7 +174,7 @@ class Markup(
             var xAdvance = tag.attrMap[TAG_XADVANCE]?.valueAsFloatOr(0f) ?: 0f
             var lineHeightScale = tag.attrMap[TAG_LINEHEIGHT]?.valueAsFloatOr(1f) ?: 1f
 
-            
+
             val scale = tag.attrMap[TAG_SCALE]?.valueAsFloatOr(1f) ?: 1f
             if (scale != 1f) {
                 scaleX *= scale
@@ -159,9 +182,9 @@ class Markup(
             }
 
             val bold = (tag.attrMap[TAG_BOLD]?.valueAsBooleanOr(false)
-                    ?: false) || (tag.attrMap[TAG_BOLD2]?.valueAsBooleanOr(false) ?: false)
+                ?: false) || (tag.attrMap[TAG_BOLD2]?.valueAsBooleanOr(false) ?: false)
             val italic = (tag.attrMap[TAG_ITALIC]?.valueAsBooleanOr(false)
-                    ?: false) || (tag.attrMap[TAG_ITALIC2]?.valueAsBooleanOr(false) ?: false)
+                ?: false) || (tag.attrMap[TAG_ITALIC2]?.valueAsBooleanOr(false) ?: false)
             val bolditalic = bold && italic
 
             if (bolditalic) {
@@ -204,7 +227,8 @@ class Markup(
     private fun parseSymbolsToTags(symbols: List<Symbol>): List<Tag> {
         if (symbols.isEmpty()) return parseSymbolsToTags(listOf(Symbol.Text("")))
 
-        val defaultRootTag = Tag(linkedSetOf(Attribute(TAG_FONT, DEFAULT_FONT_NAME),
+        val defaultRootTag = Tag(linkedSetOf(
+                Attribute(TAG_FONT, DEFAULT_FONT_NAME),
                 Attribute(TAG_COLOR, defaultTextRun.color),
                 Attribute(TAG_SCALEX, defaultTextRun.scaleX),
                 Attribute(TAG_SCALEY, defaultTextRun.scaleY),
@@ -224,6 +248,7 @@ class Markup(
                 is Symbol.Text -> {
                     text += symbol.str
                 }
+
                 is Symbol.StartTag -> {
                     // Push previous text segment as a Tag
                     val topOfStack: Tag = tagStack.last()
@@ -242,6 +267,7 @@ class Markup(
                     }
                     tagStack += Tag(LinkedHashSet(mergedAttributes.values.toList()), "")
                 }
+
                 Symbol.EndTag -> {
                     // Push previous text segment as a Tag
                     val topOfStack = tagStack.last()
@@ -397,10 +423,10 @@ class Markup(
 
     data class Attribute(val key: String, val value: Any) {
         fun valueAsIntOr(default: Int): Int = if (value is Int) value else if (value is String) (value.toIntOrNull()
-                ?: default) else default
+            ?: default) else default
 
         fun valueAsString(): String = value.toString()
-        
+
         fun valueAsFloatOr(default: Float): Float = when (val v = value) {
             is Float -> v
             is Double -> v.toFloat()
