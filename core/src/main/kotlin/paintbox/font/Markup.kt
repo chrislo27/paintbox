@@ -97,12 +97,14 @@ class Markup(
 
         fun createWithBoldItalic(
             normalFont: PaintboxFont, boldFont: PaintboxFont?, italicFont: PaintboxFont?,
-            boldItalicFont: PaintboxFont?, lenientMode: Boolean = false
+            boldItalicFont: PaintboxFont?,
+            additionalMappings: Map<String, PaintboxFont>? = null, lenientMode: Boolean = false
         ): Markup {
             val mapping = mutableMapOf<String, PaintboxFont>()
             if (boldFont != null) mapping[FONT_NAME_BOLD] = boldFont
             if (italicFont != null) mapping[FONT_NAME_ITALIC] = italicFont
             if (boldItalicFont != null) mapping[FONT_NAME_BOLDITALIC] = boldItalicFont
+            if (additionalMappings != null) mapping += additionalMappings
             
             val styles = FontStyles(if (boldFont != null) FONT_NAME_BOLD else DEFAULT_FONT_NAME,
                     if (italicFont != null) FONT_NAME_ITALIC else DEFAULT_FONT_NAME,
