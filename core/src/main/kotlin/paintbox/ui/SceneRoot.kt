@@ -2,6 +2,7 @@ package paintbox.ui
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Camera
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector2
@@ -20,6 +21,10 @@ import paintbox.util.gdxutils.drawRect
  * The [SceneRoot] element has the position 0, 0 and always has the width and height of the UI screen space.
  */
 class SceneRoot(val viewport: Viewport) : UIElement() {
+    
+    companion object {
+        val DEFAULT_DEBUG_OUTLINE_COLOR: Color = Color(0f, 1f, 0f, 1f)
+    }
 
     data class MousePosition(val x: FloatVar, val y: FloatVar)
     
@@ -70,6 +75,8 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
 
     private val _currentFocused: Var<Focusable?> = Var(null)
     val currentFocusedElement: ReadOnlyVar<Focusable?> = _currentFocused
+    
+    val debugOutlineColor: Var<Color> = Var(DEFAULT_DEBUG_OUTLINE_COLOR.cpy())
     
     constructor(camera: OrthographicCamera) : this(NoOpViewport(camera)) {
         applyViewport.set(false)
@@ -160,7 +167,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         val drawOutlines = Paintbox.uiDebugOutlines.getOrCompute()
         if (drawOutlines != Paintbox.UIDebugOutlineMode.NONE) {
             val lastPackedColor = batch.packedColor
-            batch.setColor(0f, 1f, 0f, 1f)
+            batch.color = this.debugOutlineColor.getOrCompute()
             val useOutlines = drawOutlines == Paintbox.UIDebugOutlineMode.ONLY_VISIBLE
             val isDialogPresent = this.rootDialogElement != null
             for (layer in allLayers) {
