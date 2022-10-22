@@ -299,6 +299,13 @@ open class UIElement : UIBounds() {
         }
     }
 
+    /**
+     * If this function returns true, this element is excluded from input pathing ([pathToForInput]).
+     * This should not change its return value throughout the life of the element -- unexpected results may occur
+     * due to how pathing works in the input system.
+     */
+    open fun shouldExcludeFromInput(): Boolean = false
+
     open fun sizeWidthToChildren(minimumWidth: Float = 0f, maximumWidth: Float = Float.POSITIVE_INFINITY): Float {
         // Use the farthest-right (X+) child based on right edge
         val last = children.maxByOrNull { child ->
@@ -528,7 +535,7 @@ open class UIElement : UIBounds() {
 
     /**
      * Returns a list of [UIElement]s from this element to the child that contains the point within [UIBounds.contentZone].
-     * It also excludes elements that are not [visible].
+     * It also excludes elements that are not [visible] or whose [shouldExcludeFromInput] return true.
      * IMPLEMENTATION NOTE: This function assumes that all the children for a parent fit inside of that parent's bounds.
      */
     fun pathToForInput(x: Float, y: Float): List<UIElement> {
@@ -546,7 +553,7 @@ open class UIElement : UIBounds() {
                 if (!current.bounds.containsPointLocal(x, y)) break
             }
             val found = current.children.findLast { child ->
-                child.apparentVisibility.get()
+                child.apparentVisibility.get() && !child.shouldExcludeFromInput()
                         && child.borderZone.containsPointLocal(x - xOffset, y - yOffset)
             } ?: break
 
