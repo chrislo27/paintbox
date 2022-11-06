@@ -162,10 +162,11 @@ data class TextBlock(val runs: List<TextRun>) {
                             // Only the first run matters for wrapping.    
                             val firstRunWidth = gl.runs.first().width
                             if (firstRunWidth > continuationLineWidth) {
-                                // The contiguous block does NOT fit! Find the wrap point and inject a newline.
+                                // This contiguous block does NOT fit! Find a wrap point and inject a newline.
+                                
                                 if (continuationLineWidth < font.data.spaceXadvance * 3) {
                                     // Minimum wrap length in GlyphLayout. We should just put a newline immediately, otherwise we'll get very fragmented words
-                                    text = " \n" + text.trimStart() // Space required to not trigger blankLineScale
+                                    text = " \n" + text.trimStart() // The leading space is required to not trigger blankLineScale
                                 } else {
                                     gl.setText(font, textRun.text, color, continuationLineWidth, Align.left, true)
                                     if (gl.runs.size >= 2) {
@@ -173,8 +174,17 @@ data class TextBlock(val runs: List<TextRun>) {
                                         // the second one, since the first original run will have been split.    
                                         val first = gl.runs[0]
                                         val wrapIndex = first.glyphs.size + 1
-                                        if (wrapIndex in 0 until text.length) {
-                                            text = text.substring(0, wrapIndex) + "\n" + text.substring(wrapIndex).trimStart()
+                                        if (wrapIndex in 1 until text.length) { // wrapIndex will always be >= 1
+                                            val preChar = text[wrapIndex - 1]
+                                            text = if (!font.data.isWhitespace(preChar)) {
+                                                // If the char before the newline is not a breaking-allowed char, 
+                                                // then we assume that this word was split in the middle. That looks bad,
+                                                // so we'll split at the beginning of the run instead.
+                                                // This case happens frequently if a new text run was added due to bolding etc.
+                                                " \n" + text.trimStart() // The leading space is required to not trigger blankLineScale
+                                            } else {
+                                                text.substring(0, wrapIndex) + "\n" + text.substring(wrapIndex).trimStart()
+                                            }
                                         }
                                     }
                                 }
