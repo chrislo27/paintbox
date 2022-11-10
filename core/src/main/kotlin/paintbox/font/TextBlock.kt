@@ -237,11 +237,7 @@ data class TextBlock(val runs: List<TextRun>) {
                     currentLineWidth = posX
                     posX = 0f
 
-//                    val firstInfoIndex = lineInfo.lastOrNull()?.glyphIndexEndEx ?: Pair(0, 0)
-                    lineInfo += LineInfo(
-                            currentLineIndex, currentLineWidth, currentLineStartY,
-                            /*firstInfoIndex, Pair(textRunIndex, glyphRunInfoIndex)*/
-                    )
+                    lineInfo += LineInfo(currentLineIndex, currentLineWidth, currentLineStartY)
                     currentLineIndex++
                     currentLineWidth = 0f
                     updateCurrentLineStartY = true
@@ -296,11 +292,7 @@ data class TextBlock(val runs: List<TextRun>) {
                     currentLineWidth = posX
                     posX = 0f
                     // This is a new line
-//                    val firstInfoIndex = lineInfo.lastOrNull()?.glyphIndexEndEx ?: Pair(0, 0)
-                    lineInfo += LineInfo(
-                            currentLineIndex, currentLineWidth, currentLineStartY,
-                            /*firstInfoIndex, Pair(textRunIndex, textRunInfo.glyphRunInfo.size)*/
-                    )
+                    lineInfo += LineInfo(currentLineIndex, currentLineWidth, currentLineStartY)
                     currentLineIndex++
                     currentLineWidth = 0f
                     updateCurrentLineStartY = true
@@ -325,11 +317,7 @@ data class TextBlock(val runs: List<TextRun>) {
             textRunInfo
         }
 
-//        val firstInfoIndex = lineInfo.lastOrNull()?.glyphIndexEndEx ?: Pair(0, 0)
-        lineInfo += LineInfo(
-                currentLineIndex, currentLineWidth, currentLineStartY,
-                /*firstInfoIndex, runInfo.size to runInfo.last().glyphRunInfo.size*/
-        )
+        lineInfo += LineInfo(currentLineIndex, currentLineWidth, currentLineStartY)
 
         this.runInfo = runInfo
         this.lineInfo = lineInfo
