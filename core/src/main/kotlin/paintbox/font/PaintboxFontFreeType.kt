@@ -8,6 +8,7 @@ import paintbox.util.WindowSize
 import paintbox.util.gdxutils.copy
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 /**
  * A wrapper around a [FreeTypeFontGenerator].
@@ -113,14 +114,14 @@ open class PaintboxFontFreeType(
         
         if (this.upscaledFactor != scale) {
             this.dispose()
-//            println("New upscaled factor: ${this.upscaledFactor} to $scale    $windowSize, ref $referenceSize")
+            val oldFactor = this.upscaledFactor
             this.upscaledFactor = scale
             
-
             val newParam = ftfParameter.copy()
             val oldParams = params
             newParam.size = (oldParams.fontSize * scale).toInt()
             newParam.borderWidth = oldParams.borderSize * scale
+//            println("New upscaled factor: from ${oldFactor} to $scale -- size=${oldParams.fontSize} -> ${newParam.size}, borderWidth=${oldParams.borderSize} -> ${newParam.borderWidth} $windowSize, ref $referenceSize")
 
             val generator = FreeTypeFontGenerator(oldParams.file)
             val generatedFont = generator.generateFont(newParam)
