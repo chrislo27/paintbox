@@ -4,7 +4,6 @@ import paintbox.binding.*
 import paintbox.ui.Pane
 import paintbox.ui.UIElement
 import paintbox.ui.area.Bounds
-import paintbox.ui.area.Insets
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -70,6 +69,12 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
      */
     val autoSizeMaximumSize: FloatVar = FloatVar(Float.POSITIVE_INFINITY)
     
+    /**
+     * If true, elements act as if they were in reverse order.
+     */
+    val reverseLayout: BooleanVar = BooleanVar(false)
+    
+    // TODO autosizing doesn't work with non-MIN internal alignment
     protected val internalAlignment: Var<InternalAlignment> = Var(InternalAlignment.MIN)
     private var isDoingLayout: Boolean = false
 
@@ -80,6 +85,9 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
             reLayout()
         }
         internalAlignment.addListener {
+            reLayout()
+        }
+        reverseLayout.addListener {
             reLayout()
         }
         disableLayouts.addListener {
@@ -165,12 +173,17 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
         
         isDoingLayout = true
         try {
-            val cache = elementCache
-            var acc = if (index > 0) (cache[index - 1].let { it.position + it.dimension + it.nextSpacing }) else 0f
+            var idx = index
+            var cache = elementCache.toList()
+            if (reverseLayout.get()) {
+                cache = cache.asReversed()
+                idx = cache.size - idx - 1
+            }
+            var acc = if (idx > 0) (cache[idx - 1].let { it.position + it.dimension + it.nextSpacing }) else 0f
             val cacheSize = cache.size
             val spacingValue = spacing.get()
 
-            for (i in index until cacheSize) {
+            for (i in idx until cacheSize) {
                 val d = cache[i]
                 val element = d.element
                 d.position = acc
@@ -256,6 +269,10 @@ open class HBox : AbstractHVBox<HBox.Align>() {
         LEFT(InternalAlignment.MIN), CENTRE(InternalAlignment.MIDDLE), RIGHT(InternalAlignment.MAX);
     }
 
+    /**
+     * Alias for [reverseLayout].
+     */
+    val rightToLeft: BooleanVar get() = super.reverseLayout
     override val align: Var<Align> = Var(Align.LEFT)
 
     init {
@@ -284,7 +301,8 @@ open class HBox : AbstractHVBox<HBox.Align>() {
     }
     
     override fun sizeWidthToChildren(minimumWidth: Float, maximumWidth: Float): Float {
-        val last = children.lastOrNull() // In an HBox, the last child determines the width (flows left to right)
+        // In an HBox, the last child in the flow determines the width (left to right -> last, right to left -> first)
+        val last = if (rightToLeft.get()) children.firstOrNull() else children.lastOrNull()
         var width = 0f
         if (last != null) {
             width = last.bounds.x.get() + last.bounds.width.get()
@@ -312,6 +330,10 @@ open class VBox : AbstractHVBox<VBox.Align>() {
         TOP(InternalAlignment.MIN), CENTRE(InternalAlignment.MIDDLE), BOTTOM(InternalAlignment.MAX);
     }
 
+    /**
+     * Alias for [reverseLayout].
+     */
+    val bottomToTop: BooleanVar get() = super.reverseLayout
     override val align: Var<Align> = Var(Align.TOP)
 
     init {
@@ -340,7 +362,8 @@ open class VBox : AbstractHVBox<VBox.Align>() {
     }
     
     override fun sizeHeightToChildren(minimumHeight: Float, maximumHeight: Float): Float {
-        val last = children.lastOrNull() // In a VBox, the last child determines the height (flows top to bottom)
+        // In an VBox, the last child in the flow determines the width (top to bottom -> last, bottom to top -> first)
+        val last = if (bottomToTop.get()) children.firstOrNull() else children.lastOrNull()
         var height = 0f
         if (last != null) {
             height = last.bounds.y.get() + last.bounds.height.get()
