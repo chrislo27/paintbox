@@ -113,12 +113,6 @@ class Markup(
             
             return Markup(mapping, TextRun(normalFont, ""), styles, lenientMode)
         }
-
-//        @JvmStatic
-//        fun main(args: Array<String>) {
-//            val markup = Markup()
-//            println(markup.parseIntoSymbols("test [    font\\]name=bold_font    color=#ff3322  tag3 tag4 tag5 tag6=hi   ]subtag text[color]inner tag[]back to outer[]and finally outermost"))
-//        }
     }
 
     data class FontStyles(val bold: String, val italic: String, val boldItalic: String) {
@@ -184,12 +178,9 @@ class Markup(
                 scaleY *= scale
             }
 
-            val bold = (tag.attrMap[TAG_BOLD]?.valueAsBooleanOr(false)
-                ?: false) || (tag.attrMap[TAG_BOLD2]?.valueAsBooleanOr(false) ?: false)
-            val italic = (tag.attrMap[TAG_ITALIC]?.valueAsBooleanOr(false)
-                ?: false) || (tag.attrMap[TAG_ITALIC2]?.valueAsBooleanOr(false) ?: false)
+            val bold = (tag.attrMap[TAG_BOLD]?.valueAsBooleanOr(false) ?: false) || (tag.attrMap[TAG_BOLD2]?.valueAsBooleanOr(false) ?: false)
+            val italic = (tag.attrMap[TAG_ITALIC]?.valueAsBooleanOr(false) ?: false) || (tag.attrMap[TAG_ITALIC2]?.valueAsBooleanOr(false) ?: false)
             val bolditalic = bold && italic
-
             if (bolditalic) {
                 font = fontMapping[styles.boldItalic] ?: defaultFont
             } else if (bold) {
@@ -425,8 +416,13 @@ class Markup(
     }
 
     data class Attribute(val key: String, val value: Any) {
-        fun valueAsIntOr(default: Int): Int = if (value is Int) value else if (value is String) (value.toIntOrNull()
-            ?: default) else default
+        fun valueAsIntOr(default: Int): Int = if (value is Int) {
+            value
+        } else if (value is String) {
+            (value.toIntOrNull() ?: default)
+        } else {
+            default
+        }
 
         fun valueAsString(): String = value.toString()
 
@@ -449,7 +445,7 @@ class Markup(
         }
     }
 
-    data class Tag(val attributes: LinkedHashSet<Attribute>, val text: String) {
+    private data class Tag(val attributes: LinkedHashSet<Attribute>, val text: String) {
         val attrMap: LinkedHashMap<String, Attribute> = attributes.associateByTo(LinkedHashMap()) { it.key }
     }
 
