@@ -9,6 +9,8 @@ import java.lang.NumberFormatException
 /**
  * A very simplistic markup language for forming [TextBlock]s.
  *
+ * There is a type-safe builder [Builder].
+ * 
  * ```
  * - The language has tags on a stack.
  * - A tag is a non-empty set of attributes enclosed in square brackets [b].
@@ -89,8 +91,6 @@ class Markup(
         val TAG_SUPERSCRIPT: String = "sup"
         val TAG_EXPONENT: String = "exp"
         val TAG_SCALE: String = "scale"
-
-        private val ESCAPE_SQUARE_BRACKETS_REGEX: Regex = """(?<!\\)([\[\]])""".toRegex()
         
         fun createWithSingleFont(font: PaintboxFont, lenientMode: Boolean = false): Markup {
             return Markup(emptyMap(), TextRun(font, ""), FontStyles.ALL_USING_DEFAULT_FONT, lenientMode)
@@ -114,13 +114,6 @@ class Markup(
             return Markup(mapping, TextRun(normalFont, ""), styles, lenientMode)
         }
 
-        /**
-         * Escapes left and right square brackets from [text].
-         */
-        fun escapeSquareBrackets(text: String): String {
-            return ESCAPE_SQUARE_BRACKETS_REGEX.replace(text, """\\$1""")
-        }
-
 //        @JvmStatic
 //        fun main(args: Array<String>) {
 //            val markup = Markup()
@@ -140,7 +133,7 @@ class Markup(
 
     private fun logMissingFont(key: String) {
         if (key !in missingFontLog) {
-            Paintbox.LOGGER.warn("[Markup] Font with key $key was not found in the fontMapping (${fontMapping.keys}).")
+            Paintbox.LOGGER.warn("Font with key $key was not found in the fontMapping (${fontMapping.keys}).", tag = "Markup")
             missingFontLog += key
         }
     }
@@ -468,7 +461,6 @@ class Markup(
         }
 
         class StartTag(val attributes: LinkedHashSet<Attribute>) : Symbol() {
-            val attrMap: LinkedHashMap<String, Attribute> = attributes.associateByTo(LinkedHashMap()) { it.key }
             override fun toString(): String {
                 return "StartTag[${attributes.toList().joinToString(separator = " ")}]"
             }
@@ -480,4 +472,77 @@ class Markup(
             }
         }
     }
+    
+    inner class Builder {
+        
+        private val symbolList: MutableList<Symbol> = mutableListOf()
+        private val startTagStack: MutableList<Symbol.StartTag> = mutableListOf()
+        
+        fun build(): TextBlock {
+            return this@Markup.parse(parseSymbolsToTags(symbolList))
+        }
+        
+        fun text(text: String): Builder {
+            symbolList += Symbol.Text(text)
+            return this
+        }
+        
+        fun noinherit(flag: Boolean = true): Builder = addAttributeToStartTag(Attribute(TAG_NOINHERIT, flag))
+        
+        fun font(key: String, lenient: Boolean = this@Markup.lenientMode): Builder {
+            if (!lenient && fontMapping[key] == null) {
+                error("Font with key $key was not found in the fontMapping (${fontMapping.keys}).")
+            }
+            return addAttributeToStartTag(Attribute(TAG_FONT, key))
+        }
+        
+        fun color(color: Color): Builder = addAttributeToStartTag(Attribute(TAG_COLOR, Color.argb8888(color)))
+        fun color(colorName: String): Builder = addAttributeToStartTag(Attribute(TAG_COLOR, colorName))
+        
+        fun scaleX(value: Float): Builder = addAttributeToStartTag(Attribute(TAG_SCALEX, value))
+        fun scaleY(value: Float): Builder = addAttributeToStartTag(Attribute(TAG_SCALEY, value))
+        fun scale(value: Float): Builder = addAttributeToStartTag(Attribute(TAG_SCALE, value))
+        
+        fun offsetX(value: Float): Builder = addAttributeToStartTag(Attribute(TAG_OFFSETX, value))
+        fun offsetY(value: Float): Builder = addAttributeToStartTag(Attribute(TAG_OFFSETY, value))
+        
+        fun carryOverX(flag: Boolean = true): Builder = addAttributeToStartTag(Attribute(TAG_CARRYOVERX, flag))
+        fun carryOverY(flag: Boolean = true): Builder = addAttributeToStartTag(Attribute(TAG_CARRYOVERY, flag))
+        
+        fun xAdvance(xAdvanceEm: Float): Builder = addAttributeToStartTag(Attribute(TAG_XADVANCE, xAdvanceEm))
+        fun lineHeight(lineHeightScale: Float): Builder = addAttributeToStartTag(Attribute(TAG_LINEHEIGHT, lineHeightScale))
+
+        fun bold(flag: Boolean = true): Builder = addAttributeToStartTag(Attribute(TAG_BOLD, flag))
+        fun italic(flag: Boolean = true): Builder = addAttributeToStartTag(Attribute(TAG_ITALIC, flag))
+        
+        fun subscript(flag: Boolean = true): Builder = addAttributeToStartTag(Attribute(TAG_SUBSCRIPT, flag))
+        fun superscript(flag: Boolean = true): Builder = addAttributeToStartTag(Attribute(TAG_SUPERSCRIPT, flag))
+        
+        private fun addAttributeToStartTag(attribute: Attribute): Builder {
+            return if (startTagStack.isEmpty()) {
+                startTag(listOf(attribute))
+            } else {
+                startTagStack.last().attributes.add(attribute)
+                this
+            }
+        }
+        
+        fun startTag(): Builder = startTag(emptyList())
+        
+        fun startTag(attributes: List<Attribute>): Builder {
+            val set = LinkedHashSet<Attribute>(attributes.size)
+            set.addAll(attributes)
+            val tag = Symbol.StartTag(set)
+            startTagStack += tag
+            symbolList += tag
+            return this
+        }
+        
+        fun endTag(): Builder {
+            startTagStack.removeLastOrNull() ?: error("Cannot add an end tag when there are no start tags")
+            symbolList += Symbol.EndTag
+            return this
+        }
+    }
+    
 }
