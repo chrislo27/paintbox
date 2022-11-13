@@ -90,7 +90,8 @@ class Markup(
         val TAG_EXPONENT: String = "exp"
         val TAG_SCALE: String = "scale"
 
-
+        private val ESCAPE_SQUARE_BRACKETS_REGEX: Regex = """(?<!\\)([\[\]])""".toRegex()
+        
         fun createWithSingleFont(font: PaintboxFont, lenientMode: Boolean = false): Markup {
             return Markup(emptyMap(), TextRun(font, ""), FontStyles.ALL_USING_DEFAULT_FONT, lenientMode)
         }
@@ -111,6 +112,13 @@ class Markup(
                     if (boldItalicFont != null) FONT_NAME_BOLDITALIC else DEFAULT_FONT_NAME)
             
             return Markup(mapping, TextRun(normalFont, ""), styles, lenientMode)
+        }
+
+        /**
+         * Escapes left and right square brackets from [text].
+         */
+        fun escapeSquareBrackets(text: String): String {
+            return ESCAPE_SQUARE_BRACKETS_REGEX.replace(text, """\\$1""")
         }
 
 //        @JvmStatic
