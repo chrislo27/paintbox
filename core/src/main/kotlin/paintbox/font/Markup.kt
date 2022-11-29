@@ -200,9 +200,8 @@ class Markup(
                 offsetY = -0.333f
             }
             if (superscript) {
-                // offsety=1.333, carryovery=true
+                // offsety=1.333
                 offsetY = 1.333f
-                carryoverY = true
             }
             if (exponent) {
                 // offsety=1.333, carryovery=false, scalex=0.58, scaley=0.58
