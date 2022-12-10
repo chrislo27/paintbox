@@ -123,7 +123,7 @@ open class PaintboxFontFreeType(
             newParam.borderWidth = oldParams.borderSize * scale
 //            println("New upscaled factor: from ${oldFactor} to $scale -- size=${oldParams.fontSize} -> ${newParam.size}, borderWidth=${oldParams.borderSize} -> ${newParam.borderWidth} $windowSize, ref $referenceSize")
 
-            val generator = FreeTypeFontGenerator(oldParams.file)
+            val generator = FreeTypeFontGeneratorFix(oldParams.file)
             val generatedFont = generator.generateFont(newParam)
             this.generator = generator
             this.currentFont = generatedFont
