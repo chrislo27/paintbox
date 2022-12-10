@@ -23,6 +23,13 @@ interface ReadOnlyDoubleVar : ReadOnlyVar<Double> {
      * and use the `double` specialization specific functions ([Var.Context.use]).
      */
     fun get(): Double
+    
+    /**
+     * Adds a *strong* reference listener to this [ReadOnlyDoubleVar]. It can be removed with [removeListener].
+     */
+    fun addListener(listener: DoubleVarChangedListener) {
+        this.addListener(listener as VarChangedListener<Double>)
+    }
 
     @Deprecated("Use ReadOnlyDoubleVar.get() instead to avoid explicit boxing",
             replaceWith = ReplaceWith("this.get()"),
@@ -35,6 +42,20 @@ interface ReadOnlyDoubleVar : ReadOnlyVar<Double> {
 internal class ReadOnlyConstDoubleVar(private val value: Double) : ReadOnlyVarBase<Double>(), ReadOnlyDoubleVar {
     override fun get(): Double {
         return value
+    }
+}
+
+/**
+ * A specialized [VarChangedListener] that only listens to a [ReadOnlyDoubleVar].
+ */
+fun interface DoubleVarChangedListener : VarChangedListener<Double> {
+
+    fun onChange(v: ReadOnlyDoubleVar)
+
+    override fun onChange(v: ReadOnlyVar<Double>) {
+        if (v is ReadOnlyDoubleVar) {
+            onChange(v)
+        }
     }
 }
 

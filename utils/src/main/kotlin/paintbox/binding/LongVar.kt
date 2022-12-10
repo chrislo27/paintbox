@@ -24,6 +24,13 @@ interface ReadOnlyLongVar : ReadOnlyVar<Long> {
      */
     fun get(): Long
 
+    /**
+     * Adds a *strong* reference listener to this [ReadOnlyLongVar]. It can be removed with [removeListener].
+     */
+    fun addListener(listener: LongVarChangedListener) {
+        this.addListener(listener as VarChangedListener<Long>)
+    }
+
     @Deprecated("Use ReadOnlyLongVar.get() instead to avoid explicit boxing",
             replaceWith = ReplaceWith("this.get()"),
             level = DeprecationLevel.ERROR)
@@ -35,6 +42,20 @@ interface ReadOnlyLongVar : ReadOnlyVar<Long> {
 internal class ReadOnlyConstLongVar(private val value: Long) : ReadOnlyVarBase<Long>(), ReadOnlyLongVar {
     override fun get(): Long {
         return value
+    }
+}
+
+/**
+ * A specialized [VarChangedListener] that only listens to a [ReadOnlyLongVar].
+ */
+fun interface LongVarChangedListener : VarChangedListener<Long> {
+
+    fun onChange(v: ReadOnlyLongVar)
+
+    override fun onChange(v: ReadOnlyVar<Long>) {
+        if (v is ReadOnlyLongVar) {
+            onChange(v)
+        }
     }
 }
 

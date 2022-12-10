@@ -24,6 +24,13 @@ interface ReadOnlyIntVar : ReadOnlyVar<Int> {
      */
     fun get(): Int
 
+    /**
+     * Adds a *strong* reference listener to this [ReadOnlyIntVar]. It can be removed with [removeListener].
+     */
+    fun addListener(listener: IntVarChangedListener) {
+        this.addListener(listener as VarChangedListener<Int>)
+    }
+
     @Deprecated("Use ReadOnlyIntVar.get() instead to avoid explicit boxing",
             replaceWith = ReplaceWith("this.get()"),
             level = DeprecationLevel.ERROR)
@@ -35,6 +42,20 @@ interface ReadOnlyIntVar : ReadOnlyVar<Int> {
 internal class ReadOnlyConstIntVar(private val value: Int) : ReadOnlyVarBase<Int>(), ReadOnlyIntVar {
     override fun get(): Int {
         return value
+    }
+}
+
+/**
+ * A specialized [VarChangedListener] that only listens to a [ReadOnlyIntVar].
+ */
+fun interface IntVarChangedListener : VarChangedListener<Int> {
+
+    fun onChange(v: ReadOnlyIntVar)
+
+    override fun onChange(v: ReadOnlyVar<Int>) {
+        if (v is ReadOnlyIntVar) {
+            onChange(v)
+        }
     }
 }
 

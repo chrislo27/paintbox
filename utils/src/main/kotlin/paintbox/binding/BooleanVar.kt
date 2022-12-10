@@ -24,6 +24,13 @@ interface ReadOnlyBooleanVar : ReadOnlyVar<Boolean> {
      * and use the `boolean` specialization specific functions ([Var.Context.use]).
      */
     fun get(): Boolean
+    
+    /**
+     * Adds a *strong* reference listener to this [ReadOnlyBooleanVar]. It can be removed with [removeListener].
+     */
+    fun addListener(listener: BooleanVarChangedListener) {
+        this.addListener(listener as VarChangedListener<Boolean>)
+    }
 
     @Deprecated("Use ReadOnlyBooleanVar.get() instead to avoid explicit boxing",
             replaceWith = ReplaceWith("this.get()"),
@@ -34,8 +41,23 @@ interface ReadOnlyBooleanVar : ReadOnlyVar<Boolean> {
 }
 
 internal class ReadOnlyConstBooleanVar(private val value: Boolean) : ReadOnlyVarBase<Boolean>(), ReadOnlyBooleanVar {
+    
     override fun get(): Boolean {
         return value
+    }
+}
+
+/**
+ * A specialized [VarChangedListener] that only listens to a [ReadOnlyBooleanVar].
+ */
+fun interface BooleanVarChangedListener : VarChangedListener<Boolean> {
+
+    fun onChange(v: ReadOnlyBooleanVar)
+
+    override fun onChange(v: ReadOnlyVar<Boolean>) {
+        if (v is ReadOnlyBooleanVar) {
+            onChange(v)
+        }
     }
 }
 

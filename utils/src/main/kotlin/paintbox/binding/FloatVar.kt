@@ -23,6 +23,13 @@ interface ReadOnlyFloatVar : ReadOnlyVar<Float> {
      * and use the `float` specialization specific functions ([Var.Context.use]).
      */
     fun get(): Float
+    
+    /**
+     * Adds a *strong* reference listener to this [ReadOnlyFloatVar]. It can be removed with [removeListener].
+     */
+    fun addListener(listener: FloatVarChangedListener) {
+        this.addListener(listener as VarChangedListener<Float>)
+    }
 
     @Deprecated("Use ReadOnlyFloatVar.get() instead to avoid explicit boxing",
             replaceWith = ReplaceWith("this.get()"),
@@ -35,6 +42,20 @@ interface ReadOnlyFloatVar : ReadOnlyVar<Float> {
 internal class ReadOnlyConstFloatVar(private val value: Float) : ReadOnlyVarBase<Float>(), ReadOnlyFloatVar {
     override fun get(): Float {
         return value
+    }
+}
+
+/**
+ * A specialized [VarChangedListener] that only listens to a [ReadOnlyFloatVar].
+ */
+fun interface FloatVarChangedListener : VarChangedListener<Float> {
+
+    fun onChange(v: ReadOnlyFloatVar)
+
+    override fun onChange(v: ReadOnlyVar<Float>) {
+        if (v is ReadOnlyFloatVar) {
+            onChange(v)
+        }
     }
 }
 
