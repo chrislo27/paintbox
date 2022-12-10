@@ -64,13 +64,13 @@ abstract class ReadOnlyVarBase<T> : ReadOnlyVar<T> {
     
     override fun addListener(listener: VarChangedListener<T>) {
         if (listener !in listeners) {
-            listeners = listeners + listener
+            listeners = listeners + listener // TODO This copies everything. It's CME safe but makes a lot of LinkedHashSet.Entry garbage objects
         }
     }
 
     override fun removeListener(listener: VarChangedListener<T>) {
         if (listener in listeners) {
-            listeners = listeners - listener
+            listeners = listeners - listener // TODO This copies everything. It's CME safe but makes a lot of LinkedHashSet.Entry garbage objects
         }
     }
 
