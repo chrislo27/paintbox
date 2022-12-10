@@ -31,6 +31,8 @@ interface ReadOnlyDoubleVar : ReadOnlyVar<Double> {
         this.addListener(listener as VarChangedListener<Double>)
     }
 
+    fun addDoubleListener(listener: DoubleVarChangedListener) = addListener(listener)
+
     @Deprecated("Use ReadOnlyDoubleVar.get() instead to avoid explicit boxing",
             replaceWith = ReplaceWith("this.get()"),
             level = DeprecationLevel.ERROR)

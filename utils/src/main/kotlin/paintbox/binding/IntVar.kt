@@ -31,6 +31,8 @@ interface ReadOnlyIntVar : ReadOnlyVar<Int> {
         this.addListener(listener as VarChangedListener<Int>)
     }
 
+    fun addIntListener(listener: IntVarChangedListener) = addListener(listener)
+
     @Deprecated("Use ReadOnlyIntVar.get() instead to avoid explicit boxing",
             replaceWith = ReplaceWith("this.get()"),
             level = DeprecationLevel.ERROR)

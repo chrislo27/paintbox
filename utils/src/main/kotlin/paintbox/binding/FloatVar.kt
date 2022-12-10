@@ -31,6 +31,8 @@ interface ReadOnlyFloatVar : ReadOnlyVar<Float> {
         this.addListener(listener as VarChangedListener<Float>)
     }
 
+    fun addFloatListener(listener: FloatVarChangedListener) = addListener(listener)
+
     @Deprecated("Use ReadOnlyFloatVar.get() instead to avoid explicit boxing",
             replaceWith = ReplaceWith("this.get()"),
             level = DeprecationLevel.ERROR)

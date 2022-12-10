@@ -31,6 +31,8 @@ interface ReadOnlyLongVar : ReadOnlyVar<Long> {
         this.addListener(listener as VarChangedListener<Long>)
     }
 
+    fun addLongListener(listener: LongVarChangedListener) = addListener(listener)
+
     @Deprecated("Use ReadOnlyLongVar.get() instead to avoid explicit boxing",
             replaceWith = ReplaceWith("this.get()"),
             level = DeprecationLevel.ERROR)

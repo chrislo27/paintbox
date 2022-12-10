@@ -31,6 +31,8 @@ interface ReadOnlyBooleanVar : ReadOnlyVar<Boolean> {
     fun addListener(listener: BooleanVarChangedListener) {
         this.addListener(listener as VarChangedListener<Boolean>)
     }
+    
+    fun addBooleanListener(listener: BooleanVarChangedListener) = addListener(listener)
 
     @Deprecated("Use ReadOnlyBooleanVar.get() instead to avoid explicit boxing",
             replaceWith = ReplaceWith("this.get()"),
