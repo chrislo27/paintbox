@@ -103,10 +103,12 @@ project(":desktop") {
 
         api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-windows"
         api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-windows-x86"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-windows-arm64"
         api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-linux"
         api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-linux-arm64"
         api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-linux-arm32"
         api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-macos"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-macos-arm64"
 
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
