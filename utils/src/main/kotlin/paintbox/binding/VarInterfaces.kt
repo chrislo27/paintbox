@@ -10,7 +10,7 @@ package paintbox.binding
  * 
  * The default immutable implementation can be instantiated using the [Companion.const] function. There are also
  * similar functions for each of the primitive specializations ([ReadOnlyBooleanVar], [ReadOnlyDoubleVar],
- * [ReadOnlyFloatVar], [ReadOnlyIntVar], and [ReadOnlyLongVar]).
+ * [ReadOnlyFloatVar], [ReadOnlyIntVar], [ReadOnlyLongVar], and [ReadOnlyCharVar]).
  * 
  * Note that [ReadOnlyVar] dependency tracking is generally lazy. It will not find its dependencies until it is
  * [getOrCompute]d at least once.
@@ -58,6 +58,12 @@ interface ReadOnlyVar<out T> {
          * @see ReadOnlyLongVar.Companion.const
          */
         inline fun const(value: Long): ReadOnlyLongVar = ReadOnlyLongVar.const(value)
+        
+        /**
+         * Returns a constant value [ReadOnlyCharVar]. This directly calls [ReadOnlyCharVar.Companion.const].
+         * @see ReadOnlyCharVar.Companion.const
+         */
+        inline fun const(value: Char): ReadOnlyCharVar = ReadOnlyCharVar.const(value)
     }
 
     /**
@@ -165,6 +171,11 @@ interface Var<T> : ReadOnlyVar<T> {
                 level = DeprecationLevel.ERROR)
         operator fun invoke(item: Double): DoubleVar = DoubleVar(item)
         
+        @Deprecated("Prefer using the CharVar constructor to avoid confusion with generic versions",
+                replaceWith = ReplaceWith("CharVar"),
+                level = DeprecationLevel.ERROR)
+        operator fun invoke(item: Char): CharVar = CharVar(item)
+        
     }
 
     /**
@@ -251,7 +262,7 @@ interface Var<T> : ReadOnlyVar<T> {
         }
         
         
-        // Specialization methods below --------------------------------------------------------------------------------
+        //region Specialization methods
 
         @Deprecated("Don't use ReadOnlyVar<Float>, use ReadOnlyFloatVar.use() instead to avoid explicit boxing",
                 replaceWith = ReplaceWith("(this as ReadOnlyFloatVar).use()"),
@@ -332,5 +343,22 @@ interface Var<T> : ReadOnlyVar<T> {
             return this.get()
         }
         
+
+        @Deprecated("Don't use ReadOnlyVar<Char>, use ReadOnlyCharVar.use() instead to avoid explicit boxing",
+                replaceWith = ReplaceWith("(this as ReadOnlyCharVar).use()"),
+                level = DeprecationLevel.ERROR)
+        fun ReadOnlyVar<Char>.use(): Char {
+            return use(this)
+        }
+
+        /**
+         * The char specialization method. Adds the receiver as a dependency and returns a primitive char.
+         */
+        fun ReadOnlyCharVar.use(): Char {
+            dependencies += this
+            return this.get()
+        }
+        
+        //endregion
     }
 }
