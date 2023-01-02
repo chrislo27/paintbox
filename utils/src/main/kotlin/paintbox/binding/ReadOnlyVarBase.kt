@@ -82,10 +82,7 @@ abstract class ReadOnlyVarBase<T> : ReadOnlyVar<T> {
     override fun addListener(listener: VarChangedListener<T>) {
         if (listener !in listeners) {
             if (isNotifyingListeners) {
-                listeners = LinkedHashSet<VarChangedListener<T>>(listeners.size + 1).apply { 
-                    this.addAll(listeners)
-                    this.add(listener)
-                }
+                copyListenersWith(listener)
             } else {
                 listeners.add(listener)
             }
@@ -106,6 +103,13 @@ abstract class ReadOnlyVarBase<T> : ReadOnlyVar<T> {
         if (!this.invalidated) {
             this.invalidated = true
             this.notifyListeners()
+        }
+    }
+    
+    private fun copyListenersWith(listener: VarChangedListener<T>) {
+        listeners = LinkedHashSet<VarChangedListener<T>>(listeners.size + 1).apply {
+            this.addAll(listeners)
+            this.add(listener)
         }
     }
     
