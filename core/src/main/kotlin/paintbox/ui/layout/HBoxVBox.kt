@@ -177,7 +177,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
             var cache = elementCache.toList()
             if (reverseLayout.get()) {
                 cache = cache.asReversed()
-                idx = cache.size - idx - 1
+//                idx = cache.size - idx - 1
             }
             var acc = if (idx > 0) (cache[idx - 1].let { it.position + it.dimension + it.nextSpacing }) else 0f
             val cacheSize = cache.size
