@@ -106,6 +106,8 @@ class DoubleVar : ReadOnlyVarBase<Double>, ReadOnlyDoubleVar, Var<Double> {
         sideEffecting(get(), sideEffecting)
     }
 
+    override fun asReadOnly(): ReadOnlyDoubleVar = this
+
     /**
      * The implementation of [getOrCompute] but returns a double primitive.
      */

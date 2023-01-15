@@ -106,6 +106,8 @@ class IntVar : ReadOnlyVarBase<Int>, ReadOnlyIntVar, Var<Int> {
         sideEffecting(get(), sideEffecting)
     }
 
+    override fun asReadOnly(): ReadOnlyIntVar = this
+
     /**
      * The implementation of [getOrCompute] but returns a int primitive.
      */

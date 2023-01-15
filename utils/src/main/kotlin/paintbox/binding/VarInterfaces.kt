@@ -220,6 +220,13 @@ interface Var<T> : ReadOnlyVar<T> {
     fun sideEffectingAndRetain(sideEffecting: Context.(existing: T) -> T) {
         sideEffecting(getOrCompute(), sideEffecting)
     }
+
+    /**
+     * Returns this [Var] as a [ReadOnlyVar]. Useful to avoid casting or explicit type definitions for a variable.
+     * 
+     * Primitive specializations will return their primitive read only var type.
+     */
+    fun asReadOnly(): ReadOnlyVar<T> = this
     
     // Javadoc override
     /**
