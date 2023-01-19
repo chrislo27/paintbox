@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2
 import paintbox.PaintboxGame
 import paintbox.binding.FloatVar
 import paintbox.binding.ReadOnlyFloatVar
+import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
 import paintbox.ui.*
 import paintbox.ui.skin.DefaultSkins
@@ -102,6 +103,16 @@ open class Slider : Control<Slider>() {
         val bgColor: Var<Color> = Var(Color(0.94f, 0.94f, 0.94f, 1f))
         val filledColor: Var<Color> = Var(Color(0.24f, 0.74f, 0.94f, 1f))
 
+        val disabledBgColor: Var<Color> = Var(Color(0.94f, 0.94f, 0.94f, 1f))
+        val disabledFilledColor: Var<Color> = Var(Color(0.616f, 0.616f, 0.616f, 1f))
+
+        val filledColorToUse: ReadOnlyVar<Color> = Var {
+            if (element.apparentDisabledState.use()) disabledFilledColor.use() else filledColor.use()
+        }
+        val bgColorToUse: ReadOnlyVar<Color> = Var {
+            if (element.apparentDisabledState.use()) disabledBgColor.use() else bgColor.use()
+        }
+
         override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
             val contentBounds = element.contentZone
             val rectX = contentBounds.x.get() + originX
@@ -116,11 +127,11 @@ open class Slider : Control<Slider>() {
             val linePad = 4f
             val circleH = rectH
 
-            tmpColor.set(bgColor.getOrCompute())
+            tmpColor.set(bgColorToUse.getOrCompute())
             tmpColor.a *= opacity
             batch.color = tmpColor
             batch.fillRoundedRect(rectX + linePad, rectY - rectH * 0.5f - lineH * 0.5f, rectW - linePad * 2, lineH, lineH * 0.5f)
-            tmpColor.set(filledColor.getOrCompute())
+            tmpColor.set(filledColorToUse.getOrCompute())
             tmpColor.a *= opacity
             batch.color = tmpColor
             val valueAsPercent = element.convertValueToPercentage(element._value.get())
