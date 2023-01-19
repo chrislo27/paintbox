@@ -1,5 +1,6 @@
 package paintbox.util
 
+import paintbox.util.wave.WaveUtils
 import kotlin.math.*
 
 
@@ -47,64 +48,43 @@ object MathHelper {
         return (value / abs).roundToLong() * abs
     }
 
-    fun getSawtoothWave(time: Long, seconds: Float): Float {
-        if (seconds == 0f) return 0f
-        return time % (seconds * 1000).roundToInt() / (seconds * 1000f)
-    }
+    @Deprecated("Use WaveUtils instead")
+    fun getSawtoothWave(time: Long, seconds: Float): Float = WaveUtils.getSawtoothWave(seconds, time)
 
-    fun getSawtoothWave(seconds: Float): Float {
-        return getSawtoothWave(System.currentTimeMillis(), seconds)
-    }
+    @Deprecated("Use WaveUtils instead")
+    fun getSawtoothWave(seconds: Float): Float = WaveUtils.getSawtoothWave(seconds)
 
-    fun getTriangleWave(ms: Long, seconds: Float): Float {
-        val f = getSawtoothWave(ms, seconds)
-        return if (f >= 0.5f) {
-            (1f - f) * 2
-        } else
-            f * 2
-    }
+    @Deprecated("Use WaveUtils instead")
+    fun getTriangleWave(ms: Long, seconds: Float): Float = WaveUtils.getTriangleWave(seconds, ms)
 
-    fun getTriangleWave(sec: Float): Float {
-        return getTriangleWave(System.currentTimeMillis(), sec)
-    }
+    @Deprecated("Use WaveUtils instead")
+    fun getTriangleWave(sec: Float): Float = WaveUtils.getTriangleWave(sec)
 
-    /**
-     * The peaks of the sine wave will be returned as 1.0 and the troughs will be 0.0.
-     * Starts at 0.5. Note that the [seconds] argument indicates the period from centre to centre.
-     */
-    fun getSineWave(ms: Long, seconds: Float): Float {
-        if (seconds == 0f) return 0f
-        return 0.5f * sin(Math.PI / seconds * (ms / 1000.0)).toFloat() + 0.5f
-    }
 
-    fun getSineWave(sec: Float): Float {
-        return getSineWave(System.currentTimeMillis(), sec)
-    }
+    @Deprecated("Use WaveUtils instead")
+    fun getSineWave(ms: Long, seconds: Float): Float = WaveUtils.getSineWave(seconds, ms)
+
+    @Deprecated("Use WaveUtils instead")
+    fun getSineWave(sec: Float): Float = WaveUtils.getSineWave(sec)
 
     /**
      * The peaks of the cosine wave will be returned as 1.0 and the troughs will be 0.0.
      * Starts at 1. Note that the [seconds] argument indicates the period from peak to trough.
      */
-    fun getCosineWave(ms: Long, seconds: Float): Float {
-        if (seconds == 0f) return 0f
-        return 0.5f * cos(Math.PI / seconds * (ms / 1000.0)).toFloat() + 0.5f
-    }
+    @Deprecated("Use WaveUtils instead")
+    fun getCosineWave(ms: Long, seconds: Float): Float = WaveUtils.getCosineWave(seconds, ms)
 
-    fun getCosineWave(sec: Float): Float {
-        return getCosineWave(System.currentTimeMillis(), sec)
-    }
+    @Deprecated("Use WaveUtils instead")
+    fun getCosineWave(sec: Float): Float = WaveUtils.getCosineWave(sec)
 
     /**
      * The peaks of the cosine wave will be returned as 1.0 and the troughs will be 0.0.
      * Starts at 0. Note that the [seconds] argument indicates the period from peak to trough.
      */
-    fun getBaseCosineWave(ms: Long, seconds: Float): Float {
-        if (seconds == 0f) return 1f
-        return -0.5f * cos(Math.PI / seconds * (ms / 1000.0)).toFloat() + 0.5f
-    }
+    @Deprecated("Use WaveUtils instead")
+    fun getBaseCosineWave(ms: Long, seconds: Float): Float = WaveUtils.getBaseCosineWave(seconds, ms)
 
-    fun getBaseCosineWave(sec: Float): Float {
-        return getBaseCosineWave(System.currentTimeMillis(), sec)
-    }
-
+    @Deprecated("Use WaveUtils instead")
+    fun getBaseCosineWave(sec: Float): Float = WaveUtils.getBaseCosineWave(sec)
+    
 }
