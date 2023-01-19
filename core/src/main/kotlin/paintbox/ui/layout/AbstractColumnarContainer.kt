@@ -2,6 +2,7 @@ package paintbox.ui.layout
 
 import paintbox.binding.FloatVar
 import paintbox.binding.ReadOnlyFloatVar
+import paintbox.binding.Var
 import paintbox.ui.Pane
 import paintbox.ui.UIElement
 import paintbox.util.ListOfOnes
@@ -172,26 +173,43 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
  */
 abstract class ColumnarBox<Box : AbstractHVBox<AlignEnum>, AlignEnum : AbstractHVBox.BoxAlign>
     : AbstractColumnarContainer<Box> {
-    
-    constructor(columnAllotment: List<Int>, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
-            : super(columnAllotment, useRows, putSpacersInBetweenLogicalCols)
-    constructor(numColumns: Int, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
-            : super(numColumns, useRows, putSpacersInBetweenLogicalCols)
+
+    /**
+     * If null, uses [getDefaultAlignment]. Otherwise, uses this value.
+     */
+    val defaultAlignmentBehaviour: Var<AlignEnum?> = Var(null)
+
+    constructor(columnAllotment: List<Int>, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false,
+                defaultAlignmentBehaviour: AlignEnum? = null)
+            : super(columnAllotment, useRows, putSpacersInBetweenLogicalCols) {
+        this.defaultAlignmentBehaviour.set(defaultAlignmentBehaviour)
+    }
+
+    constructor(numColumns: Int, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false,
+                defaultAlignmentBehaviour: AlignEnum? = null)
+            : super(numColumns, useRows, putSpacersInBetweenLogicalCols) {
+        this.defaultAlignmentBehaviour.set(defaultAlignmentBehaviour)
+    }
 
 
     protected abstract fun getDefaultAlignment(logicalIndex: Int, realIndex: Int, logicalCols: Int, totalCols: Int): AlignEnum
 
     override fun onContainerCreate(newBox: Box, logicalIndex: Int, realIndex: Int) {
-        newBox.align.set(getDefaultAlignment(logicalIndex, realIndex, numLogicalColumns, numRealColumns))
+        newBox.align.bind {
+            defaultAlignmentBehaviour.use() ?: getDefaultAlignment(logicalIndex, realIndex, numLogicalColumns, numRealColumns)
+        }
     }
 }
 
 open class ColumnarHBox : ColumnarBox<HBox, HBox.Align> {
     
-    constructor(columnAllotment: List<Int>, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
-            : super(columnAllotment, useRows, putSpacersInBetweenLogicalCols)
-    constructor(numColumns: Int, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
-            : super(numColumns, useRows, putSpacersInBetweenLogicalCols)
+    constructor(columnAllotment: List<Int>, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false, 
+                defaultAlignmentBehaviour: HBox.Align? = null)
+            : super(columnAllotment, useRows, putSpacersInBetweenLogicalCols, defaultAlignmentBehaviour)
+    
+    constructor(numColumns: Int, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false, 
+                defaultAlignmentBehaviour: HBox.Align? = null)
+            : super(numColumns, useRows, putSpacersInBetweenLogicalCols, defaultAlignmentBehaviour)
 
     override fun createBox(): HBox {
         return HBox()
@@ -207,12 +225,15 @@ open class ColumnarHBox : ColumnarBox<HBox, HBox.Align> {
 }
 
 open class ColumnarVBox : ColumnarBox<VBox, VBox.Align> {
-    
-    constructor(columnAllotment: List<Int>, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
-            : super(columnAllotment, useRows, putSpacersInBetweenLogicalCols)
-    constructor(numColumns: Int, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false)
-            : super(numColumns, useRows, putSpacersInBetweenLogicalCols)
-    
+
+    constructor(columnAllotment: List<Int>, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false,
+                defaultAlignmentBehaviour: VBox.Align? = VBox.Align.TOP)
+            : super(columnAllotment, useRows, putSpacersInBetweenLogicalCols, defaultAlignmentBehaviour)
+
+    constructor(numColumns: Int, useRows: Boolean, putSpacersInBetweenLogicalCols: Boolean = false,
+                defaultAlignmentBehaviour: VBox.Align? = VBox.Align.TOP)
+            : super(numColumns, useRows, putSpacersInBetweenLogicalCols, defaultAlignmentBehaviour)
+
     override fun createBox(): VBox {
         return VBox()
     }
