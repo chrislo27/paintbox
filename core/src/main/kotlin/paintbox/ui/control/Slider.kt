@@ -3,6 +3,7 @@ package paintbox.ui.control
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import paintbox.PaintboxGame
 import paintbox.binding.FloatVar
@@ -135,9 +136,11 @@ open class Slider : Control<Slider>() {
             tmpColor.a *= opacity
             batch.color = tmpColor
             val valueAsPercent = element.convertValueToPercentage(element._value.get())
-            batch.fillRoundedRect(rectX + linePad, rectY - rectH * 0.5f - lineH * 0.5f, (rectW - linePad * 2) * valueAsPercent, lineH, lineH * 0.5f)
+            batch.fillRoundedRect(rectX + linePad, rectY - rectH * 0.5f - lineH * 0.5f,
+                    MathUtils.lerp((circleH * 0.5f).coerceAtMost(rectW * 0.5f), (rectW - circleH * 0.5f).coerceAtLeast(rectW * 0.5f), valueAsPercent), lineH, lineH * 0.5f)
 
-            tmpColor.mul(0.97f)
+            val filledCircleMul = 0.97f
+            tmpColor.mul(filledCircleMul, filledCircleMul, filledCircleMul, 1f)
             batch.color = tmpColor
             batch.draw(PaintboxGame.paintboxSpritesheet.circleFilled, rectX + (valueAsPercent * (rectW - circleH)), rectY - rectH, circleH, circleH)
 
