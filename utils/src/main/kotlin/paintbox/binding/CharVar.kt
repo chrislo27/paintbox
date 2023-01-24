@@ -108,7 +108,7 @@ class CharVar : ReadOnlyVarBase<Char>, ReadOnlyCharVar, Var<Char> {
         sideEffecting(get(), sideEffecting)
     }
 
-    override fun asReadOnly(): ReadOnlyCharVar = this
+    override fun asReadOnlyVar(): ReadOnlyCharVar = this
 
     /**
      * The implementation of [getOrCompute] but returns a boolean primitive.

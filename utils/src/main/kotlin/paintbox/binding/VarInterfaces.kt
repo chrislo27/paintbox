@@ -226,7 +226,7 @@ interface Var<T> : ReadOnlyVar<T> {
      * 
      * Primitive specializations will return their primitive read only var type.
      */
-    fun asReadOnly(): ReadOnlyVar<T> = this
+    fun asReadOnlyVar(): ReadOnlyVar<T> = this
     
     // Javadoc override
     /**

@@ -106,7 +106,7 @@ class FloatVar : ReadOnlyVarBase<Float>, ReadOnlyFloatVar, Var<Float> {
         sideEffecting(get(), sideEffecting)
     }
 
-    override fun asReadOnly(): ReadOnlyFloatVar = this
+    override fun asReadOnlyVar(): ReadOnlyFloatVar = this
 
     /**
      * The implementation of [getOrCompute] but returns a float primitive.

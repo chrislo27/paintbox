@@ -106,7 +106,7 @@ class LongVar : ReadOnlyVarBase<Long>, ReadOnlyLongVar, Var<Long> {
         sideEffecting(get(), sideEffecting)
     }
 
-    override fun asReadOnly(): ReadOnlyLongVar = this
+    override fun asReadOnlyVar(): ReadOnlyLongVar = this
 
     /**
      * The implementation of [getOrCompute] but returns a long primitive.

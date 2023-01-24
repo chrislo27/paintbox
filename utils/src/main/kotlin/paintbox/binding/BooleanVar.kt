@@ -107,7 +107,7 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, ReadOnlyBooleanVar, Var<Boolean> {
         sideEffecting(get(), sideEffecting)
     }
 
-    override fun asReadOnly(): ReadOnlyBooleanVar = this
+    override fun asReadOnlyVar(): ReadOnlyBooleanVar = this
 
     /**
      * The implementation of [getOrCompute] but returns a boolean primitive.
