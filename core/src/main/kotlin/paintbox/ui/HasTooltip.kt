@@ -2,6 +2,7 @@ package paintbox.ui
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.utils.Align
+import paintbox.binding.ContextBinding
 import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
 import paintbox.font.PaintboxFont
@@ -57,7 +58,7 @@ open class Tooltip
     constructor(text: String, font: PaintboxFont = UIElement.defaultFont)
             : super(text, font)
 
-    constructor(binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
+    constructor(binding: ContextBinding<String>, font: PaintboxFont = UIElement.defaultFont)
             : super(binding, font)
 
     constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)

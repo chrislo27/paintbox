@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
 import paintbox.ui.ActionablePane
-import paintbox.ui.UIElement
 
 
 abstract class Skinnable<SELF> : ActionablePane() {

@@ -102,7 +102,7 @@ open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont) : 
         }
     }
 
-    constructor(binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
+    constructor(binding: ContextBinding<String>, font: PaintboxFont = UIElement.defaultFont)
             : this("", font) {
         textLabel.text.bind(binding)
     }

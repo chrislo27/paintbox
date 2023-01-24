@@ -68,7 +68,7 @@ open class Button(text: String, font: PaintboxFont = UIElement.defaultFont) : Co
      */
     val internalTextBlock: Var<TextBlock> by lazy { createInternalTextBlockVar(this) }
 
-    constructor(binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
+    constructor(binding: ContextBinding<String>, font: PaintboxFont = UIElement.defaultFont)
             : this("", font) {
         text.bind(binding)
     }

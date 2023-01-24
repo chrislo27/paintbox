@@ -64,17 +64,17 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
         currentValue = item
     }
 
-    constructor(computation: Var.Context.() -> Int) {
+    constructor(computation: ContextBinding<Int>) {
         binding = IntBinding.Compute(computation)
     }
 
-    constructor(eager: Boolean, computation: Var.Context.() -> Int) : this(computation) {
+    constructor(eager: Boolean, computation: ContextBinding<Int>) : this(computation) {
         if (eager) {
             get()
         }
     }
 
-    constructor(item: Int, sideEffecting: Var.Context.(existing: Int) -> Int) {
+    constructor(item: Int, sideEffecting: ContextSideEffecting<Int>) {
         binding = IntBinding.SideEffecting(item, sideEffecting)
     }
 
@@ -95,19 +95,19 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
         notifyListeners()
     }
 
-    override fun bind(computation: Var.Context.() -> Int) {
+    override fun bind(computation: ContextBinding<Int>) {
         reset()
         binding = IntBinding.Compute(computation)
         notifyListeners()
     }
 
-    override fun sideEffecting(item: Int, sideEffecting: Var.Context.(existing: Int) -> Int) {
+    override fun sideEffecting(item: Int, sideEffecting: ContextSideEffecting<Int>) {
         reset()
         binding = IntBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }
 
-    override fun sideEffectingAndRetain(sideEffecting: Var.Context.(existing: Int) -> Int) {
+    override fun sideEffectingAndRetain(sideEffecting: ContextSideEffecting<Int>) {
         sideEffecting(get(), sideEffecting)
     }
 
@@ -262,10 +262,9 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
          */
         object Const : IntBinding()
 
-        class Compute(val computation: Var.Context.() -> Int) : IntBinding()
+        class Compute(val computation: ContextBinding<Int>) : IntBinding()
 
-        class SideEffecting(var item: Int, val sideEffectingComputation: Var.Context.(existing: Int) -> Int) :
-            IntBinding()
+        class SideEffecting(var item: Int, val sideEffectingComputation: ContextSideEffecting<Int>) : IntBinding()
     }
 }
 

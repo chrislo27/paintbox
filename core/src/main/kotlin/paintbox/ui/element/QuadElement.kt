@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import paintbox.PaintboxGame
+import paintbox.binding.ContextBinding
 import paintbox.binding.FloatVar
 import paintbox.util.ColorStack
 import paintbox.ui.UIElement
@@ -48,7 +49,7 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
     constructor(initColorAll: Color) : this(initColorAll, initColorAll, initColorAll, initColorAll)
     constructor() : this(Color.WHITE)
 
-    constructor(bindingAll: Var.Context.() -> Color) : this() {
+    constructor(bindingAll: ContextBinding<Color>) : this() {
         topLeftColor.bind(bindingAll)
         topRightColor.bind(bindingAll)
         bottomLeftColor.bind(bindingAll)
@@ -62,7 +63,7 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
         bottomRightColor.set(right.cpy())
     }
 
-    fun leftRightGradient(left: Var.Context.() -> Color, right: Var.Context.() -> Color) {
+    fun leftRightGradient(left: ContextBinding<Color>, right: ContextBinding<Color>) {
         topLeftColor.bind(left)
         bottomLeftColor.bind(left)
         topRightColor.bind(right)
@@ -76,7 +77,7 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
         bottomRightColor.set(bottom.cpy())
     }
 
-    fun topBottomGradient(top: Var.Context.() -> Color, bottom: Var.Context.() -> Color) {
+    fun topBottomGradient(top: ContextBinding<Color>, bottom: ContextBinding<Color>) {
         topLeftColor.bind(top)
         topRightColor.bind(top)
         bottomLeftColor.bind(bottom)

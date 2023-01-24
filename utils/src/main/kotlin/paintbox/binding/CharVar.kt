@@ -66,17 +66,17 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
         currentValue = item
     }
 
-    constructor(computation: Var.Context.() -> Char) {
+    constructor(computation: ContextBinding<Char>) {
         binding = CharBinding.Compute(computation)
     }
 
-    constructor(eager: Boolean, computation: Var.Context.() -> Char) : this(computation) {
+    constructor(eager: Boolean, computation: ContextBinding<Char>) : this(computation) {
         if (eager) {
             get()
         }
     }
 
-    constructor(item: Char, sideEffecting: Var.Context.(existing: Char) -> Char) {
+    constructor(item: Char, sideEffecting: ContextSideEffecting<Char>) {
         binding = CharBinding.SideEffecting(item, sideEffecting)
     }
 
@@ -97,19 +97,19 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
         notifyListeners()
     }
 
-    override fun bind(computation: Var.Context.() -> Char) {
+    override fun bind(computation: ContextBinding<Char>) {
         reset()
         binding = CharBinding.Compute(computation)
         notifyListeners()
     }
 
-    override fun sideEffecting(item: Char, sideEffecting: Var.Context.(existing: Char) -> Char) {
+    override fun sideEffecting(item: Char, sideEffecting: ContextSideEffecting<Char>) {
         reset()
         binding = CharBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }
 
-    override fun sideEffectingAndRetain(sideEffecting: Var.Context.(existing: Char) -> Char) {
+    override fun sideEffectingAndRetain(sideEffecting: ContextSideEffecting<Char>) {
         sideEffecting(get(), sideEffecting)
     }
 
@@ -181,9 +181,8 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
          */
         object Const : CharBinding()
 
-        class Compute(val computation: Var.Context.() -> Char) : CharBinding()
+        class Compute(val computation: ContextBinding<Char>) : CharBinding()
 
-        class SideEffecting(var item: Char, val sideEffectingComputation: Var.Context.(existing: Char) -> Char) :
-            CharBinding()
+        class SideEffecting(var item: Char, val sideEffectingComputation: ContextSideEffecting<Char>) : CharBinding()
     }
 }

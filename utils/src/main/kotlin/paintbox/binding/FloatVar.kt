@@ -64,17 +64,17 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
         currentValue = item
     }
 
-    constructor(computation: Var.Context.() -> Float) {
+    constructor(computation: ContextBinding<Float>) {
         binding = FloatBinding.Compute(computation)
     }
 
-    constructor(eager: Boolean, computation: Var.Context.() -> Float) : this(computation) {
+    constructor(eager: Boolean, computation: ContextBinding<Float>) : this(computation) {
         if (eager) {
             get()
         }
     }
 
-    constructor(item: Float, sideEffecting: Var.Context.(existing: Float) -> Float) {
+    constructor(item: Float, sideEffecting: ContextSideEffecting<Float>) {
         binding = FloatBinding.SideEffecting(item, sideEffecting)
     }
 
@@ -95,19 +95,19 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
         notifyListeners()
     }
 
-    override fun bind(computation: Var.Context.() -> Float) {
+    override fun bind(computation: ContextBinding<Float>) {
         reset()
         binding = FloatBinding.Compute(computation)
         notifyListeners()
     }
 
-    override fun sideEffecting(item: Float, sideEffecting: Var.Context.(existing: Float) -> Float) {
+    override fun sideEffecting(item: Float, sideEffecting: ContextSideEffecting<Float>) {
         reset()
         binding = FloatBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }
 
-    override fun sideEffectingAndRetain(sideEffecting: Var.Context.(existing: Float) -> Float) {
+    override fun sideEffectingAndRetain(sideEffecting: ContextSideEffecting<Float>) {
         sideEffecting(get(), sideEffecting)
     }
 
@@ -179,9 +179,8 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
          */
         object Const : FloatBinding()
 
-        class Compute(val computation: Var.Context.() -> Float) : FloatBinding()
+        class Compute(val computation: ContextBinding<Float>) : FloatBinding()
 
-        class SideEffecting(var item: Float, val sideEffectingComputation: Var.Context.(existing: Float) -> Float) :
-            FloatBinding()
+        class SideEffecting(var item: Float, val sideEffectingComputation: ContextSideEffecting<Float>) : FloatBinding()
     }
 }

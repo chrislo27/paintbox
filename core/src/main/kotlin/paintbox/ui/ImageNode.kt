@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Align
+import paintbox.binding.ContextBinding
 import paintbox.binding.FloatVar
 import paintbox.binding.IntVar
 import paintbox.binding.Var
@@ -50,10 +51,9 @@ open class ImageNode(
     val scaleY: FloatVar = FloatVar { scale.use() }
 
     constructor(
-        binding: Var.Context.() -> TextureRegion?,
+        binding: ContextBinding<TextureRegion?>,
         renderingMode: ImageRenderingMode = ImageRenderingMode.MAINTAIN_ASPECT_RATIO,
-    )
-            : this(null, renderingMode) {
+    ) : this(null, renderingMode) {
         textureRegion.bind(binding)
     }
 
@@ -141,7 +141,7 @@ open class ImageIcon
             : super(tex, renderingMode)
 
     constructor(
-        binding: Var.Context.() -> TextureRegion?,
+        binding: ContextBinding<TextureRegion?>,
         renderingMode: ImageRenderingMode = ImageRenderingMode.MAINTAIN_ASPECT_RATIO,
     )
             : super(binding, renderingMode)
@@ -161,8 +161,7 @@ open class ImageWindowNode(tex: TextureRegion? = null) : UIElement() {
     val windowU2: FloatVar = FloatVar(1f)
     val windowV2: FloatVar = FloatVar(1f)
 
-    constructor(binding: Var.Context.() -> TextureRegion?)
-            : this(null) {
+    constructor(binding: ContextBinding<TextureRegion?>) : this(null) {
         textureRegion.bind(binding)
     }
 

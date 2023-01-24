@@ -1,5 +1,6 @@
 package paintbox.ui.control
 
+import paintbox.binding.ContextBinding
 import paintbox.binding.FloatVar
 import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
@@ -25,7 +26,7 @@ open class MenuButton<T>(startingList: List<T>, text: String, font: PaintboxFont
     override val contextMenuItemStrConverter: Var<StringConverter<T>> =
         Var.bind { this@MenuButton.itemStringConverter.use() }
 
-    constructor(startingList: List<T>, binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
+    constructor(startingList: List<T>, binding: ContextBinding<String>, font: PaintboxFont = UIElement.defaultFont)
             : this(startingList, "", font) {
         @Suppress("LeakingThis")
         this.text.bind(binding)

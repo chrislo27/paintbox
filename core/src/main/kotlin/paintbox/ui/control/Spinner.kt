@@ -1,7 +1,6 @@
 package paintbox.ui.control
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import paintbox.PaintboxGame
 import paintbox.binding.BooleanVar
 import paintbox.binding.FloatVar
 import paintbox.binding.ReadOnlyFloatVar

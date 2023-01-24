@@ -8,7 +8,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Align
-import paintbox.PaintboxGame
 import paintbox.binding.*
 import paintbox.font.PaintboxFont
 import paintbox.ui.*
@@ -631,7 +630,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
             val tmpColor = ColorStack.getAndPush()
             val layout: GlyphLayout = element.glyphLayout.getOrCompute()
             val paintboxFont = element.font.getOrCompute()
-            var caretHeight = 1f
+            var caretHeight: Float
             val overallOffsetX = element.xOffset.get()
             val hasFocusNow = element.hasFocus.get()
             val textColor = element.textColor.getOrCompute()

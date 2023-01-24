@@ -1,5 +1,6 @@
 package paintbox.ui
 
+import paintbox.binding.ContextBinding
 import paintbox.binding.Var
 
 /**
@@ -25,13 +26,13 @@ sealed class Anchor {
             element.bounds.y.set(offsetY)
         }
 
-        override fun xConfigure(element: UIElement, offsetX: Var.Context.() -> Float) {
+        override fun xConfigure(element: UIElement, offsetX: ContextBinding<Float>) {
             element.bounds.x.bind {
                 offsetX.invoke(this)
             }
         }
 
-        override fun yConfigure(element: UIElement, offsetY: Var.Context.() -> Float) {
+        override fun yConfigure(element: UIElement, offsetY: ContextBinding<Float>) {
             element.bounds.y.bind {
                 offsetY.invoke(this)
             }
@@ -55,13 +56,13 @@ sealed class Anchor {
             }
         }
 
-        override fun xConfigure(element: UIElement, offsetX: Var.Context.() -> Float) {
+        override fun xConfigure(element: UIElement, offsetX: ContextBinding<Float>) {
             element.bounds.x.bind {
                 offsetX.invoke(this)
             }
         }
 
-        override fun yConfigure(element: UIElement, offsetY: Var.Context.() -> Float) {
+        override fun yConfigure(element: UIElement, offsetY: ContextBinding<Float>) {
             val parent = element.parent
             element.bounds.y.bind {
                 (parent.use()?.contentZone?.height?.use()
@@ -87,13 +88,13 @@ sealed class Anchor {
             }
         }
 
-        override fun xConfigure(element: UIElement, offsetX: Var.Context.() -> Float) {
+        override fun xConfigure(element: UIElement, offsetX: ContextBinding<Float>) {
             element.bounds.x.bind {
                 offsetX.invoke(this)
             }
         }
 
-        override fun yConfigure(element: UIElement, offsetY: Var.Context.() -> Float) {
+        override fun yConfigure(element: UIElement, offsetY: ContextBinding<Float>) {
             val parent = element.parent
             element.bounds.y.bind {
                 (parent.use()?.contentZone?.height?.use()
@@ -119,14 +120,14 @@ sealed class Anchor {
             element.bounds.y.set(offsetY)
         }
 
-        override fun xConfigure(element: UIElement, offsetX: Var.Context.() -> Float) {
+        override fun xConfigure(element: UIElement, offsetX: ContextBinding<Float>) {
             val parent = element.parent
             element.bounds.x.bind {
                 (parent.use()?.contentZone?.width?.use() ?: 0f) - (element.bounds.width.use()) + offsetX.invoke(this)
             }
         }
 
-        override fun yConfigure(element: UIElement, offsetY: Var.Context.() -> Float) {
+        override fun yConfigure(element: UIElement, offsetY: ContextBinding<Float>) {
             element.bounds.y.bind {
                 offsetY.invoke(this)
             }
@@ -153,14 +154,14 @@ sealed class Anchor {
             }
         }
 
-        override fun xConfigure(element: UIElement, offsetX: Var.Context.() -> Float) {
+        override fun xConfigure(element: UIElement, offsetX: ContextBinding<Float>) {
             val parent = element.parent
             element.bounds.x.bind {
                 (parent.use()?.contentZone?.width?.use() ?: 0f) - (element.bounds.width.use()) + offsetX.invoke(this)
             }
         }
 
-        override fun yConfigure(element: UIElement, offsetY: Var.Context.() -> Float) {
+        override fun yConfigure(element: UIElement, offsetY: ContextBinding<Float>) {
             val parent = element.parent
             element.bounds.y.bind {
                 (parent.use()?.contentZone?.height?.use()
@@ -189,14 +190,14 @@ sealed class Anchor {
             }
         }
 
-        override fun xConfigure(element: UIElement, offsetX: Var.Context.() -> Float) {
+        override fun xConfigure(element: UIElement, offsetX: ContextBinding<Float>) {
             val parent = element.parent
             element.bounds.x.bind {
                 (parent.use()?.contentZone?.width?.use() ?: 0f) - (element.bounds.width.use()) + offsetX.invoke(this)
             }
         }
 
-        override fun yConfigure(element: UIElement, offsetY: Var.Context.() -> Float) {
+        override fun yConfigure(element: UIElement, offsetY: ContextBinding<Float>) {
             val parent = element.parent
             element.bounds.y.bind {
                 (parent.use()?.contentZone?.height?.use()
@@ -222,7 +223,7 @@ sealed class Anchor {
             element.bounds.y.set(offsetY)
         }
 
-        override fun xConfigure(element: UIElement, offsetX: Var.Context.() -> Float) {
+        override fun xConfigure(element: UIElement, offsetX: ContextBinding<Float>) {
             val parent = element.parent
             element.bounds.x.bind {
                 (parent.use()?.contentZone?.width?.use()
@@ -230,7 +231,7 @@ sealed class Anchor {
             }
         }
 
-        override fun yConfigure(element: UIElement, offsetY: Var.Context.() -> Float) {
+        override fun yConfigure(element: UIElement, offsetY: ContextBinding<Float>) {
             element.bounds.y.bind {
                 offsetY.invoke(this)
             }
@@ -257,7 +258,7 @@ sealed class Anchor {
             }
         }
 
-        override fun xConfigure(element: UIElement, offsetX: Var.Context.() -> Float) {
+        override fun xConfigure(element: UIElement, offsetX: ContextBinding<Float>) {
             val parent = element.parent
             element.bounds.x.bind {
                 (parent.use()?.contentZone?.width?.use()
@@ -265,7 +266,7 @@ sealed class Anchor {
             }
         }
 
-        override fun yConfigure(element: UIElement, offsetY: Var.Context.() -> Float) {
+        override fun yConfigure(element: UIElement, offsetY: ContextBinding<Float>) {
             val parent = element.parent
             element.bounds.y.bind {
                 (parent.use()?.contentZone?.height?.use()
@@ -294,7 +295,7 @@ sealed class Anchor {
             }
         }
 
-        override fun xConfigure(element: UIElement, offsetX: Var.Context.() -> Float) {
+        override fun xConfigure(element: UIElement, offsetX: ContextBinding<Float>) {
             val parent = element.parent
             element.bounds.x.bind {
                 (parent.use()?.contentZone?.width?.use()
@@ -302,7 +303,7 @@ sealed class Anchor {
             }
         }
 
-        override fun yConfigure(element: UIElement, offsetY: Var.Context.() -> Float) {
+        override fun yConfigure(element: UIElement, offsetY: ContextBinding<Float>) {
             val parent = element.parent
             element.bounds.y.bind {
                 (parent.use()?.contentZone?.height?.use()
@@ -321,7 +322,7 @@ sealed class Anchor {
      *
      * The context in the [offsetX] function parameters is the [Var.Context] of the bounds x [Var].
      */
-    abstract fun xConfigure(element: UIElement, offsetX: Var.Context.() -> Float)
+    abstract fun xConfigure(element: UIElement, offsetX: ContextBinding<Float>)
 
     /**
      * Configures the [element] based on this [Anchor], only on the X axis.
@@ -333,7 +334,7 @@ sealed class Anchor {
      *
      * The context in the [offsetY] function parameters is the [Var.Context] of the bounds y [Var].
      */
-    abstract fun yConfigure(element: UIElement, offsetY: Var.Context.() -> Float)
+    abstract fun yConfigure(element: UIElement, offsetY: ContextBinding<Float>)
 
 
     /**
@@ -353,8 +354,8 @@ sealed class Anchor {
     @Suppress("NOTHING_TO_INLINE", "RedundantModalityModifier")
     final inline fun configure(
         element: UIElement,
-        noinline offsetX: Var.Context.() -> Float = { 0f },
-        noinline offsetY: Var.Context.() -> Float = { 0f },
+        noinline offsetX: ContextBinding<Float> = { 0f },
+        noinline offsetY: ContextBinding<Float> = { 0f },
     ) {
         xConfigure(element, offsetX)
         yConfigure(element, offsetY)

@@ -64,17 +64,17 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
         currentValue = item
     }
 
-    constructor(computation: Var.Context.() -> Long) {
+    constructor(computation: ContextBinding<Long>) {
         binding = LongBinding.Compute(computation)
     }
 
-    constructor(eager: Boolean, computation: Var.Context.() -> Long) : this(computation) {
+    constructor(eager: Boolean, computation: ContextBinding<Long>) : this(computation) {
         if (eager) {
             get()
         }
     }
 
-    constructor(item: Long, sideEffecting: Var.Context.(existing: Long) -> Long) {
+    constructor(item: Long, sideEffecting: ContextSideEffecting<Long>) {
         binding = LongBinding.SideEffecting(item, sideEffecting)
     }
 
@@ -95,19 +95,19 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
         notifyListeners()
     }
 
-    override fun bind(computation: Var.Context.() -> Long) {
+    override fun bind(computation: ContextBinding<Long>) {
         reset()
         binding = LongBinding.Compute(computation)
         notifyListeners()
     }
 
-    override fun sideEffecting(item: Long, sideEffecting: Var.Context.(existing: Long) -> Long) {
+    override fun sideEffecting(item: Long, sideEffecting: ContextSideEffecting<Long>) {
         reset()
         binding = LongBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }
 
-    override fun sideEffectingAndRetain(sideEffecting: Var.Context.(existing: Long) -> Long) {
+    override fun sideEffectingAndRetain(sideEffecting: ContextSideEffecting<Long>) {
         sideEffecting(get(), sideEffecting)
     }
 
@@ -262,10 +262,9 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
          */
         object Const : LongBinding()
 
-        class Compute(val computation: Var.Context.() -> Long) : LongBinding()
+        class Compute(val computation: ContextBinding<Long>) : LongBinding()
 
-        class SideEffecting(var item: Long, val sideEffectingComputation: Var.Context.(existing: Long) -> Long) :
-            LongBinding()
+        class SideEffecting(var item: Long, val sideEffectingComputation: ContextSideEffecting<Long>) : LongBinding()
     }
 }
 

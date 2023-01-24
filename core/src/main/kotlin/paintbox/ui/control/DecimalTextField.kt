@@ -1,6 +1,5 @@
 package paintbox.ui.control
 
-import paintbox.PaintboxGame
 import paintbox.binding.*
 import paintbox.font.PaintboxFont
 import paintbox.ui.UIElement

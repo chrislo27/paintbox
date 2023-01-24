@@ -22,17 +22,17 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
         binding = GenericBinding.Const
     }
 
-    constructor(computation: Var.Context.() -> T) {
+    constructor(computation: ContextBinding<T>) {
         binding = GenericBinding.Compute(computation)
     }
 
-    constructor(eager: Boolean, computation: Var.Context.() -> T) : this(computation) {
+    constructor(eager: Boolean, computation: ContextBinding<T>) : this(computation) {
         if (eager) {
             getOrCompute()
         }
     }
 
-    constructor(item: T, sideEffecting: Var.Context.(existing: T) -> T) {
+    constructor(item: T, sideEffecting: ContextSideEffecting<T>) {
         binding = GenericBinding.SideEffecting(item, sideEffecting)
     }
 
@@ -55,19 +55,19 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
         notifyListeners()
     }
 
-    override fun bind(computation: Var.Context.() -> T) {
+    override fun bind(computation: ContextBinding<T>) {
         reset()
         binding = GenericBinding.Compute(computation)
         notifyListeners()
     }
 
-    override fun sideEffecting(item: T, sideEffecting: Var.Context.(existing: T) -> T) {
+    override fun sideEffecting(item: T, sideEffecting: ContextSideEffecting<T>) {
         reset()
         binding = GenericBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }
 
-    override fun sideEffectingAndRetain(sideEffecting: Var.Context.(existing: T) -> T) {
+    override fun sideEffectingAndRetain(sideEffecting: ContextSideEffecting<T>) {
         sideEffecting(getOrCompute(), sideEffecting)
     }
 
@@ -120,9 +120,8 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
     private sealed class GenericBinding<out T> {
         object Const : GenericBinding<Nothing>()
 
-        class Compute<T>(val computation: Var.Context.() -> T) : GenericBinding<T>()
+        class Compute<T>(val computation: ContextBinding<T>) : GenericBinding<T>()
 
-        class SideEffecting<T>(var item: T, val sideEffectingComputation: Var.Context.(existing: T) -> T) :
-            GenericBinding<T>()
+        class SideEffecting<T>(var item: T, val sideEffectingComputation: ContextSideEffecting<T>) : GenericBinding<T>()
     }
 }

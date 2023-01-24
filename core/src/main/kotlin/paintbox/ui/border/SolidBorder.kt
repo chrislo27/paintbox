@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import paintbox.PaintboxGame
 import paintbox.binding.BooleanVar
+import paintbox.binding.ContextBinding
 import paintbox.binding.Var
 import paintbox.util.ColorStack
 import paintbox.ui.UIElement
@@ -20,7 +21,8 @@ class SolidBorder(initColor: Color) : Border {
     val roundedCorners: BooleanVar = BooleanVar(false)
 
     constructor() : this(Color.WHITE)
-    constructor(binding: Var.Context.() -> Color) : this() {
+
+    constructor(binding: ContextBinding<Color>) : this() {
         color.bind(binding)
     }
 

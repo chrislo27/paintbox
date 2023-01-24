@@ -64,17 +64,17 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
         currentValue = item
     }
 
-    constructor(computation: Var.Context.() -> Double) {
+    constructor(computation: ContextBinding<Double>) {
         binding = DoubleBinding.Compute(computation)
     }
 
-    constructor(eager: Boolean, computation: Var.Context.() -> Double) : this(computation) {
+    constructor(eager: Boolean, computation: ContextBinding<Double>) : this(computation) {
         if (eager) {
             get()
         }
     }
 
-    constructor(item: Double, sideEffecting: Var.Context.(existing: Double) -> Double) {
+    constructor(item: Double, sideEffecting: ContextSideEffecting<Double>) {
         binding = DoubleBinding.SideEffecting(item, sideEffecting)
     }
 
@@ -95,19 +95,19 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
         notifyListeners()
     }
 
-    override fun bind(computation: Var.Context.() -> Double) {
+    override fun bind(computation: ContextBinding<Double>) {
         reset()
         binding = DoubleBinding.Compute(computation)
         notifyListeners()
     }
 
-    override fun sideEffecting(item: Double, sideEffecting: Var.Context.(existing: Double) -> Double) {
+    override fun sideEffecting(item: Double, sideEffecting: ContextSideEffecting<Double>) {
         reset()
         binding = DoubleBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }
 
-    override fun sideEffectingAndRetain(sideEffecting: Var.Context.(existing: Double) -> Double) {
+    override fun sideEffectingAndRetain(sideEffecting: ContextSideEffecting<Double>) {
         sideEffecting(get(), sideEffecting)
     }
 
@@ -179,9 +179,11 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
          */
         object Const : DoubleBinding()
 
-        class Compute(val computation: Var.Context.() -> Double) : DoubleBinding()
+        class Compute(val computation: ContextBinding<Double>) : DoubleBinding()
 
-        class SideEffecting(var item: Double, val sideEffectingComputation: Var.Context.(existing: Double) -> Double) :
-            DoubleBinding()
+        class SideEffecting(
+            var item: Double,
+            val sideEffectingComputation: ContextSideEffecting<Double>
+        ) : DoubleBinding()
     }
 }

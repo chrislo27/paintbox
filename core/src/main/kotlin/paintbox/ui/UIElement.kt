@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2
 import paintbox.PaintboxGame
 import paintbox.binding.*
 import paintbox.font.PaintboxFont
-import paintbox.ui.area.Insets
 import paintbox.ui.area.ReadOnlyBounds
 import paintbox.ui.border.Border
 import paintbox.ui.border.NoBorder
@@ -21,7 +20,7 @@ open class UIElement : UIBounds() {
 
     companion object {
 
-        private val DEFAULT_MULTIPLIER_BINDING: Var.Context.() -> Float = { 1f }
+        private val DEFAULT_MULTIPLIER_BINDING: ContextBinding<Float> = { 1f }
         private const val CLIP_RECT_BUFFER: Float = 16f
 
         private var defaultFontOverride: PaintboxFont? = null
@@ -421,8 +420,8 @@ open class UIElement : UIBounds() {
     @Suppress("SimpleRedundantLet")
     fun bindVarToParentWidth(
         varr: FloatVar,
-        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
-        adjustBinding: Var.Context.() -> Float,
+        multiplierBinding: ContextBinding<Float> = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: ContextBinding<Float>,
     ) {
         varr.bind {
             (this@UIElement.parent.use()?.let { p -> p.contentZone.width.use() }
@@ -433,8 +432,8 @@ open class UIElement : UIBounds() {
     @Suppress("SimpleRedundantLet")
     fun bindVarToParentHeight(
         varr: FloatVar,
-        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
-        adjustBinding: Var.Context.() -> Float,
+        multiplierBinding: ContextBinding<Float> = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: ContextBinding<Float>,
     ) {
         varr.bind {
             (this@UIElement.parent.use()?.let { p -> p.contentZone.height.use() }
@@ -458,8 +457,8 @@ open class UIElement : UIBounds() {
 
     fun bindVarToSelfHeight(
         varr: FloatVar,
-        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
-        adjustBinding: Var.Context.() -> Float,
+        multiplierBinding: ContextBinding<Float> = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: ContextBinding<Float>,
     ) {
         val thisBounds = this.bounds
         varr.bind {
@@ -469,8 +468,8 @@ open class UIElement : UIBounds() {
 
     fun bindVarToSelfWidth(
         varr: FloatVar,
-        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
-        adjustBinding: Var.Context.() -> Float,
+        multiplierBinding: ContextBinding<Float> = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: ContextBinding<Float>,
     ) {
         val thisBounds = this.bounds
         varr.bind {
@@ -488,15 +487,15 @@ open class UIElement : UIBounds() {
     }
 
     fun bindWidthToParent(
-        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
-        adjustBinding: Var.Context.() -> Float,
+        multiplierBinding: ContextBinding<Float> = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: ContextBinding<Float>,
     ) {
         bindVarToParentWidth(this.bounds.width, multiplierBinding, adjustBinding)
     }
 
     fun bindHeightToParent(
-        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
-        adjustBinding: Var.Context.() -> Float,
+        multiplierBinding: ContextBinding<Float> = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: ContextBinding<Float>,
     ) {
         bindVarToParentHeight(this.bounds.height, multiplierBinding, adjustBinding)
     }
@@ -510,15 +509,15 @@ open class UIElement : UIBounds() {
     }
 
     fun bindWidthToSelfHeight(
-        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
-        adjustBinding: Var.Context.() -> Float,
+        multiplierBinding: ContextBinding<Float> = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: ContextBinding<Float>,
     ) {
         bindVarToSelfHeight(this.bounds.width, multiplierBinding, adjustBinding)
     }
 
     fun bindHeightToSelfWidth(
-        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
-        adjustBinding: Var.Context.() -> Float,
+        multiplierBinding: ContextBinding<Float> = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: ContextBinding<Float>,
     ) {
         bindVarToSelfWidth(this.bounds.height, multiplierBinding, adjustBinding)
     }
@@ -532,15 +531,15 @@ open class UIElement : UIBounds() {
     }
 
     fun bindXToParentWidth(
-        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
-        adjustBinding: Var.Context.() -> Float,
+        multiplierBinding: ContextBinding<Float> = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: ContextBinding<Float>,
     ) {
         bindVarToParentWidth(this.bounds.x, multiplierBinding, adjustBinding)
     }
 
     fun bindYToParentHeight(
-        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
-        adjustBinding: Var.Context.() -> Float,
+        multiplierBinding: ContextBinding<Float> = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: ContextBinding<Float>,
     ) {
         bindVarToParentHeight(this.bounds.y, multiplierBinding, adjustBinding)
     }

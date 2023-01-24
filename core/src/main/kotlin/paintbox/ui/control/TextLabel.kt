@@ -135,7 +135,7 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont) :
      */
     val internalTextBlock: Var<TextBlock> = createInternalTextBlockVar(this)
 
-    constructor(binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
+    constructor(binding: ContextBinding<String>, font: PaintboxFont = UIElement.defaultFont)
             : this("", font) {
         text.bind(binding)
     }

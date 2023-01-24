@@ -30,13 +30,13 @@ interface Var<T> : ReadOnlyVar<T> {
          * Creates a [GenericVar] bound to the given [computation].
          * @see Var.bind
          */
-        fun <T> bind(computation: Context.() -> T): Var<T> = GenericVar(computation)
+        fun <T> bind(computation: ContextBinding<T>): Var<T> = GenericVar(computation)
 
         /**
          * Creates a [GenericVar] eagerly bound to the given [computation].
          * @see Var.eagerBind
          */
-        fun <T> eagerBind(computation: Context.() -> T): Var<T> = GenericVar(eager = true, computation)
+        fun <T> eagerBind(computation: ContextBinding<T>): Var<T> = GenericVar(eager = true, computation)
 
         /**
          * Creates a [GenericVar] bound to the given [computation].
@@ -44,14 +44,14 @@ interface Var<T> : ReadOnlyVar<T> {
          * This is identical to the [bind][Companion.bind] function.
          * @see Var.bind
          */
-        operator fun <T> invoke(computation: Context.() -> T): Var<T> = bind(computation)
+        operator fun <T> invoke(computation: ContextBinding<T>): Var<T> = bind(computation)
 
         /**
          * Creates a [GenericVar] with the given [item] as the base value and a [sideEffecting] function.
          * @see Var.sideEffecting
          * @see Var.sideEffectingAndRetain
          */
-        fun <T> sideEffecting(item: T, sideEffecting: Context.(existing: T) -> T): Var<T> =
+        fun <T> sideEffecting(item: T, sideEffecting: ContextSideEffecting<T>): Var<T> = 
             GenericVar(item, sideEffecting)
 
 
@@ -112,7 +112,7 @@ interface Var<T> : ReadOnlyVar<T> {
      *
      * @see eagerBind
      */
-    fun bind(computation: Context.() -> T)
+    fun bind(computation: ContextBinding<T>)
 
     /**
      * Binds this [Var] to be computed from [computation], exactly like [bind] would.
@@ -122,7 +122,7 @@ interface Var<T> : ReadOnlyVar<T> {
      *
      * @see bind
      */
-    fun eagerBind(computation: Context.() -> T): T {
+    fun eagerBind(computation: ContextBinding<T>): T {
         bind(computation)
         return getOrCompute()
     }
@@ -132,7 +132,7 @@ interface Var<T> : ReadOnlyVar<T> {
      *
      * @see sideEffectingAndRetain
      */
-    fun sideEffecting(item: T, sideEffecting: Context.(existing: T) -> T)
+    fun sideEffecting(item: T, sideEffecting: ContextSideEffecting<T>)
 
     /**
      * Sets this var to be updated/mutated
@@ -140,7 +140,7 @@ interface Var<T> : ReadOnlyVar<T> {
      *
      * @see sideEffecting
      */
-    fun sideEffectingAndRetain(sideEffecting: Context.(existing: T) -> T) {
+    fun sideEffectingAndRetain(sideEffecting: ContextSideEffecting<T>) {
         sideEffecting(getOrCompute(), sideEffecting)
     }
 
@@ -304,3 +304,7 @@ interface Var<T> : ReadOnlyVar<T> {
         //endregion
     }
 }
+
+typealias ContextBinding<R> = Var.Context.() -> R
+
+typealias ContextSideEffecting<R> = Var.Context.(existing: R) -> R

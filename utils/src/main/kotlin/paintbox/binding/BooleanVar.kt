@@ -65,17 +65,17 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
         currentValue = item
     }
 
-    constructor(computation: Var.Context.() -> Boolean) {
+    constructor(computation: ContextBinding<Boolean>) {
         binding = BooleanBinding.Compute(computation)
     }
 
-    constructor(eager: Boolean, computation: Var.Context.() -> Boolean) : this(computation) {
+    constructor(eager: Boolean, computation: ContextBinding<Boolean>) : this(computation) {
         if (eager) {
             get()
         }
     }
 
-    constructor(item: Boolean, sideEffecting: Var.Context.(existing: Boolean) -> Boolean) {
+    constructor(item: Boolean, sideEffecting: ContextSideEffecting<Boolean>) {
         binding = BooleanBinding.SideEffecting(item, sideEffecting)
     }
 
@@ -96,19 +96,19 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
         notifyListeners()
     }
 
-    override fun bind(computation: Var.Context.() -> Boolean) {
+    override fun bind(computation: ContextBinding<Boolean>) {
         reset()
         binding = BooleanBinding.Compute(computation)
         notifyListeners()
     }
 
-    override fun sideEffecting(item: Boolean, sideEffecting: Var.Context.(existing: Boolean) -> Boolean) {
+    override fun sideEffecting(item: Boolean, sideEffecting: ContextSideEffecting<Boolean>) {
         reset()
         binding = BooleanBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }
 
-    override fun sideEffectingAndRetain(sideEffecting: Var.Context.(existing: Boolean) -> Boolean) {
+    override fun sideEffectingAndRetain(sideEffecting: ContextSideEffecting<Boolean>) {
         sideEffecting(get(), sideEffecting)
     }
 
@@ -191,11 +191,11 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
          */
         object Const : BooleanBinding()
 
-        class Compute(val computation: Var.Context.() -> Boolean) : BooleanBinding()
+        class Compute(val computation: ContextBinding<Boolean>) : BooleanBinding()
 
         class SideEffecting(
             var item: Boolean,
-            val sideEffectingComputation: Var.Context.(existing: Boolean) -> Boolean,
+            val sideEffectingComputation: ContextSideEffecting<Boolean>,
         ) : BooleanBinding()
     }
 }

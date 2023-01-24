@@ -2,6 +2,7 @@ package paintbox.ui.element
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import paintbox.binding.ContextBinding
 import paintbox.util.ColorStack
 import paintbox.ui.UIElement
 import paintbox.binding.Var
@@ -14,7 +15,7 @@ open class RectElement(initColor: Color) : UIElement() {
 
     constructor() : this(Color.WHITE)
 
-    constructor(binding: Var.Context.() -> Color) : this() {
+    constructor(binding: ContextBinding<Color>) : this() {
         color.bind(binding)
     }
 
