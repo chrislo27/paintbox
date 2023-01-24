@@ -1,3 +1,6 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+
 buildscript {
     repositories {
         gradlePluginPortal()
@@ -34,11 +37,11 @@ allprojects {
 //        maven { url 'https://jitpack.io/' }
     }
 
-    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
-        kotlinOptions {
-            jvmTarget = "11"
-            freeCompilerArgs += "-opt-in=kotlin.ExperimentalUnsignedTypes"
-            freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+    tasks.withType(KotlinCompilationTask).configureEach {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+            freeCompilerArgs.add("-opt-in=kotlin.ExperimentalUnsignedTypes")
+            freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
         }
     }
 
