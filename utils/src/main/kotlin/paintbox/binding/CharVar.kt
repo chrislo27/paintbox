@@ -7,7 +7,7 @@ import java.lang.Character.MIN_VALUE as nullChar
  *
  * Provides the [get] method which is a primitive-type char.
  */
-interface ReadOnlyCharVar : ReadOnlyVar<Char> {
+interface ReadOnlyCharVar : SpecializedReadOnlyVar<Char>, ReadOnlyVar<Char> {
 
     companion object {
         /**
@@ -45,7 +45,7 @@ internal class ReadOnlyConstCharVar(private val value: Char) : ReadOnlyVarBase<C
  *
  * Provides the [get] method which is a primitive-type char.
  */
-class CharVar : ReadOnlyVarBase<Char>, ReadOnlyCharVar, Var<Char> {
+class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Var<Char> {
 
     private var binding: CharBinding
     private var currentValue: Char = nullChar

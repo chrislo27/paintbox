@@ -5,7 +5,7 @@ package paintbox.binding
  *
  * Provides the [get] method which is a primitive-type int.
  */
-interface ReadOnlyIntVar : ReadOnlyVar<Int> {
+interface ReadOnlyIntVar : SpecializedReadOnlyVar<Int>, ReadOnlyVar<Int> {
 
     companion object {
         /**
@@ -43,7 +43,7 @@ internal class ReadOnlyConstIntVar(private val value: Int) : ReadOnlyVarBase<Int
  *
  * Provides the [get] method which is a primitive-type int.
  */
-class IntVar : ReadOnlyVarBase<Int>, ReadOnlyIntVar, Var<Int> {
+class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<Int> {
 
     private var binding: IntBinding
     private var currentValue: Int = 0

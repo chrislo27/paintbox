@@ -5,7 +5,7 @@ package paintbox.binding
  *
  * Provides the [get] method which is a primitive-type long.
  */
-interface ReadOnlyLongVar : ReadOnlyVar<Long> {
+interface ReadOnlyLongVar : SpecializedReadOnlyVar<Long>, ReadOnlyVar<Long> {
     
     companion object {
         /**
@@ -43,7 +43,7 @@ internal class ReadOnlyConstLongVar(private val value: Long) : ReadOnlyVarBase<L
  *
  * Provides the [get] method which is a primitive-type long.
  */
-class LongVar : ReadOnlyVarBase<Long>, ReadOnlyLongVar, Var<Long> {
+class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Var<Long> {
 
     private var binding: LongBinding
     private var currentValue: Long = 0L

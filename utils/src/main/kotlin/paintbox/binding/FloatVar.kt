@@ -5,7 +5,7 @@ package paintbox.binding
  * 
  * Provides the [get] method which is a primitive-type float.
  */
-interface ReadOnlyFloatVar : ReadOnlyVar<Float> {
+interface ReadOnlyFloatVar : SpecializedReadOnlyVar<Float>, ReadOnlyVar<Float> {
 
     companion object {
         /**
@@ -43,7 +43,7 @@ internal class ReadOnlyConstFloatVar(private val value: Float) : ReadOnlyVarBase
  *
  * Provides the [get] method which is a primitive-type float.
  */
-class FloatVar : ReadOnlyVarBase<Float>, ReadOnlyFloatVar, Var<Float> {
+class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar, Var<Float> {
     
     private var binding: FloatBinding
     private var currentValue: Float = 0f

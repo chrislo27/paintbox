@@ -6,7 +6,7 @@ package paintbox.binding
  *
  * Provides the [get] method which is a primitive-type boolean.
  */
-interface ReadOnlyBooleanVar : ReadOnlyVar<Boolean> {
+interface ReadOnlyBooleanVar : SpecializedReadOnlyVar<Boolean>, ReadOnlyVar<Boolean> {
 
     companion object {
         /**
@@ -44,7 +44,7 @@ internal class ReadOnlyConstBooleanVar(private val value: Boolean) : ReadOnlyVar
  *
  * Provides the [get] method which is a primitive-type boolean.
  */
-class BooleanVar : ReadOnlyVarBase<Boolean>, ReadOnlyBooleanVar, Var<Boolean> {
+class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBooleanVar, Var<Boolean> {
 
     private var binding: BooleanBinding
     private var currentValue: Boolean = false

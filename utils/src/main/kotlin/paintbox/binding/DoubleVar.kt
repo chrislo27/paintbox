@@ -5,7 +5,7 @@ package paintbox.binding
  * 
  * Provides the [get] method which is a primitive-type double.
  */
-interface ReadOnlyDoubleVar : ReadOnlyVar<Double> {
+interface ReadOnlyDoubleVar : SpecializedReadOnlyVar<Double>, ReadOnlyVar<Double> {
 
     companion object {
         /**
@@ -43,7 +43,7 @@ internal class ReadOnlyConstDoubleVar(private val value: Double) : ReadOnlyVarBa
  *
  * Provides the [get] method which is a primitive-type double.
  */
-class DoubleVar : ReadOnlyVarBase<Double>, ReadOnlyDoubleVar, Var<Double> {
+class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubleVar, Var<Double> {
     
     private var binding: DoubleBinding
     private var currentValue: Double = 0.0
