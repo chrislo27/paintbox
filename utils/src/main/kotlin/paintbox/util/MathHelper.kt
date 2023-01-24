@@ -19,8 +19,10 @@ object MathHelper {
         return px in realX..(realX + width) && py in realY..(realY + height)
     }
 
-    fun isIntersecting(x1: Float, y1: Float, w1: Float, h1: Float, x2: Float, y2: Float, w2: Float,
-                       h2: Float): Boolean {
+    fun isIntersecting(
+        x1: Float, y1: Float, w1: Float, h1: Float, x2: Float, y2: Float, w2: Float,
+        h2: Float,
+    ): Boolean {
         val width1 = if (w1 < 0) abs(w1) else w1
         val height1 = if (h1 < 0) abs(h1) else h1
         val realX1 = if (w1 < 0) x1 - width1 else x1
@@ -86,5 +88,5 @@ object MathHelper {
 
     @Deprecated("Use WaveUtils instead")
     fun getBaseCosineWave(sec: Float): Float = WaveUtils.getBaseCosineWave(sec)
-    
+
 }

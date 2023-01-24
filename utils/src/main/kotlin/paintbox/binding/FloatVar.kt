@@ -2,12 +2,13 @@ package paintbox.binding
 
 /**
  * The [Float] specialization of [ReadOnlyVar].
- * 
+ *
  * Provides the [get] method which is a primitive-type float.
  */
 interface ReadOnlyFloatVar : SpecializedReadOnlyVar<Float>, ReadOnlyVar<Float> {
 
     companion object {
+
         /**
          * Returns a constant value [ReadOnlyFloatVar]. The implementation used is memory optimized and doesn't
          * have dependencies like [FloatVar] would.
@@ -24,15 +25,18 @@ interface ReadOnlyFloatVar : SpecializedReadOnlyVar<Float>, ReadOnlyVar<Float> {
      */
     fun get(): Float
 
-    @Deprecated("Use ReadOnlyFloatVar.get() instead to avoid explicit boxing",
-            replaceWith = ReplaceWith("this.get()"),
-            level = DeprecationLevel.ERROR)
+    @Deprecated(
+        "Use ReadOnlyFloatVar.get() instead to avoid explicit boxing",
+        replaceWith = ReplaceWith("this.get()"),
+        level = DeprecationLevel.ERROR
+    )
     override fun getOrCompute(): Float {
         return get() // WILL BE BOXED!
     }
 }
 
 internal class ReadOnlyConstFloatVar(private val value: Float) : ReadOnlyVarBase<Float>(), ReadOnlyFloatVar {
+
     override fun get(): Float {
         return value
     }
@@ -44,10 +48,11 @@ internal class ReadOnlyConstFloatVar(private val value: Float) : ReadOnlyVarBase
  * Provides the [get] method which is a primitive-type float.
  */
 class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar, Var<Float> {
-    
+
     private var binding: FloatBinding
     private var currentValue: Float = 0f
-    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet() // Cannot be generic since it can depend on any other Var
+    private var dependencies: Set<ReadOnlyVar<Any?>> =
+        emptySet() // Cannot be generic since it can depend on any other Var
 
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
@@ -62,7 +67,7 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
     constructor(computation: Var.Context.() -> Float) {
         binding = FloatBinding.Compute(computation)
     }
-    
+
     constructor(eager: Boolean, computation: Var.Context.() -> Float) : this(computation) {
         if (eager) {
             get()
@@ -119,6 +124,7 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
                 }
                 this.currentValue
             }
+
             is FloatBinding.Compute -> {
                 if (!invalidated) {
                     currentValue
@@ -134,6 +140,7 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
                     result
                 }
             }
+
             is FloatBinding.SideEffecting -> {
                 if (invalidated) {
                     val ctx = Var.Context()
@@ -153,9 +160,11 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
     }
 
 
-    @Deprecated("Use FloatVar.get() instead to avoid explicit boxing",
-            replaceWith = ReplaceWith("this.get()"),
-            level = DeprecationLevel.ERROR)
+    @Deprecated(
+        "Use FloatVar.get() instead to avoid explicit boxing",
+        replaceWith = ReplaceWith("this.get()"),
+        level = DeprecationLevel.ERROR
+    )
     override fun getOrCompute(): Float {
         return get() // WILL BE BOXED!
     }
@@ -172,6 +181,7 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
 
         class Compute(val computation: Var.Context.() -> Float) : FloatBinding()
 
-        class SideEffecting(var item: Float, val sideEffectingComputation: Var.Context.(existing: Float) -> Float) : FloatBinding()
+        class SideEffecting(var item: Float, val sideEffectingComputation: Var.Context.(existing: Float) -> Float) :
+            FloatBinding()
     }
 }

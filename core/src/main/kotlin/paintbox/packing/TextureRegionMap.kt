@@ -23,11 +23,11 @@ interface TextureRegionMap {
      * A region is considered indexed if its ID is in the format id_X, where X is a number.
      */
     fun getIndexedRegions(id: String): Map<Int, TextureRegion>
-    
+
     /**
      * Returns a map of regions by their number.
      * A region is considered indexed if its ID is in the format id_X, where X is a number.
      */
     fun getIndexedRegionsOrNull(id: String): Map<Int, TextureRegion>?
-    
+
 }

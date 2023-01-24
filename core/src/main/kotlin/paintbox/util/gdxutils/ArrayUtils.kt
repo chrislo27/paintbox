@@ -3,8 +3,8 @@ package paintbox.util.gdxutils
 import com.badlogic.gdx.utils.Array
 
 fun <T> Array<T>.toList(): List<T> =
-        this.map { it }
+    this.map { it }
 
 fun <T> Array<T>.toMutableList(): MutableList<T> =
-        this.map { it }.toMutableList()
+    this.map { it }.toMutableList()
 

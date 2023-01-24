@@ -18,12 +18,12 @@ abstract class Skinnable<SELF> : ActionablePane() {
             skinFactory as SkinFactory<SELF, Skin<SELF>, Skinnable<SELF>>
         }
     }
-    val skin: ReadOnlyVar<Skin<SELF>> by lazy { 
+    val skin: ReadOnlyVar<Skin<SELF>> by lazy {
         Var.bind { skinFactory.use().createSkin(this@Skinnable) }
     }
 
     abstract fun getDefaultSkinID(): String
-    
+
     override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
         skin.getOrCompute().renderSelf(originX, originY, batch)
     }

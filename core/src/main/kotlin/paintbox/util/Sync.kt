@@ -6,18 +6,19 @@ import kotlin.concurrent.thread
  * A highly accurate sync method that continually adapts to the system
  * it runs on to provide reliable results.
  * http://forum.lwjgl.org/index.php?topic=6582.0
- * 
+ *
  * Modified to not use GLFW.
  *
  * @author Riven
  * @author kappaOne
  */
 open class Sync {
-    
+
     companion object {
+
         /** number of nano seconds in a second  */
         private const val NANOS_IN_SECOND = 1000L * 1000L * 1000L
-        
+
         init {
             if (SystemUtils.isWindows()) {
                 // On Windows the sleep functions can be highly inaccurate by
@@ -32,7 +33,7 @@ open class Sync {
             }
         }
     }
-    
+
     /** The time to sleep/yield until the next frame  */
     private var nextFrame: Long = 0
 
@@ -81,7 +82,7 @@ open class Sync {
         // schedule next frame, drop frame(s) if already too late for next frame
         nextFrame = (nextFrame + (NANOS_IN_SECOND / fps).toLong()).coerceAtLeast(time)
     }
-    
+
     fun sync(fps: Int) = sync(fps.toDouble())
 
     /**
@@ -97,7 +98,7 @@ open class Sync {
     }
 
     private var lastNano: Long = System.nanoTime()
-    
+
     /**
      * Get the system time in nano seconds
      *
@@ -110,13 +111,14 @@ open class Sync {
 
     private class RunningAvg(slotCount: Int) {
         companion object {
+
             private const val DAMPEN_THRESHOLD = 10 * 1000L * 1000L // 10ms
             private const val DAMPEN_FACTOR = 0.9f // don't change: 0.9f is exactly right!
         }
-        
+
         private val slots: LongArray = LongArray(slotCount)
         private var offset: Int = 0
-        
+
         fun init(value: Long) {
             while (offset < slots.size) {
                 slots[offset++] = value

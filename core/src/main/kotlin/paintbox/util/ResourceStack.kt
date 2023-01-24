@@ -16,17 +16,18 @@ abstract class ResourceStack<T>(initialCapacity: Int = 64) {
 
     private val pool: InternalPool = InternalPool(initialCapacity)
     private val stack: LinkedList<T & Any> = LinkedList()
-    
+
     val numInStack: Int get() = stack.size
     var peakCount: Int = 0
         private set
-    
-    
+
+
     /**
      * Gets a new object from the pool and returns it. This puts it on the resource stack.
      */
     fun getAndPush(): T & Any {
-        val obtained = pool.obtain() ?: error("[Thread ${Thread.currentThread().name}] pool.obtain returned null. This could be a threading issue. numFree: ${pool.free} ResourceStack: ${this.javaClass.name}")
+        val obtained = pool.obtain()
+            ?: error("[Thread ${Thread.currentThread().name}] pool.obtain returned null. This could be a threading issue. numFree: ${pool.free} ResourceStack: ${this.javaClass.name}")
         stack.add(obtained)
         if (peakCount < stack.size) {
             peakCount = stack.size
@@ -40,13 +41,14 @@ abstract class ResourceStack<T>(initialCapacity: Int = 64) {
      */
     fun pop(): Boolean {
         if (stack.isEmpty()) return false
-        val last = stack.removeLast() ?: error("[Thread ${Thread.currentThread().name}] Stack's last item from stack.removeLast() was null. This could be a threading issue. numFree: ${pool.free} ResourceStack: ${this.javaClass.name}")
+        val last = stack.removeLast()
+            ?: error("[Thread ${Thread.currentThread().name}] Stack's last item from stack.removeLast() was null. This could be a threading issue. numFree: ${pool.free} ResourceStack: ${this.javaClass.name}")
         pool.free(last)
         return true
     }
 
     protected abstract fun newObject(): T & Any
-    
+
     protected abstract fun resetWhenFreed(obj: T & Any)
 
     /**
@@ -61,7 +63,7 @@ abstract class ResourceStack<T>(initialCapacity: Int = 64) {
         action(obj)
         pop()
     }
-    
+
     fun resetPeakCount(): Int {
         val old = peakCount
         peakCount = 0
@@ -69,6 +71,7 @@ abstract class ResourceStack<T>(initialCapacity: Int = 64) {
     }
 
     private inner class InternalPool(initialCapacity: Int) : Pool<T>(initialCapacity) {
+
         override fun newObject(): T & Any {
             return this@ResourceStack.newObject()
         }
@@ -85,6 +88,7 @@ abstract class ResourceStack<T>(initialCapacity: Int = 64) {
  * A convenience singleton for implementing temporary, pooled [com.badlogic.gdx.graphics.Color]s in a stack method.
  */
 object ColorStack : ResourceStack<Color>() {
+
     override fun newObject(): Color {
         return Color(1f, 1f, 1f, 1f)
     }
@@ -95,6 +99,7 @@ object ColorStack : ResourceStack<Color>() {
 }
 
 object RectangleStack : ResourceStack<Rectangle>() {
+
     override fun newObject(): Rectangle {
         return Rectangle()
     }
@@ -105,6 +110,7 @@ object RectangleStack : ResourceStack<Rectangle>() {
 }
 
 object Vector2Stack : ResourceStack<Vector2>() {
+
     override fun newObject(): Vector2 {
         return Vector2()
     }
@@ -115,6 +121,7 @@ object Vector2Stack : ResourceStack<Vector2>() {
 }
 
 object Vector3Stack : ResourceStack<Vector3>() {
+
     override fun newObject(): Vector3 {
         return Vector3()
     }
@@ -125,6 +132,7 @@ object Vector3Stack : ResourceStack<Vector3>() {
 }
 
 object Matrix4Stack : ResourceStack<Matrix4>() {
+
     override fun newObject(): Matrix4 {
         return Matrix4()
     }

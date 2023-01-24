@@ -4,4 +4,4 @@ import com.badlogic.gdx.files.FileHandle
 
 
 fun FileHandle.copyHandle(): FileHandle =
-        FileHandle(this.file())
+    FileHandle(this.file())

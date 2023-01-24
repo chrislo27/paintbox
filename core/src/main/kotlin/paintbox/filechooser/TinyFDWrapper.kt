@@ -16,7 +16,7 @@ import javax.swing.UIManager
 
 
 object TinyFDWrapper : IFileDialog {
-    
+
     private val isWindows: Boolean = SystemUtils.isWindows()
 
     private fun File?.toProperPath(): String? {
@@ -24,7 +24,7 @@ object TinyFDWrapper : IFileDialog {
         if (this.isDirectory) return this.absolutePath + "/"
         return this.absolutePath
     }
-    
+
     private fun String.starDot(): String {
         if (this.startsWith("*.")) return this
         return "*.$this"
@@ -44,7 +44,7 @@ object TinyFDWrapper : IFileDialog {
                 filterPatterns.flip()
 
                 val path = tinyfd_openFileDialog(title, defaultFile, filterPatterns, filter.description, false)
-                        ?: return null
+                    ?: return null
                 File(path)
             }
         }
@@ -68,7 +68,7 @@ object TinyFDWrapper : IFileDialog {
                 filterPatterns.flip()
 
                 val path = tinyfd_openFileDialog(title, defaultFile, filterPatterns, filter.description, true)
-                        ?: return emptyList()
+                    ?: return emptyList()
                 path.split('|').map { File(it) }
             }
         }
@@ -78,7 +78,12 @@ object TinyFDWrapper : IFileDialog {
      * Opens an open file chooser dialog that can select multiple files.
      * [callback] is called when the dialog is closed/file(s) is selected.
      */
-    override fun openMultipleFiles(title: String, defaultFile: File?, filter: FileExtFilter?, callback: (List<File>) -> Unit) {
+    override fun openMultipleFiles(
+        title: String,
+        defaultFile: File?,
+        filter: FileExtFilter?,
+        callback: (List<File>) -> Unit,
+    ) {
         openMultipleFiles(title, defaultFile.toProperPath(), filter).let(callback)
     }
 
@@ -121,11 +126,11 @@ object TinyFDWrapper : IFileDialog {
             }
             val fileChooser = object : JFileChooser(defaultFolder) {
                 override fun createDialog(parent: Component?): JDialog {
-                    return super.createDialog(parent).apply { 
+                    return super.createDialog(parent).apply {
                         setIconImage(BufferedImage(32, 32, BufferedImage.TYPE_INT_ARGB))
                     }
                 }
-            }.apply { 
+            }.apply {
                 this.fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
                 this.dialogTitle = title
             }
@@ -133,6 +138,7 @@ object TinyFDWrapper : IFileDialog {
                 JFileChooser.APPROVE_OPTION -> {
                     fileChooser.selectedFile
                 }
+
                 else -> null
             }
         } else {
@@ -144,7 +150,7 @@ object TinyFDWrapper : IFileDialog {
     /**
      * Opens a select folder/directory chooser dialog.
      * [callback] is called when the dialog is closed/a directory is selected.
-     * 
+     *
      * Broken on Windows: returns the last directory if the user hits CANCEL, instead of returning null
      */
     override fun selectFolder(title: String, defaultDir: File?, callback: (File?) -> Unit) {

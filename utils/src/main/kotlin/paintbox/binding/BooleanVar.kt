@@ -9,6 +9,7 @@ package paintbox.binding
 interface ReadOnlyBooleanVar : SpecializedReadOnlyVar<Boolean>, ReadOnlyVar<Boolean> {
 
     companion object {
+
         /**
          * Returns a constant value [ReadOnlyBooleanVar]. The implementation used is memory optimized and doesn't
          * have dependencies like [BooleanVar] would.
@@ -25,15 +26,18 @@ interface ReadOnlyBooleanVar : SpecializedReadOnlyVar<Boolean>, ReadOnlyVar<Bool
      */
     fun get(): Boolean
 
-    @Deprecated("Use ReadOnlyBooleanVar.get() instead to avoid explicit boxing",
-            replaceWith = ReplaceWith("this.get()"),
-            level = DeprecationLevel.ERROR)
+    @Deprecated(
+        "Use ReadOnlyBooleanVar.get() instead to avoid explicit boxing",
+        replaceWith = ReplaceWith("this.get()"),
+        level = DeprecationLevel.ERROR
+    )
     override fun getOrCompute(): Boolean {
         return get() // WILL BE BOXED!
     }
 }
 
 internal class ReadOnlyConstBooleanVar(private val value: Boolean) : ReadOnlyVarBase<Boolean>(), ReadOnlyBooleanVar {
+
     override fun get(): Boolean {
         return value
     }
@@ -48,7 +52,8 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
 
     private var binding: BooleanBinding
     private var currentValue: Boolean = false
-    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet() // Cannot be generic since it can depend on any other Var
+    private var dependencies: Set<ReadOnlyVar<Any?>> =
+        emptySet() // Cannot be generic since it can depend on any other Var
 
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
@@ -120,6 +125,7 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
                 }
                 this.currentValue
             }
+
             is BooleanBinding.Compute -> {
                 if (!invalidated) {
                     currentValue
@@ -135,6 +141,7 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
                     result
                 }
             }
+
             is BooleanBinding.SideEffecting -> {
                 if (invalidated) {
                     val ctx = Var.Context()
@@ -154,9 +161,11 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
     }
 
 
-    @Deprecated("Use BooleanVar.get() instead to avoid explicit boxing",
-            replaceWith = ReplaceWith("this.get()"),
-            level = DeprecationLevel.ERROR)
+    @Deprecated(
+        "Use BooleanVar.get() instead to avoid explicit boxing",
+        replaceWith = ReplaceWith("this.get()"),
+        level = DeprecationLevel.ERROR
+    )
     override fun getOrCompute(): Boolean {
         return get() // WILL BE BOXED!
     }
@@ -184,7 +193,10 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
 
         class Compute(val computation: Var.Context.() -> Boolean) : BooleanBinding()
 
-        class SideEffecting(var item: Boolean, val sideEffectingComputation: Var.Context.(existing: Boolean) -> Boolean) : BooleanBinding()
+        class SideEffecting(
+            var item: Boolean,
+            val sideEffectingComputation: Var.Context.(existing: Boolean) -> Boolean,
+        ) : BooleanBinding()
     }
 }
 

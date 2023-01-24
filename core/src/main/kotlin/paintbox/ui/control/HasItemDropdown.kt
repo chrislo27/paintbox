@@ -22,10 +22,11 @@ interface HasItemDropdown<T> {
      */
     interface Separator
 
-    val items: Var<List<T>> 
+    val items: Var<List<T>>
+
     @Suppress("UNCHECKED_CAST")
     val itemStringConverter: Var<StringConverter<T>>
-    
+
     /**
      * Fired whenever an item was selected, even if it was already selected previously.
      */
@@ -35,9 +36,9 @@ interface HasItemDropdown<T> {
     val contextMenuMarkup: Var<Markup?>
     val contextMenuFont: Var<PaintboxFont>
     val contextMenuItemStrConverter: Var<StringConverter<T>>
-    
+
     companion object {
-        
+
         /**
          * Call to set the action to deploy a dropdown of choices. [onItemSelected] will be invoked when completed.
          */
@@ -60,7 +61,7 @@ interface HasItemDropdown<T> {
                 control.onItemSelected.invoke(item)
             }
         }
-        
+
         @Suppress("FunctionName")
         private fun <AP, T> _setDefaultActionToDeployDropdown(control: AP, menuItemAction: (item: T) -> Unit)
                 where AP : ActionablePane, AP : HasItemDropdown<T>, AP : HasLabelComponent {
@@ -132,6 +133,6 @@ interface HasItemDropdown<T> {
             }
         }
     }
-    
+
 }
 

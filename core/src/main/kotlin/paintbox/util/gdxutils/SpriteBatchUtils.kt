@@ -22,8 +22,20 @@ fun SpriteBatch.fillRect(rect: Rectangle) {
 fun SpriteBatch.drawRect(x: Float, y: Float, width: Float, height: Float, lineX: Float, lineY: Float) {
     this.draw(PaintboxGame.fillTexture, x, y, width, lineY.coerceAtMost(height))
     this.draw(PaintboxGame.fillTexture, x, y + height, width, -(lineY.coerceAtMost(height)))
-    this.draw(PaintboxGame.fillTexture, x, y + lineY, lineX.coerceAtMost(width), height - (lineY * 2).coerceAtMost(height))
-    this.draw(PaintboxGame.fillTexture, x + width, y + lineY, -(lineX.coerceAtMost(width)), height - (lineY * 2).coerceAtMost(height))
+    this.draw(
+        PaintboxGame.fillTexture,
+        x,
+        y + lineY,
+        lineX.coerceAtMost(width),
+        height - (lineY * 2).coerceAtMost(height)
+    )
+    this.draw(
+        PaintboxGame.fillTexture,
+        x + width,
+        y + lineY,
+        -(lineX.coerceAtMost(width)),
+        height - (lineY * 2).coerceAtMost(height)
+    )
 }
 
 fun SpriteBatch.drawRect(x: Float, y: Float, width: Float, height: Float, line: Float) {
@@ -69,28 +81,34 @@ private val quadVerts: FloatArray = FloatArray(20)
 /**
  * bottom left, bottom right, top right, top left
  */
-fun SpriteBatch.drawQuad(x1: Float, y1: Float, color1: Color,
-                         x2: Float, y2: Float, color2: Color,
-                         x3: Float, y3: Float, color3: Color,
-                         x4: Float, y4: Float, color4: Color,
-                         texture: Texture = PaintboxGame.fillTexture) {
-    this.drawQuad(x1, y1, color1.toFloatBits(),
-                  x2, y2, color2.toFloatBits(),
-                  x3, y3, color3.toFloatBits(),
-                  x4, y4, color4.toFloatBits(),
-                  texture)
+fun SpriteBatch.drawQuad(
+    x1: Float, y1: Float, color1: Color,
+    x2: Float, y2: Float, color2: Color,
+    x3: Float, y3: Float, color3: Color,
+    x4: Float, y4: Float, color4: Color,
+    texture: Texture = PaintboxGame.fillTexture,
+) {
+    this.drawQuad(
+        x1, y1, color1.toFloatBits(),
+        x2, y2, color2.toFloatBits(),
+        x3, y3, color3.toFloatBits(),
+        x4, y4, color4.toFloatBits(),
+        texture
+    )
 }
 
 /**
  * bottom left, bottom right, top right, top left
  */
-fun SpriteBatch.drawQuad(x1: Float, y1: Float, color1: Float,
-                         x2: Float, y2: Float, color2: Float,
-                         x3: Float, y3: Float, color3: Float,
-                         x4: Float, y4: Float, color4: Float,
-                         texture: Texture = PaintboxGame.fillTexture,
-                         blU: Float = 0f, blV: Float = 0f, brU: Float = 1f, brV: Float = 0f,
-                         trU: Float = 1f, trV: Float = 1f, tlU: Float = 0f, tlV: Float = 1f) {
+fun SpriteBatch.drawQuad(
+    x1: Float, y1: Float, color1: Float,
+    x2: Float, y2: Float, color2: Float,
+    x3: Float, y3: Float, color3: Float,
+    x4: Float, y4: Float, color4: Float,
+    texture: Texture = PaintboxGame.fillTexture,
+    blU: Float = 0f, blV: Float = 0f, brU: Float = 1f, brV: Float = 0f,
+    trU: Float = 1f, trV: Float = 1f, tlU: Float = 0f, tlV: Float = 1f,
+) {
     var idx = 0
 
     quadVerts[idx++] = x1
@@ -125,13 +143,13 @@ inline fun SpriteBatch.batchCall(projection: Matrix4 = this.projectionMatrix, dr
     contract {
         callsInPlace(drawFunction, InvocationKind.EXACTLY_ONCE)
     }
-    
+
     val oldProjection = this.projectionMatrix
     val oldColor = this.packedColor
 
     this.projectionMatrix = projection
     this.packedColor = Color.WHITE_FLOAT_BITS
-    
+
     this.begin()
     this.drawFunction()
     this.end()
@@ -143,9 +161,19 @@ inline fun SpriteBatch.batchCall(projection: Matrix4 = this.projectionMatrix, dr
 /**
  * The same as [SpriteBatch.draw(texture, x, y, width, height, u, v, u2, v2)] but [u] and [v] are in the top left, and
  * [u2] and [v2] are in the bottom right. The original [SpriteBatch] draw function has the origin in the bottom left.
- * 
+ *
  * The uv order for this function is more akin to [TextureRegion]'s internal uv representation.
  */
-fun SpriteBatch.drawUV(tex: Texture, x: Float, y: Float, width: Float, height: Float, u: Float, v: Float, u2: Float, v2: Float) {
+fun SpriteBatch.drawUV(
+    tex: Texture,
+    x: Float,
+    y: Float,
+    width: Float,
+    height: Float,
+    u: Float,
+    v: Float,
+    u2: Float,
+    v2: Float,
+) {
     this.draw(tex, x, y, width, height, u, v2, u2, v)
 }

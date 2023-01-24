@@ -8,6 +8,7 @@ package paintbox.binding
 interface ReadOnlyIntVar : SpecializedReadOnlyVar<Int>, ReadOnlyVar<Int> {
 
     companion object {
+
         /**
          * Returns a constant value [ReadOnlyIntVar]. The implementation used is memory optimized and doesn't
          * have dependencies like [IntVar] would.
@@ -24,15 +25,18 @@ interface ReadOnlyIntVar : SpecializedReadOnlyVar<Int>, ReadOnlyVar<Int> {
      */
     fun get(): Int
 
-    @Deprecated("Use ReadOnlyIntVar.get() instead to avoid explicit boxing",
-            replaceWith = ReplaceWith("this.get()"),
-            level = DeprecationLevel.ERROR)
+    @Deprecated(
+        "Use ReadOnlyIntVar.get() instead to avoid explicit boxing",
+        replaceWith = ReplaceWith("this.get()"),
+        level = DeprecationLevel.ERROR
+    )
     override fun getOrCompute(): Int {
         return get() // WILL BE BOXED!
     }
 }
 
 internal class ReadOnlyConstIntVar(private val value: Int) : ReadOnlyVarBase<Int>(), ReadOnlyIntVar {
+
     override fun get(): Int {
         return value
     }
@@ -47,7 +51,8 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
 
     private var binding: IntBinding
     private var currentValue: Int = 0
-    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet() // Cannot be generic since it can depend on any other Var
+    private var dependencies: Set<ReadOnlyVar<Any?>> =
+        emptySet() // Cannot be generic since it can depend on any other Var
 
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
@@ -62,7 +67,7 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
     constructor(computation: Var.Context.() -> Int) {
         binding = IntBinding.Compute(computation)
     }
-    
+
     constructor(eager: Boolean, computation: Var.Context.() -> Int) : this(computation) {
         if (eager) {
             get()
@@ -119,6 +124,7 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
                 }
                 this.currentValue
             }
+
             is IntBinding.Compute -> {
                 if (!invalidated) {
                     currentValue
@@ -134,6 +140,7 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
                     result
                 }
             }
+
             is IntBinding.SideEffecting -> {
                 if (invalidated) {
                     val ctx = Var.Context()
@@ -153,9 +160,11 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
     }
 
 
-    @Deprecated("Use IntVar.get() instead to avoid explicit boxing",
-            replaceWith = ReplaceWith("this.get()"),
-            level = DeprecationLevel.ERROR)
+    @Deprecated(
+        "Use IntVar.get() instead to avoid explicit boxing",
+        replaceWith = ReplaceWith("this.get()"),
+        level = DeprecationLevel.ERROR
+    )
     override fun getOrCompute(): Int {
         return get() // WILL BE BOXED!
     }
@@ -183,7 +192,7 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
         this.set(old + 1)
         return old
     }
-    
+
     /**
      * Increments this value by 1 and returns the NEW value.
      */
@@ -201,7 +210,7 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
         this.set(old + amount)
         return old
     }
-    
+
     /**
      * Increments this value by [amount] and returns the NEW value.
      */
@@ -219,7 +228,7 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
         this.set(old - 1)
         return old
     }
-    
+
     /**
      * Decrements this value by 1 and returns the NEW value.
      */
@@ -237,7 +246,7 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
         this.set(old - amount)
         return old
     }
-    
+
     /**
      * Decrements this value by [amount] and returns the NEW value.
      */
@@ -255,7 +264,8 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
 
         class Compute(val computation: Var.Context.() -> Int) : IntBinding()
 
-        class SideEffecting(var item: Int, val sideEffectingComputation: Var.Context.(existing: Int) -> Int) : IntBinding()
+        class SideEffecting(var item: Int, val sideEffectingComputation: Var.Context.(existing: Int) -> Int) :
+            IntBinding()
     }
 }
 

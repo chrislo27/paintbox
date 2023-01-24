@@ -8,7 +8,6 @@ import paintbox.binding.Var
 import paintbox.ui.*
 
 
-
 enum class PressedState(val hovered: Boolean, val pressed: Boolean) {
     NONE(false, false),
     HOVERED(true, false),
@@ -21,9 +20,13 @@ enum class PressedState(val hovered: Boolean, val pressed: Boolean) {
  * It is recommended to use [HasPressedState.DefaultImpl] as a delegation implementation.
  */
 interface HasPressedState {
+
     companion object {
-        fun createDefaultPressedStateVar(isHoveredOver: ReadOnlyBooleanVar,
-                                         isPressedDown: ReadOnlyBooleanVar): ReadOnlyVar<PressedState> {
+
+        fun createDefaultPressedStateVar(
+            isHoveredOver: ReadOnlyBooleanVar,
+            isPressedDown: ReadOnlyBooleanVar,
+        ): ReadOnlyVar<PressedState> {
             return Var {
                 val hovered = isHoveredOver.use()
                 val pressed = isPressedDown.use()
@@ -39,7 +42,7 @@ interface HasPressedState {
             }
         }
     }
-    
+
     val isHoveredOver: ReadOnlyBooleanVar
     val isPressedDown: ReadOnlyBooleanVar
     val pressedState: ReadOnlyVar<PressedState>
@@ -47,11 +50,13 @@ interface HasPressedState {
     /**
      * The default implementation of [HasPressedState].
      * Does NOT handle the disabled state of [Control] ([Control] implements [HasPressedState] separately).
-     * 
+     *
      * The using class should call [addDefaultPressedStateInputListener] to add the appropriate input event listener on init.
      */
     class DefaultImpl : HasPressedState {
+
         companion object {
+
             /**
              * A class that delegates its [HasPressedState] to [DefaultImpl] should call this function on init.
              */
@@ -62,14 +67,17 @@ interface HasPressedState {
                         is MouseEntered -> {
                             (self.isHoveredOver as BooleanVar).set(true)
                         }
+
                         is MouseExited -> {
                             (self.isHoveredOver as BooleanVar).set(false)
                         }
+
                         is ClickPressed -> {
                             if (event.button == Input.Buttons.LEFT) {
                                 (self.isPressedDown as BooleanVar).set(true)
                             }
                         }
+
                         is ClickReleased -> {
                             if (event.button == Input.Buttons.LEFT && self.isPressedDown.get()) {
                                 (self.isPressedDown as BooleanVar).set(false)
@@ -80,10 +88,11 @@ interface HasPressedState {
                 }
             }
         }
-        
+
         override val isHoveredOver: ReadOnlyBooleanVar = BooleanVar(false)
         override val isPressedDown: ReadOnlyBooleanVar = BooleanVar(false)
-        override val pressedState: ReadOnlyVar<PressedState> = HasPressedState.createDefaultPressedStateVar(isHoveredOver, isPressedDown)
-        
+        override val pressedState: ReadOnlyVar<PressedState> =
+            HasPressedState.createDefaultPressedStateVar(isHoveredOver, isPressedDown)
+
     }
 }

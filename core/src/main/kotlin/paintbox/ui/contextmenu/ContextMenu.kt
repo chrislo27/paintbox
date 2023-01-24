@@ -32,6 +32,7 @@ import paintbox.util.gdxutils.grey
 open class ContextMenu : Control<ContextMenu>() {
 
     companion object {
+
         const val SKIN_ID: String = "ContextMenu"
         const val CONTEXT_MENU_BUTTON_SKIN_ID: String = "ContextMenu_Button"
 
@@ -69,7 +70,7 @@ open class ContextMenu : Control<ContextMenu>() {
     var isContentInScrollPane: Boolean = false
         protected set
     protected var contentContainer: UIElement? = null
-    
+
     init {
         this.border.set(Insets(1f))
         this.borderStyle.set(SolidBorder(Color.BLACK))
@@ -77,14 +78,14 @@ open class ContextMenu : Control<ContextMenu>() {
         this.bounds.height.set(defaultWidth.get())
 
         addChild(backgroundRect)
-        
+
         scrollPane = ScrollPane().apply {
             this.hBarPolicy.set(ScrollPane.ScrollBarPolicy.NEVER)
             this.vBarPolicy.set(ScrollPane.ScrollBarPolicy.AS_NEEDED)
             this.vBar.unitIncrement.set(10f)
             this.vBar.blockIncrement.set(40f)
         }
-        
+
         this.addInputEventListener { _ ->
             true // Accepts any input events so the context menu doesn't get closed
         }
@@ -111,7 +112,7 @@ open class ContextMenu : Control<ContextMenu>() {
                     }
                     false
                 }
-                pane.onAction = { 
+                pane.onAction = {
                     var consumed = false
                     val forwardTarget = forwardOnActionTo
                     if (forwardTarget != null) {
@@ -129,7 +130,7 @@ open class ContextMenu : Control<ContextMenu>() {
                     }
                 })
             }
-            
+
             val contentPane: Pane = (object : Pane(), HasTooltip by HasTooltip.DefaultImpl() {
             }).also { pane ->
                 pane.padding.set(Insets(6f, 6f, 8f, 8f))
@@ -150,6 +151,7 @@ open class ContextMenu : Control<ContextMenu>() {
                     basePane.bounds.height.set(h)
                     contentPane.addChild(item.element)
                 }
+
                 is Menu -> TODO() // TODO Implement sub menus
                 is SeparatorMenuItem -> {
                     useHovered.set(false)
@@ -162,6 +164,7 @@ open class ContextMenu : Control<ContextMenu>() {
                         pane.addChild(RectElement(Color.BLACK))
                     }
                 }
+
                 is LabelMenuItem -> {
                     useHovered.set(false)
                     val padding = 2f
@@ -180,6 +183,7 @@ open class ContextMenu : Control<ContextMenu>() {
                         })
                     }
                 }
+
                 is SimpleMenuItem -> {
                     val padding = 2f
                     val panePadding = contentPane.padding.getOrCompute()
@@ -207,6 +211,7 @@ open class ContextMenu : Control<ContextMenu>() {
                         })
                     }
                 }
+
                 is CheckBoxMenuItem -> {
                     val padding = 2f
                     val panePadding = contentPane.padding.getOrCompute()
@@ -243,24 +248,24 @@ open class ContextMenu : Control<ContextMenu>() {
             }
             MenuItemMetadata(item, basePane)
         }
-        
+
         val containingVbox = VBox().apply {
             this.spacing.set(0f)
         }
 
-        containingVbox.temporarilyDisableLayouts { 
-            metadata.forEach { 
+        containingVbox.temporarilyDisableLayouts {
+            metadata.forEach {
                 containingVbox += it.element
             }
         }
         containingVbox.sizeHeightToChildren(10f)
         activeMenuItems = metadata
-        
+
         val oldContainer = this.contentContainer
         if (oldContainer != null) {
             scrollPaneParent.removeChild(oldContainer)
         }
-        
+
         val computedHeight = containingVbox.bounds.height.get()
         val maxH = maxHeight.get()
         val realHeight = computedHeight.coerceAtMost(maxH)
@@ -275,18 +280,20 @@ open class ContextMenu : Control<ContextMenu>() {
             scrollPaneParent.removeChild(scrollPane)
             scrollPaneParent.addChild(containingVbox)
         }
-        
+
         contentContainer = containingVbox
 
         val thisBorder = this.border.getOrCompute()
-        this.bounds.width.set(width.get() + thisBorder.left + thisBorder.right
-                + (if (isContentInScrollPane) scrollPane.vBar.bounds.width.get() else 0f))
+        this.bounds.width.set(
+            width.get() + thisBorder.left + thisBorder.right
+                    + (if (isContentInScrollPane) scrollPane.vBar.bounds.width.get() else 0f)
+        )
         this.bounds.height.set(realHeight + thisBorder.top + thisBorder.bottom)
     }
 
     fun scrollToItem(menuItem: MenuItem) {
         if (!isContentInScrollPane) return
-        
+
         val metadata = this.activeMenuItems.find { it.menuItem === menuItem }
         if (metadata != null) {
             val bottomEdge = metadata.element.bounds.y.get() + metadata.element.bounds.height.get()
@@ -295,7 +302,7 @@ open class ContextMenu : Control<ContextMenu>() {
             scrollPane.vBar.setValue(targetValue)
         }
     }
-    
+
     fun addMenuItem(child: MenuItem) {
         if (child !in menuItems) {
             menuItems = menuItems + child

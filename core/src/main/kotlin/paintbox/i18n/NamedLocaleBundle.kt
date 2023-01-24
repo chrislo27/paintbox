@@ -22,12 +22,12 @@ data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundl
             emptyMap()
         }
     }
-    
+
     val allKeys: Set<String> by lazy {
         val map = internalProperties
         map.keys.toSet()
     }
-    
+
     /**
      * Keys with missing information.
      */
@@ -38,16 +38,18 @@ data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundl
      * Future IAEs are suppressed.
      */
     val caughtIAEs: MutableSet<String> = mutableSetOf()
-    
+
     init {
         val actualLocale = bundle.locale
         val requestedLocale = namedLocale.locale
         if (actualLocale != requestedLocale) {
-            Paintbox.LOGGER.log(if (actualLocale.language != requestedLocale.language) Logger.LogLevel.ERROR else Logger.LogLevel.WARN,
-                    "NamedLocaleBundle \"$bundleName\" (${namedLocale}) isn't using the same locale as requested. Requested: '$requestedLocale', actual: '$actualLocale'")
+            Paintbox.LOGGER.log(
+                if (actualLocale.language != requestedLocale.language) Logger.LogLevel.ERROR else Logger.LogLevel.WARN,
+                "NamedLocaleBundle \"$bundleName\" (${namedLocale}) isn't using the same locale as requested. Requested: '$requestedLocale', actual: '$actualLocale'"
+            )
         }
     }
-    
+
     fun getValue(key: String): String {
         if (isKeyMissing(key)) return key
         return bundle[key]
@@ -66,7 +68,7 @@ data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundl
             key
         }
     }
-    
+
     fun isKeyMissing(key: String): Boolean {
         if (key in missingKeys) return true
         try {
@@ -78,7 +80,7 @@ data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundl
         }
         return false
     }
-    
+
     operator fun contains(key: String): Boolean = !isKeyMissing(key)
-    
+
 }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.Input
 
 open class ActionablePane : PaneWithTooltip() {
     companion object {
+
         val DEFAULT_ACTION: () -> Boolean = { false }
         val DEFAULT_EVENT_ACTION: (InputEvent) -> Boolean = { false }
     }
@@ -25,29 +26,32 @@ open class ActionablePane : PaneWithTooltip() {
 
     protected open fun defaultInputEventHandler(event: InputEvent): Boolean {
         return when (event) {
-                is ClickReleased -> {
-                    if (event.isCurrentlyWithinBounds) {
-                        if (event.button == Input.Buttons.LEFT) {
-                            if (!onAction()) {
-                                onLeftClick(event)
-                            } else true
-                        } else if (event.button == Input.Buttons.RIGHT) {
-                            if (!onAltAction()) {
-                                onRightClick(event)
-                            } else true
-                        } else if (event.button == Input.Buttons.MIDDLE) {
-                            onMiddleClick(event)
-                        } else false
+            is ClickReleased -> {
+                if (event.isCurrentlyWithinBounds) {
+                    if (event.button == Input.Buttons.LEFT) {
+                        if (!onAction()) {
+                            onLeftClick(event)
+                        } else true
+                    } else if (event.button == Input.Buttons.RIGHT) {
+                        if (!onAltAction()) {
+                            onRightClick(event)
+                        } else true
+                    } else if (event.button == Input.Buttons.MIDDLE) {
+                        onMiddleClick(event)
                     } else false
-                }
-                is MouseEntered -> {
-                    onHoverStart(event)
-                }
-                is MouseExited -> {
-                    onHoverEnd(event)
-                }
-                else -> false
+                } else false
             }
+
+            is MouseEntered -> {
+                onHoverStart(event)
+            }
+
+            is MouseExited -> {
+                onHoverEnd(event)
+            }
+
+            else -> false
+        }
     }
 
     protected open fun addDefaultInputEventListener() {

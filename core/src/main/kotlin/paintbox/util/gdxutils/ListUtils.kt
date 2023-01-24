@@ -5,4 +5,4 @@ import java.util.concurrent.ThreadLocalRandom
 
 
 fun <T> List<T>.random(random: Random = ThreadLocalRandom.current()): T =
-        this[random.nextInt(this.size)]
+    this[random.nextInt(this.size)]

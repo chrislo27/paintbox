@@ -13,6 +13,7 @@ import paintbox.util.Version
 abstract class PaintboxPreferences<Game : PaintboxGame>(val main: Game, val prefs: Preferences) : Disposable {
 
     companion object {
+
         fun determineMaxRefreshRate(minimum: Int = 24, fallback: Int = 60): Int {
             return try {
                 Gdx.graphics.displayMode.refreshRate.coerceAtLeast(minimum)
@@ -42,11 +43,12 @@ abstract class PaintboxPreferences<Game : PaintboxGame>(val main: Game, val pref
             this.putBoolean(newIndicator.key, newIndicator.value.get())
         }
     }
-    
+
     protected class InitScope {
+
         val allKeyValues: MutableList<KeyValue<*>> = mutableListOf()
         val allNewIndicators: MutableList<NewIndicator> = mutableListOf()
-        
+
         fun <KV : KeyValue<T>, T> KV.add(): KV {
             allKeyValues += this
             return this
@@ -65,10 +67,10 @@ abstract class PaintboxPreferences<Game : PaintboxGame>(val main: Game, val pref
     abstract val allNewIndicators: List<NewIndicator>
 
     abstract fun getLastVersionKey(): String
-    
+
     open fun load() {
         val prefs = this.prefs
-        
+
         allKeyValues.forEach { kv ->
             kv.load(prefs)
         }
@@ -79,7 +81,7 @@ abstract class PaintboxPreferences<Game : PaintboxGame>(val main: Game, val pref
 
     open fun persist() {
         val prefs = this.prefs
-        
+
         allKeyValues.forEach { kv ->
             kv.persist(prefs)
         }
@@ -94,7 +96,7 @@ abstract class PaintboxPreferences<Game : PaintboxGame>(val main: Game, val pref
      */
     open fun setStartupSettings(game: Game) {
     }
-    
+
     protected open fun setFpsAndVsync(game: Game, maxFramerate: Var<Int>, vsyncEnabled: Var<Boolean>) {
         // LauncherSettings override properties
         val fps = game.launcherSettings.fps
@@ -116,5 +118,5 @@ abstract class PaintboxPreferences<Game : PaintboxGame>(val main: Game, val pref
         prefs.putString(getLastVersionKey(), main.version.toString()).flush()
         persist()
     }
-    
+
 }

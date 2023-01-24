@@ -12,12 +12,14 @@ import com.badlogic.gdx.utils.Disposable
 class LazySound(val handle: FileHandle) : Disposable {
 
     companion object {
+
         var loadLazilyWithAssetManager: Boolean = true
         var soundFactory: (FileHandle) -> Sound = { Gdx.audio.newSound(it) }
     }
 
     @Volatile
     private var backing: Sound? = null
+
     @Volatile
     var disposedOf: Boolean = false
         private set

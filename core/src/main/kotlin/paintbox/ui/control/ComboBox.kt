@@ -18,48 +18,53 @@ import paintbox.util.gdxutils.fillRect
 import kotlin.math.min
 
 
-open class ComboBox<T>(startingList: List<T>, selectedItem: T, 
-                       font: PaintboxFont = UIElement.defaultFont)
-    : Control<ComboBox<T>>(), HasLabelComponent, HasItemDropdown<T>, HasSelectedItem<T> {
-    
+open class ComboBox<T>(
+    startingList: List<T>, selectedItem: T,
+    font: PaintboxFont = UIElement.defaultFont,
+) : Control<ComboBox<T>>(), HasLabelComponent, HasItemDropdown<T>, HasSelectedItem<T> {
+
     companion object {
+
         const val COMBOBOX_SKIN_ID: String = "ComboBox"
-        
+
         val DEFAULT_STRING_CONVERTER: StringConverter<Any?> get() = StringConverter.DEFAULT_STRING_CONVERTER
         val DEFAULT_PADDING: Insets = Insets(2f, 2f, 4f, 4f)
-        
+
         init {
             DefaultSkins.register(COMBOBOX_SKIN_ID, SkinFactory { element: ComboBox<*> ->
                 @Suppress("UNCHECKED_CAST")
                 ComboBoxSkin(element as ComboBox<Any?>)
             })
         }
-        
+
         fun createInternalTextBlockVar(comboBox: ComboBox<Any?>): Var<TextBlock> {
             return Var {
                 val text = comboBox.text.use()
                 val markup: Markup? = comboBox.markup.use()
                 markup?.parse(text)
-                    ?: TextRun(comboBox.font.use(), text, Color.WHITE,
-                        comboBox.scaleX.use(), comboBox.scaleY.use()).toTextBlock()
+                    ?: TextRun(
+                        comboBox.font.use(), text, Color.WHITE,
+                        comboBox.scaleX.use(), comboBox.scaleY.use()
+                    ).toTextBlock()
             }
         }
     }
-    
-    
+
+
     override val items: Var<List<T>> = Var(startingList)
     override val selectedItem: Var<T> = Var(selectedItem)
+
     @Suppress("UNCHECKED_CAST")
     override val itemStringConverter: Var<StringConverter<T>> = Var(DEFAULT_STRING_CONVERTER as StringConverter<T>)
     override val text: ReadOnlyVar<String> = Var.bind {
         this@ComboBox.itemStringConverter.use().convert(this@ComboBox.selectedItem.use())
     }
-    
+
     val backgroundColor: Var<Color> = Var(Color(1f, 1f, 1f, 1f))
     val contrastColor: Var<Color> = Var(Color(0f, 0f, 0f, 1f))
     val textColor: Var<Color> = Var.bind { contrastColor.use() }
     val arrowColor: Var<Color> = Var.bind { contrastColor.use() }
-    
+
     override val font: Var<PaintboxFont> = Var(font)
     override val scaleX: FloatVar = FloatVar(1f)
     override val scaleY: FloatVar = FloatVar(1f)
@@ -89,8 +94,9 @@ open class ComboBox<T>(startingList: List<T>, selectedItem: T,
     override val contextMenuDefaultWidth: FloatVar = FloatVar { this@ComboBox.bounds.width.use() }
     override val contextMenuMarkup: Var<Markup?> = Var.bind { this@ComboBox.markup.use() }
     override val contextMenuFont: Var<PaintboxFont> = Var.bind { this@ComboBox.font.use() }
-    override val contextMenuItemStrConverter: Var<StringConverter<T>> = Var.bind { this@ComboBox.itemStringConverter.use() }
-    
+    override val contextMenuItemStrConverter: Var<StringConverter<T>> =
+        Var.bind { this@ComboBox.itemStringConverter.use() }
+
     init {
         this.border.set(Insets(1f))
         this.borderStyle.set(SolidBorder().also { border ->
@@ -101,12 +107,13 @@ open class ComboBox<T>(startingList: List<T>, selectedItem: T,
         @Suppress("LeakingThis")
         HasItemDropdown.setDefaultActionToDeployDropdown(this)
     }
-    
+
     override fun getDefaultSkinID(): String = COMBOBOX_SKIN_ID
-    
+
 }
 
 open class ComboBoxSkin(element: ComboBox<Any?>) : Skin<ComboBox<Any?>>(element) {
+
     override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
         val paddingBounds = element.paddingZone
         val rectX = paddingBounds.x.get() + originX
@@ -137,10 +144,12 @@ open class ComboBoxSkin(element: ComboBox<Any?>) : Skin<ComboBox<Any?>>(element)
         batch.color = rectColor
         val arrowSize = min(contentW * element.scaleX.get(), contentH * element.scaleY.get()) * 0.75f
         if (arrowSize > 0f) {
-            batch.draw(paintboxSpritesheet.downChevronArrow, contentX + contentW - arrowSize,
-                    contentY - contentH + (contentH - arrowSize) / 2, arrowSize, arrowSize)
+            batch.draw(
+                paintboxSpritesheet.downChevronArrow, contentX + contentW - arrowSize,
+                contentY - contentH + (contentH - arrowSize) / 2, arrowSize, arrowSize
+            )
         }
-        
+
         batch.packedColor = lastPackedColor
         ColorStack.pop()
 
@@ -177,8 +186,10 @@ open class ComboBoxSkin(element: ComboBox<Any?>) : Skin<ComboBox<Any?>>(element)
             }
 
             batch.color = tmpColor // Sets the text colour and opacity
-            text.drawCompressed(batch, textX + xOffset, textY - textH + yOffset,
-                    if (compressX) (textW) else 0f, element.textAlign.getOrCompute())
+            text.drawCompressed(
+                batch, textX + xOffset, textY - textH + yOffset,
+                if (compressX) (textW) else 0f, element.textAlign.getOrCompute()
+            )
             ColorStack.pop()
         }
 

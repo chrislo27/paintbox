@@ -20,10 +20,11 @@ import kotlin.math.min
 /**
  * A [TextLabel] is a [Control] that renders a [TextBlock]
  */
-open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
-    : Control<TextLabel>(), HasLabelComponent {
+open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont) : Control<TextLabel>(),
+    HasLabelComponent {
 
     companion object {
+
         const val TEXTLABEL_SKIN_ID: String = "TextLabel"
         const val SCROLLING_TEXTLABEL_SKIN_ID: String = "TextLabel_scrolling"
 
@@ -40,8 +41,10 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
             return Var {
                 val markup: Markup? = label.markup.use()
                 (markup?.parse(label.text.use())
-                        ?: TextRun(label.font.use(), label.text.use(), Color.WHITE,
-                                /*label.scaleX.use(), label.scaleY.use()*/ 1f, 1f).toTextBlock()).also { textBlock ->
+                    ?: TextRun(
+                        label.font.use(), label.text.use(), Color.WHITE,
+                        /*label.scaleX.use(), label.scaleY.use()*/ 1f, 1f
+                    ).toTextBlock()).also { textBlock ->
                     if (label.doLineWrapping.use()) {
                         textBlock.lineWrapping.set(label.contentZone.width.use() / (if (label.doesScaleXAffectWrapping.use()) label.scaleX.use() else 1f))
                     }
@@ -54,19 +57,20 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
      * The autosizing behaviour.
      */
     sealed class AutosizeBehavior {
+
         object None : AutosizeBehavior()
 
         /**
          * Autosizing is active.
-         * 
+         *
          * [dimensions] indicates whether width, height, or both should be affected.
-         * 
+         *
          * [triggerOnlyWhenInScene] is true by default; a value of true means the autosize will only happen
          * if the [TextLabel.sceneRoot] is not null. This works because [TextLabel.internalTextBlock]
          * is accessed when rendering (and thus updated), and the label must be in the scene graph to be rendered.
          */
         class Active(val dimensions: Dimensions, val triggerOnlyWhenInScene: Boolean = true) : AutosizeBehavior()
-        
+
         enum class Dimensions(val affectWidth: Boolean, val affectHeight: Boolean) {
             WIDTH_ONLY(true, false),
             HEIGHT_ONLY(false, true),
@@ -92,11 +96,12 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
      * Determines the x-scale the text is rendered at.
      */
     override val scaleX: FloatVar = FloatVar(1f)
+
     /**
      * Determines the y-scale the text is rendered at.
      */
     override val scaleY: FloatVar = FloatVar(1f)
-    
+
     val doesScaleXAffectWrapping: BooleanVar = BooleanVar(true)
 
     /**
@@ -112,10 +117,12 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
     val doXCompression: BooleanVar = BooleanVar(true)
     val doLineWrapping: BooleanVar = BooleanVar(false)
     val autosizeBehavior: Var<AutosizeBehavior> = Var(AutosizeBehavior.None)
+
     /**
      * The maximum width of this label when auto-resized. A value of zero means there is no limit.
      */
     val maxWidth: FloatVar = FloatVar(0f)
+
     /**
      * The maximum height of this label when auto-resized. A value of zero means there is no limit.
      */
@@ -123,11 +130,11 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
 
     /**
      * Defaults to an auto-generated [TextBlock] with the given [text].
-     * 
+     *
      * If this is overwritten, this [TextLabel]'s [textColor] should be set to have a non-zero opacity.
      */
     val internalTextBlock: Var<TextBlock> = createInternalTextBlockVar(this)
-    
+
     constructor(binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
             : this("", font) {
         text.bind(binding)
@@ -162,8 +169,10 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
             AutosizeBehavior.None -> {}
             is AutosizeBehavior.Active -> {
                 if (!b.triggerOnlyWhenInScene || this.sceneRoot.getOrCompute() != null) {
-                    resizeBoundsToContent(limitWidth = maxWidth.get(), limitHeight = maxHeight.get(),
-                            affectWidth = b.dimensions.affectWidth, affectHeight = b.dimensions.affectHeight)
+                    resizeBoundsToContent(
+                        limitWidth = maxWidth.get(), limitHeight = maxHeight.get(),
+                        affectWidth = b.dimensions.affectWidth, affectHeight = b.dimensions.affectHeight
+                    )
                 }
             }
         }
@@ -175,35 +184,39 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont)
     /**
      * Resizes this element to fit the bounds of the [internalTextBlock].
      * [limitWidth] and [limitHeight] will strictly limit the width/height if they are greater than zero.
-     * 
+     *
      */
-    fun resizeBoundsToContent(affectWidth: Boolean = true, affectHeight: Boolean = true,
-                              limitWidth: Float = 0f, limitHeight: Float = 0f) {
+    fun resizeBoundsToContent(
+        affectWidth: Boolean = true, affectHeight: Boolean = true,
+        limitWidth: Float = 0f, limitHeight: Float = 0f,
+    ) {
         val textBlock: TextBlock = this.internalTextBlock.getOrCompute()
         if (textBlock.isRunInfoInvalid()) {
             textBlock.computeLayouts()
         }
         if (!affectWidth && !affectHeight) return
-        
+
         val textWidth = textBlock.width * scaleX.get()
         val textHeight = textBlock.height * scaleY.get()
-        
+
         val borderInsets = this.border.getOrCompute()
         val marginInsets = this.margin.getOrCompute()
         val paddingInsets = this.bgPadding.getOrCompute().maximize(this.padding.getOrCompute())
-        
+
         fun Insets.leftright(): Float = this.left + this.right
         fun Insets.topbottom(): Float = this.top + this.bottom
 
         if (affectWidth) {
-            var computedWidth = borderInsets.leftright() + marginInsets.leftright() + paddingInsets.leftright() + textWidth
+            var computedWidth =
+                borderInsets.leftright() + marginInsets.leftright() + paddingInsets.leftright() + textWidth
             if (limitWidth > 0f) {
                 computedWidth = computedWidth.coerceAtMost(limitWidth)
             }
             this.bounds.width.set(computedWidth)
         }
         if (affectHeight) {
-            var computedHeight = borderInsets.topbottom() + marginInsets.topbottom() + paddingInsets.topbottom() + textHeight
+            var computedHeight =
+                borderInsets.topbottom() + marginInsets.topbottom() + paddingInsets.topbottom() + textHeight
             if (limitHeight > 0f) {
                 computedHeight = computedHeight.coerceAtMost(limitHeight)
             }
@@ -285,17 +298,21 @@ open class TextLabelSkin(element: TextLabel) : Skin<TextLabel>(element) {
             val bgColor = ColorStack.getAndPush().set(bgColorToUse.getOrCompute())
             bgColor.a *= opacity
             batch.color = bgColor
-            batch.fillRect(bx.coerceAtLeast(x), by/*.coerceAtLeast(y - bh.coerceAtMost(h))*/,
-                    if (compressX) bw.coerceAtMost(w) else bw, bh/*.coerceAtMost(h)*/)
+            batch.fillRect(
+                bx.coerceAtLeast(x), by/*.coerceAtLeast(y - bh.coerceAtMost(h))*/,
+                if (compressX) bw.coerceAtMost(w) else bw, bh/*.coerceAtMost(h)*/
+            )
             ColorStack.pop()
         }
 
         batch.color = tmpColor // Sets the opacity of the text
         if (compressX) {
             val maxTextWidth = w - bgPaddingInsets.left - bgPaddingInsets.right
-            text.drawCompressed(batch, x + (xOffset).coerceAtLeast(bgPaddingInsets.left), (y - h + yOffset),
-                    maxTextWidth,
-                    element.textAlign.getOrCompute(), scaleX, scaleY)
+            text.drawCompressed(
+                batch, x + (xOffset).coerceAtLeast(bgPaddingInsets.left), (y - h + yOffset),
+                maxTextWidth,
+                element.textAlign.getOrCompute(), scaleX, scaleY
+            )
         } else {
             text.draw(batch, x + xOffset, (y - h + yOffset), element.textAlign.getOrCompute(), scaleX, scaleY)
         }
@@ -392,8 +409,10 @@ class ScrollingTextLabelSkin(element: TextLabel) : TextLabelSkin(element) {
             val bgColor = ColorStack.getAndPush().set(bgColorToUse.getOrCompute())
             bgColor.a *= opacity
             batch.color = bgColor
-            batch.fillRect(bx.coerceAtLeast(x), by/*.coerceAtLeast(y - bh.coerceAtMost(h))*/,
-                    if (compressX) bw.coerceAtMost(w) else bw, bh/*.coerceAtMost(h)*/)
+            batch.fillRect(
+                bx.coerceAtLeast(x), by/*.coerceAtLeast(y - bh.coerceAtMost(h))*/,
+                if (compressX) bw.coerceAtMost(w) else bw, bh/*.coerceAtMost(h)*/
+            )
             ColorStack.pop()
         }
 
@@ -415,18 +434,40 @@ class ScrollingTextLabelSkin(element: TextLabel) : TextLabelSkin(element) {
         }
         if (compressX) {
             val maxTextWidth = w - bgPaddingInsets.left - bgPaddingInsets.right
-            text.drawCompressed(batch, x + (xOffset).coerceAtLeast(bgPaddingInsets.left) + scrollOffset, (y - h + yOffset),
-                    maxTextWidth,
-                    element.textAlign.getOrCompute(), scaleX, scaleY)
+            text.drawCompressed(
+                batch, x + (xOffset).coerceAtLeast(bgPaddingInsets.left) + scrollOffset, (y - h + yOffset),
+                maxTextWidth,
+                element.textAlign.getOrCompute(), scaleX, scaleY
+            )
             if (scrollOffset < 0f) {
-                text.drawCompressed(batch, x + (xOffset).coerceAtLeast(bgPaddingInsets.left) + scrollOffset + textWrapPoint, (y - h + yOffset),
-                        maxTextWidth,
-                        element.textAlign.getOrCompute(), scaleX, scaleY)
+                text.drawCompressed(
+                    batch,
+                    x + (xOffset).coerceAtLeast(bgPaddingInsets.left) + scrollOffset + textWrapPoint,
+                    (y - h + yOffset),
+                    maxTextWidth,
+                    element.textAlign.getOrCompute(),
+                    scaleX,
+                    scaleY
+                )
             }
         } else {
-            text.draw(batch, x + xOffset + scrollOffset, (y - h + yOffset), element.textAlign.getOrCompute(), scaleX, scaleY)
+            text.draw(
+                batch,
+                x + xOffset + scrollOffset,
+                (y - h + yOffset),
+                element.textAlign.getOrCompute(),
+                scaleX,
+                scaleY
+            )
             if (scrollOffset < 0f) {
-                text.draw(batch, x + xOffset + scrollOffset + textWrapPoint, (y - h + yOffset), element.textAlign.getOrCompute(), scaleX, scaleY)
+                text.draw(
+                    batch,
+                    x + xOffset + scrollOffset + textWrapPoint,
+                    (y - h + yOffset),
+                    element.textAlign.getOrCompute(),
+                    scaleX,
+                    scaleY
+                )
             }
         }
         ColorStack.pop()

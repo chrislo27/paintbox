@@ -14,9 +14,9 @@ import paintbox.util.gdxutils.drawQuad
 /**
  * A quad describes a OpenGL quad with configurable colours for each corner.
  */
-open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: Color, initBottomRight: Color)
-    : UIElement() {
-    
+open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: Color, initBottomRight: Color) :
+    UIElement() {
+
     val topLeftColor: Var<Color> = Var(Color(1f, 1f, 1f, 1f).set(initTopLeft))
     val topRightColor: Var<Color> = Var(Color(1f, 1f, 1f, 1f).set(initTopRight))
     val bottomLeftColor: Var<Color> = Var(Color(1f, 1f, 1f, 1f).set(initBottomLeft))
@@ -26,7 +26,7 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
      * Texture to use when filling the quad. By default it is null, which means it will use [paintbox.PaintboxGame.fillTexture].
      */
     val texture: Var<Texture?> = Var(null)
-    
+
     val topLeftOffsetU: FloatVar = FloatVar(0f)
     val topLeftOffsetV: FloatVar = FloatVar(1f)
     val topRightOffsetU: FloatVar = FloatVar(1f)
@@ -35,7 +35,7 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
     val bottomLeftOffsetV: FloatVar = FloatVar(0f)
     val bottomRightOffsetU: FloatVar = FloatVar(1f)
     val bottomRightOffsetV: FloatVar = FloatVar(0f)
-    
+
     val topLeftTextureU: FloatVar = FloatVar { topLeftOffsetU.use() }
     val topLeftTextureV: FloatVar = FloatVar { topLeftOffsetV.use() }
     val topRightTextureU: FloatVar = FloatVar { topRightOffsetU.use() }
@@ -44,38 +44,38 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
     val bottomLeftTextureV: FloatVar = FloatVar { bottomLeftOffsetV.use() }
     val bottomRightTextureU: FloatVar = FloatVar { bottomRightOffsetU.use() }
     val bottomRightTextureV: FloatVar = FloatVar { bottomRightOffsetV.use() }
-    
+
     constructor(initColorAll: Color) : this(initColorAll, initColorAll, initColorAll, initColorAll)
     constructor() : this(Color.WHITE)
-    
+
     constructor(bindingAll: Var.Context.() -> Color) : this() {
         topLeftColor.bind(bindingAll)
         topRightColor.bind(bindingAll)
         bottomLeftColor.bind(bindingAll)
         bottomRightColor.bind(bindingAll)
     }
-    
+
     fun leftRightGradient(left: Color, right: Color) {
         topLeftColor.set(left.cpy())
         bottomLeftColor.set(left.cpy())
         topRightColor.set(right.cpy())
         bottomRightColor.set(right.cpy())
     }
-    
+
     fun leftRightGradient(left: Var.Context.() -> Color, right: Var.Context.() -> Color) {
         topLeftColor.bind(left)
         bottomLeftColor.bind(left)
         topRightColor.bind(right)
         bottomRightColor.bind(right)
     }
-    
+
     fun topBottomGradient(top: Color, bottom: Color) {
         topLeftColor.set(top.cpy())
         topRightColor.set(top.cpy())
         bottomLeftColor.set(bottom.cpy())
         bottomRightColor.set(bottom.cpy())
     }
-    
+
     fun topBottomGradient(top: Var.Context.() -> Color, bottom: Var.Context.() -> Color) {
         topLeftColor.bind(top)
         topRightColor.bind(top)
@@ -107,15 +107,15 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
 
         batch.setColor(1f, 1f, 1f, 1f)
         batch.drawQuad(
-                x + w * bottomLeftOffsetU.get(), (y - h) + h * bottomLeftOffsetV.get(), tmpColorBL.toFloatBits(),
-                x + w * bottomRightOffsetU.get(), (y - h) + h * bottomRightOffsetV.get(), tmpColorBR.toFloatBits(),
-                x + w * topRightOffsetU.get(), (y - h) + h * topRightOffsetV.get(), tmpColorTR.toFloatBits(),
-                x + w * topLeftOffsetU.get(), (y - h) + h * topLeftOffsetV.get(), tmpColorTL.toFloatBits(), 
-                texture.getOrCompute() ?: PaintboxGame.fillTexture,
-                blU = bottomLeftTextureU.get(), blV = bottomLeftTextureV.get(),
-                brU = bottomRightTextureU.get(), brV = bottomRightTextureV.get(),
-                trU = topRightTextureU.get(), trV = topRightTextureV.get(),
-                tlU = topLeftTextureU.get(), tlV = topLeftTextureV.get()
+            x + w * bottomLeftOffsetU.get(), (y - h) + h * bottomLeftOffsetV.get(), tmpColorBL.toFloatBits(),
+            x + w * bottomRightOffsetU.get(), (y - h) + h * bottomRightOffsetV.get(), tmpColorBR.toFloatBits(),
+            x + w * topRightOffsetU.get(), (y - h) + h * topRightOffsetV.get(), tmpColorTR.toFloatBits(),
+            x + w * topLeftOffsetU.get(), (y - h) + h * topLeftOffsetV.get(), tmpColorTL.toFloatBits(),
+            texture.getOrCompute() ?: PaintboxGame.fillTexture,
+            blU = bottomLeftTextureU.get(), blV = bottomLeftTextureV.get(),
+            brU = bottomRightTextureU.get(), brV = bottomRightTextureV.get(),
+            trU = topRightTextureU.get(), trV = topRightTextureV.get(),
+            tlU = topLeftTextureU.get(), tlV = topLeftTextureV.get()
         )
 
         ColorStack.pop()

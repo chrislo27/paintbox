@@ -4,8 +4,7 @@ import java.io.FilterOutputStream
 import java.io.OutputStream
 
 
-class BranchedOutputStream(out: OutputStream, val branch: OutputStream)
-    : FilterOutputStream(out) {
+class BranchedOutputStream(out: OutputStream, val branch: OutputStream) : FilterOutputStream(out) {
 
     override fun close() {
         try {
@@ -20,17 +19,20 @@ class BranchedOutputStream(out: OutputStream, val branch: OutputStream)
         branch.flush()
     }
 
-    @Synchronized override fun write(b: Int) {
+    @Synchronized
+    override fun write(b: Int) {
         out.write(b)
         branch.write(b)
     }
 
-    @Synchronized override fun write(b: ByteArray) {
+    @Synchronized
+    override fun write(b: ByteArray) {
         out.write(b)
         branch.write(b)
     }
 
-    @Synchronized override fun write(b: ByteArray, off: Int, len: Int) {
+    @Synchronized
+    override fun write(b: ByteArray, off: Int, len: Int) {
         out.write(b, off, len)
         branch.write(b, off, len)
     }

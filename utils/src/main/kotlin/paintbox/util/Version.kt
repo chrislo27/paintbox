@@ -1,25 +1,27 @@
 package paintbox.util
 
 
-data class Version(val major: Int, val minor: Int, val patch: Int, val suffix: String = "")
-    : Comparable<Version> {
-    
+data class Version(val major: Int, val minor: Int, val patch: Int, val suffix: String = "") : Comparable<Version> {
+
     companion object {
+
         val REGEX: Regex = "v?(\\d+).(\\d+).(\\d+)(?:-(.+))?".toRegex()
         val ZERO: Version = Version(0, 0, 0)
-        
+
         fun parse(thing: String): Version? {
             val match: MatchResult = REGEX.matchEntire(thing) ?: return null
 
             return try {
-                Version(Integer.parseInt(match.groupValues[1]), Integer.parseInt(match.groupValues[2]),
-                        Integer.parseInt(match.groupValues[3]), match.groupValues.getOrNull(4) ?: "")
+                Version(
+                    Integer.parseInt(match.groupValues[1]), Integer.parseInt(match.groupValues[2]),
+                    Integer.parseInt(match.groupValues[3]), match.groupValues.getOrNull(4) ?: ""
+                )
             } catch (e: Exception) {
                 null
             }
         }
     }
-    
+
     private val stringRepresentation: String = "$major.$minor.$patch${if (suffix.isNotEmpty()) "-$suffix" else ""}"
     private val vstringRepresentation: String = "v$stringRepresentation"
 
@@ -37,6 +39,6 @@ data class Version(val major: Int, val minor: Int, val patch: Int, val suffix: S
     override fun toString(): String {
         return vstringRepresentation
     }
-    
+
     fun toNonVString(): String = stringRepresentation
 }

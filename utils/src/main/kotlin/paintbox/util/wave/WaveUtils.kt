@@ -34,5 +34,5 @@ object WaveUtils {
     fun getBaseCosineWave(periodSec: Float, timeMs: Long = System.currentTimeMillis(), offsetMs: Long = 0L): Float {
         return BaseCosineWave.getWaveValue(periodSec * 2, timeMs, offsetMs)
     }
-    
+
 }

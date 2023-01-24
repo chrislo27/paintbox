@@ -31,7 +31,7 @@ open class AssetRegistryInstance : Disposable {
     init {
         manager.setLoader(LazySound::class.java, LazySoundLoader(manager.fileHandleResolver))
         manager.setLoader(PackedSheet::class.java, PackedSheetLoader(manager.fileHandleResolver))
-        
+
         // No-op asset loader
         addAssetLoader(object : IAssetLoader {
             override fun addManagedAssets(manager: AssetManager) {}
@@ -95,7 +95,7 @@ open class AssetRegistryInstance : Disposable {
         if (disposed) {
             return 0f
         }
-        
+
         if (loadingState == LoadState.NONE) {
             loadingState = LoadState.LOADING
 
@@ -167,7 +167,7 @@ open class AssetRegistryInstance : Disposable {
         unloadAllAssets()
         manager.dispose()
     }
-    
+
 
     fun stopAllSounds() {
         manager.getAll(Sound::class.java, Array()).toList().forEach(Sound::stop)
@@ -181,7 +181,8 @@ open class AssetRegistryInstance : Disposable {
 
     fun resumeAllSounds() {
         manager.getAll(Sound::class.java, Array()).toList().forEach(Sound::resume)
-        manager.getAll(LazySound::class.java, Array()).toList().filter(LazySound::isLoaded).forEach { it.sound.resume() }
+        manager.getAll(LazySound::class.java, Array()).toList().filter(LazySound::isLoaded)
+            .forEach { it.sound.resume() }
     }
 }
 
@@ -195,7 +196,7 @@ interface IAssetLoader {
     fun addManagedAssets(manager: AssetManager)
 
     fun addUnmanagedAssets(assets: MutableMap<String, Any>)
-    
+
     fun linearTexture(): TextureLoader.TextureParameter = TextureLoader.TextureParameter().apply {
         this.magFilter = Texture.TextureFilter.Linear
         this.minFilter = Texture.TextureFilter.Linear

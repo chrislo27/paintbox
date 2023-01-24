@@ -8,14 +8,14 @@ import paintbox.binding.Var
 
 /**
  * A wrapper around a plain [BitmapFont].
- * 
+ *
  * @param ownsFont If true, this [PaintboxFontBitmap] will dispose the provided [font] when [dispose] is called
  */
 class PaintboxFontBitmap(
     params: PaintboxFontParams,
-    private val font: BitmapFont, val ownsFont: Boolean
+    private val font: BitmapFont, val ownsFont: Boolean,
 ) : PaintboxFont(params) {
-    
+
     private var isInBegin: Boolean = false
     override val currentFontNumber: Long = 0L // Backing font never changes
     override val currentFontNumberVar: ReadOnlyLongVar = LongVar(currentFontNumber)
@@ -24,7 +24,7 @@ class PaintboxFontBitmap(
         this.font.data.setScale(1f)
         this.fontDataInfo.copyFromFont(font)
     }
-    
+
     override fun resize(width: Int, height: Int) {
         // Nothing needs to happen with the font for resize. Referential resizing is done with begin()
     }
@@ -38,7 +38,7 @@ class PaintboxFontBitmap(
             }
         }
         isInBegin = true
-        
+
         val params = this.params.getOrCompute()
         if (params.scaleToReferenceSize) {
             val scaleX = areaWidth / params.referenceSize.width
@@ -47,14 +47,14 @@ class PaintboxFontBitmap(
                 font.data.setScale(scaleX, scaleY)
             }
         }
-        
+
         return font
     }
 
     override fun end() {
         if (!isInBegin && !PaintboxFont.LENIENT_BEGIN_END) error("Cannot call end before begin")
         isInBegin = false
-        
+
         // Sets font back to scaleXY = 1.0
         this.fontDataInfo.applyToFont(this.font)
     }

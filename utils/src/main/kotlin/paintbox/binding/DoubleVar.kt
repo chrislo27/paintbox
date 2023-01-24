@@ -2,12 +2,13 @@ package paintbox.binding
 
 /**
  * The [Double] specialization of [ReadOnlyVar].
- * 
+ *
  * Provides the [get] method which is a primitive-type double.
  */
 interface ReadOnlyDoubleVar : SpecializedReadOnlyVar<Double>, ReadOnlyVar<Double> {
 
     companion object {
+
         /**
          * Returns a constant value [ReadOnlyDoubleVar]. The implementation used is memory optimized and doesn't
          * have dependencies like [DoubleVar] would.
@@ -24,15 +25,18 @@ interface ReadOnlyDoubleVar : SpecializedReadOnlyVar<Double>, ReadOnlyVar<Double
      */
     fun get(): Double
 
-    @Deprecated("Use ReadOnlyDoubleVar.get() instead to avoid explicit boxing",
-            replaceWith = ReplaceWith("this.get()"),
-            level = DeprecationLevel.ERROR)
+    @Deprecated(
+        "Use ReadOnlyDoubleVar.get() instead to avoid explicit boxing",
+        replaceWith = ReplaceWith("this.get()"),
+        level = DeprecationLevel.ERROR
+    )
     override fun getOrCompute(): Double {
         return get() // WILL BE BOXED!
     }
 }
 
 internal class ReadOnlyConstDoubleVar(private val value: Double) : ReadOnlyVarBase<Double>(), ReadOnlyDoubleVar {
+
     override fun get(): Double {
         return value
     }
@@ -44,11 +48,12 @@ internal class ReadOnlyConstDoubleVar(private val value: Double) : ReadOnlyVarBa
  * Provides the [get] method which is a primitive-type double.
  */
 class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubleVar, Var<Double> {
-    
+
     private var binding: DoubleBinding
     private var currentValue: Double = 0.0
-    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet() // Cannot be generic since it can depend on any other Var
-    
+    private var dependencies: Set<ReadOnlyVar<Any?>> =
+        emptySet() // Cannot be generic since it can depend on any other Var
+
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
      */
@@ -62,7 +67,7 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
     constructor(computation: Var.Context.() -> Double) {
         binding = DoubleBinding.Compute(computation)
     }
-    
+
     constructor(eager: Boolean, computation: Var.Context.() -> Double) : this(computation) {
         if (eager) {
             get()
@@ -119,6 +124,7 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
                 }
                 this.currentValue
             }
+
             is DoubleBinding.Compute -> {
                 if (!invalidated) {
                     currentValue
@@ -134,6 +140,7 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
                     result
                 }
             }
+
             is DoubleBinding.SideEffecting -> {
                 if (invalidated) {
                     val ctx = Var.Context()
@@ -153,9 +160,11 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
     }
 
 
-    @Deprecated("Use DoubleVar.get() instead to avoid explicit boxing",
-            replaceWith = ReplaceWith("this.get()"),
-            level = DeprecationLevel.ERROR)
+    @Deprecated(
+        "Use DoubleVar.get() instead to avoid explicit boxing",
+        replaceWith = ReplaceWith("this.get()"),
+        level = DeprecationLevel.ERROR
+    )
     override fun getOrCompute(): Double {
         return get() // WILL BE BOXED!
     }
@@ -172,6 +181,7 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
 
         class Compute(val computation: Var.Context.() -> Double) : DoubleBinding()
 
-        class SideEffecting(var item: Double, val sideEffectingComputation: Var.Context.(existing: Double) -> Double) : DoubleBinding()
+        class SideEffecting(var item: Double, val sideEffectingComputation: Var.Context.(existing: Double) -> Double) :
+            DoubleBinding()
     }
 }

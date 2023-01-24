@@ -21,7 +21,9 @@ import paintbox.util.gdxutils.isShiftDown
  * A [ScrollPane] has content that is panned around. It also has optional [ScrollBar]s for user interactivity.
  */
 open class ScrollPane : Control<ScrollPane>() {
+
     companion object {
+
         const val SCROLLPANE_SKIN_ID: String = "ScrollPane"
 
         init {
@@ -46,31 +48,35 @@ open class ScrollPane : Control<ScrollPane>() {
     val vBarPolicy: Var<ScrollBarPolicy> = Var(ScrollBarPolicy.AS_NEEDED)
     val barSize: FloatVar = FloatVar(15f)
     val minThumbSize: FloatVar = FloatVar(20f)
-    
+
     /**
      * The current width of the content UI element.
      */
     val currentW: ReadOnlyFloatVar = FloatVar(eager = true) {
         currentContent.use()?.bounds?.width?.use() ?: 0f
     }
+
     /**
      * The current height of the content UI element.
      */
     val currentH: ReadOnlyFloatVar = FloatVar(eager = true) {
         currentContent.use()?.bounds?.height?.use() ?: 0f
     }
+
     /**
      * The current height of the content pane (visible area).
      */
     val contentPaneWidth: ReadOnlyFloatVar = FloatVar(eager = true) {
         contentPane.contentZone.width.use()
     }
+
     /**
      * The current height of the content pane (visible area).
      */
     val contentPaneHeight: ReadOnlyFloatVar = FloatVar(eager = true) {
         contentPane.contentZone.height.use()
     }
+
     /**
      * The difference between the width of the content and the width of the visible area.
      * Effectively this is how much you can scroll horizontally.
@@ -78,6 +84,7 @@ open class ScrollPane : Control<ScrollPane>() {
     val contentWidthDiff: ReadOnlyFloatVar = FloatVar(eager = true) {
         currentW.use() - contentPaneWidth.use()
     }
+
     /**
      * The difference between the height of the content and the height of the visible area.
      * Effectively this is how much you can scroll vertically.
@@ -133,14 +140,14 @@ open class ScrollPane : Control<ScrollPane>() {
         hBar.visibleAmount.eagerBind {
             val barMax = hBar.maximum.use()
             ((contentPaneWidth.use() / currentW.use()) * barMax)
-                    .coerceAtMost(barMax)
-                    .coerceAtLeast(minThumbSize.use())
+                .coerceAtMost(barMax)
+                .coerceAtLeast(minThumbSize.use())
         }
         vBar.visibleAmount.eagerBind {
             val barMax = vBar.maximum.use()
             ((contentPaneHeight.use() / currentH.use()) * barMax)
-                    .coerceAtMost(barMax)
-                    .coerceAtLeast(minThumbSize.use())
+                .coerceAtMost(barMax)
+                .coerceAtLeast(minThumbSize.use())
         }
 
         addChild(contentPane)
@@ -187,11 +194,12 @@ open class ScrollPane : Control<ScrollPane>() {
     fun getContent(): UIElement? = currentContent.getOrCompute()
 
     override fun getDefaultSkinID(): String = ScrollPane.SCROLLPANE_SKIN_ID
-    
+
     class ContentPane : Pane()
 }
 
 open class ScrollPaneSkin(element: ScrollPane) : Skin<ScrollPane>(element) {
+
     val bgColor: Var<Color> = Var(Color(0.94f, 0.94f, 0.94f, 0f))
 
     override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {

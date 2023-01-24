@@ -24,16 +24,15 @@ import java.io.File
 /**
  * Represents a set of textures that are packed at runtime and addressable via an ID.
  */
-class PackedSheet(val config: Config, initial: List<Packable> = emptyList())
-    : TextureRegionMap, Disposable {
+class PackedSheet(val config: Config, initial: List<Packable> = emptyList()) : TextureRegionMap, Disposable {
 
-    private class PackResult(val atlas: TextureAtlas, val originalPackables: List<Packable>, val timeTaken: Double)
-        : Disposable {
+    private class PackResult(val atlas: TextureAtlas, val originalPackables: List<Packable>, val timeTaken: Double) :
+        Disposable {
 
         val regions: Map<String, TextureAtlas.AtlasRegion> = atlas.regions.associateBy { it.name }
         val indexedRegions: Map<String, Map<Int, TextureAtlas.AtlasRegion>> = atlas.regions.filter { it.index >= 0 }
-                .groupBy { it.name }
-                .mapValues { (_, value) -> value.associateBy { r -> r.index } }
+            .groupBy { it.name }
+            .mapValues { (_, value) -> value.associateBy { r -> r.index } }
 
         override fun dispose() {
             atlas.dispose()
@@ -67,7 +66,14 @@ class PackedSheet(val config: Config, initial: List<Packable> = emptyList())
 
         val nano = System.nanoTime()
         val size = config.maxSize
-        val packer = PixmapPacker(size, size, config.format, config.padding, config.duplicateBorder, config.packStrategy).also { packer ->
+        val packer = PixmapPacker(
+            size,
+            size,
+            config.format,
+            config.padding,
+            config.duplicateBorder,
+            config.packStrategy
+        ).also { packer ->
             packer.transparentColor = config.transparentColor
         }
         val packables = packables.values.toList()
@@ -88,7 +94,13 @@ class PackedSheet(val config: Config, initial: List<Packable> = emptyList())
         }
 
         val newAtlas = TextureAtlas()
-        packer.updateTextureAtlas(newAtlas, config.atlasMinFilter, config.atlasMagFilter, config.atlasMipMaps, config.atlasUseIndexing)
+        packer.updateTextureAtlas(
+            newAtlas,
+            config.atlasMinFilter,
+            config.atlasMagFilter,
+            config.atlasMipMaps,
+            config.atlasUseIndexing
+        )
 
         packer.dispose()
         val endNano = System.nanoTime()
@@ -101,14 +113,15 @@ class PackedSheet(val config: Config, initial: List<Packable> = emptyList())
             outputToFile(outputFile)
         }
     }
-    
+
     fun outputToFile(outputFile: FileHandle) {
         val newAtlas = this.atlas?.atlas ?: return
         val textures = newAtlas.textures
         if (textures.size > 0) {
             val onlyOne = textures.size == 1
             textures.forEachIndexed { index, texture ->
-                val file = if (onlyOne) outputFile else outputFile.sibling(outputFile.nameWithoutExtension() + ".${index}.png")
+                val file =
+                    if (onlyOne) outputFile else outputFile.sibling(outputFile.nameWithoutExtension() + ".${index}.png")
                 val td = texture.textureData
                 if (!td.isPrepared) {
                     td.prepare()
@@ -150,15 +163,15 @@ class PackedSheet(val config: Config, initial: List<Packable> = emptyList())
     }
 
     data class Config(
-            val maxSize: Int = 1024, val format: Pixmap.Format = Pixmap.Format.RGBA8888, val padding: Int = 2,
-            val duplicateBorder: Boolean = true,
-            val packStrategy: PixmapPacker.PackStrategy = PixmapPacker.GuillotineStrategy(),
-            val atlasMinFilter: Texture.TextureFilter = Texture.TextureFilter.Nearest,
-            val atlasMagFilter: Texture.TextureFilter = Texture.TextureFilter.Nearest,
-            val atlasMipMaps: Boolean = false,
-            val atlasUseIndexing: Boolean = true,
-            val debugOutputFile: FileHandle? = null,
-            val transparentColor: Color = Color(1f, 1f, 1f, 0f),
+        val maxSize: Int = 1024, val format: Pixmap.Format = Pixmap.Format.RGBA8888, val padding: Int = 2,
+        val duplicateBorder: Boolean = true,
+        val packStrategy: PixmapPacker.PackStrategy = PixmapPacker.GuillotineStrategy(),
+        val atlasMinFilter: Texture.TextureFilter = Texture.TextureFilter.Nearest,
+        val atlasMagFilter: Texture.TextureFilter = Texture.TextureFilter.Nearest,
+        val atlasMipMaps: Boolean = false,
+        val atlasUseIndexing: Boolean = true,
+        val debugOutputFile: FileHandle? = null,
+        val transparentColor: Color = Color(1f, 1f, 1f, 0f),
     )
 }
 
@@ -168,6 +181,7 @@ class PackedSheet(val config: Config, initial: List<Packable> = emptyList())
 interface Packable {
 
     companion object {
+
         /**
          * Creates a [Packable] with the given ID and file handle.
          */
@@ -195,6 +209,7 @@ interface Packable {
  * Wraps a [Texture]. It is recommended to use the extension function [Texture.asPackable].
  */
 class PackableTextureWrapper(override val id: String, val texture: Texture) : Packable {
+
     override fun obtainTexture(): Texture = this.texture
 
     override fun shouldDisposeTexture(): Boolean = false
@@ -220,23 +235,37 @@ class TemporaryPackableTex(override val id: String, val fileHandle: FileHandle) 
     override fun shouldDisposeTexture(): Boolean = true
 }
 
-class PackedSheetLoader(resolver: FileHandleResolver)
-    : AsynchronousAssetLoader<PackedSheet, PackedSheetLoader.PackedSheetLoaderParam>(resolver) {
+class PackedSheetLoader(resolver: FileHandleResolver) :
+    AsynchronousAssetLoader<PackedSheet, PackedSheetLoader.PackedSheetLoaderParam>(resolver) {
 
     class PackedSheetLoaderParam(
-            val packables: List<Packable> = emptyList(),
-            val config: PackedSheet.Config = PackedSheet.Config()
+        val packables: List<Packable> = emptyList(),
+        val config: PackedSheet.Config = PackedSheet.Config(),
     ) : AssetLoaderParameters<PackedSheet>()
 
-    override fun getDependencies(fileName: String?, file: FileHandle?, parameter: PackedSheetLoaderParam?): Array<AssetDescriptor<Any>>? {
+    override fun getDependencies(
+        fileName: String?,
+        file: FileHandle?,
+        parameter: PackedSheetLoaderParam?,
+    ): Array<AssetDescriptor<Any>>? {
         return null
     }
 
-    override fun loadAsync(manager: AssetManager, fileName: String, file: FileHandle, parameter: PackedSheetLoaderParam?) {
+    override fun loadAsync(
+        manager: AssetManager,
+        fileName: String,
+        file: FileHandle,
+        parameter: PackedSheetLoaderParam?,
+    ) {
         // Nothing to load async.
     }
 
-    override fun loadSync(manager: AssetManager, fileName: String, file: FileHandle, parameter: PackedSheetLoaderParam?): PackedSheet {
+    override fun loadSync(
+        manager: AssetManager,
+        fileName: String,
+        file: FileHandle,
+        parameter: PackedSheetLoaderParam?,
+    ): PackedSheet {
         val param = parameter ?: PackedSheetLoaderParam()
         val packedSheet = PackedSheet(param.config, param.packables)
         packedSheet.pack()

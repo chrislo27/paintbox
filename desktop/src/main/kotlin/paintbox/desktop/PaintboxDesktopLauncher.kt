@@ -28,7 +28,7 @@ class PaintboxDesktopLauncher(val game: PaintboxGame, val arguments: PaintboxArg
             game.launcherSettings.fps = fps
         }
         val vsync = arguments.vsync
-        if (vsync != null) { 
+        if (vsync != null) {
             config.useVsync(vsync)
             game.launcherSettings.vsync = vsync
         }

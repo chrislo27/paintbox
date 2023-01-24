@@ -18,24 +18,24 @@ internal class UIEventTestScreen(override val main: NewUITestGame) : PaintboxScr
     init {
         populate()
     }
-    
+
     private fun populate() {
         root = SceneRoot(camera)
         root += TestColorElement(Color(1f, 165f / 255f, 0.5f, 1f))
-        
+
         fun randomColor(): Color = Color(MathUtils.random(), MathUtils.random(), MathUtils.random(), 1f)
-        
+
         // Toolbar
         root += TestColorElement(Color(0f, 0f, 0f, 0.5f)).also { toolbar ->
             toolbar.bounds.height.set(40f)
-            
+
             // Left toolbar
             toolbar += UIElement().also { lt ->
                 lt.bounds.x.set(4f)
                 lt.bounds.y.set(4f)
                 lt.bounds.height.set(32f)
                 lt.bounds.width.bind { (lt.parent.use()?.bounds?.width?.use() ?: 0f) - 8f }
-                
+
                 val num = 6
                 (0 until num).forEach { i ->
                     lt += TestColorElement(Color(1f, 1f, 1f, 1f).fromHsv(360f * i / num, 0.9f, 0.8f)).apply {
@@ -46,13 +46,13 @@ internal class UIEventTestScreen(override val main: NewUITestGame) : PaintboxScr
                     }
                 }
             }
-            
+
             // Centre toolbar
             toolbar += UIElement().also { ct ->
                 val num = 3
                 val buttonWidth = 32f
                 val buttonSpacing = 4f
-                
+
                 ct.bounds.width.set((buttonWidth + buttonSpacing) * num - buttonSpacing)
                 Anchor.TopCentre.configure(ct)
                 ct.bounds.y.set(4f)
@@ -67,7 +67,7 @@ internal class UIEventTestScreen(override val main: NewUITestGame) : PaintboxScr
                     }
                 }
             }
-            
+
             // Right toolbar
             toolbar += UIElement().also { rt ->
                 rt.bounds.x.set(4f)
@@ -89,7 +89,7 @@ internal class UIEventTestScreen(override val main: NewUITestGame) : PaintboxScr
 
     override fun render(delta: Float) {
         super.render(delta)
-        
+
         if (Gdx.input.isKeyJustPressed(Input.Keys.P)) {
             populate()
         }

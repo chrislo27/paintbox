@@ -114,9 +114,13 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
                         this.padding.set(Insets(2f))
                         this.doClickFlash = true
                         if (i == num / 2) {
-                            addChild(ImageNode(PaintboxGame.paintboxSpritesheet.logo128, ImageRenderingMode.FULL).apply {
+                            addChild(
+                                ImageNode(
+                                    PaintboxGame.paintboxSpritesheet.logo128,
+                                    ImageRenderingMode.FULL
+                                ).apply {
 
-                            })
+                                })
                         }
                     }
                 }
@@ -152,11 +156,18 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             rect.borderStyle.set(SolidBorder(Color.CYAN))
             rect.margin.set(Insets(5f))
 
-            rect += TextNode(TextBlock(listOf(
-                    TextRun(main.debugFontBoldBordered, "Hello\nline2\nline3g adwadwadwadaddadwd"),
-                    TextRun(main.debugFontBoldBordered, "a separate TextRun", color = Color.RED),
-                    TextRun(main.debugFontBoldBordered, "\n\n\nnananananananananananananananananananananananannananananana"),
-            ))).apply {
+            rect += TextNode(
+                TextBlock(
+                    listOf(
+                        TextRun(main.debugFontBoldBordered, "Hello\nline2\nline3g adwadwadwadaddadwd"),
+                        TextRun(main.debugFontBoldBordered, "a separate TextRun", color = Color.RED),
+                        TextRun(
+                            main.debugFontBoldBordered,
+                            "\n\n\nnananananananananananananananananananananananannananananana"
+                        ),
+                    )
+                )
+            ).apply {
                 renderAlign.set(Align.center)
                 doXCompression.set(false)
                 doClipping.set(true)
@@ -176,7 +187,10 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             }
         }
 
-        bg += TextLabel("Test text label.\nNewline.\n㈀ ㈁ ㈂ ㈃ ㈄ ㈅ ㈆\n㈇ ㈈ ㈉ ㈊ ㈋ ㈌ ㈍", font = PaintboxGame.gameInstance.unifontFont).also { label ->
+        bg += TextLabel(
+            "Test text label.\nNewline.\n㈀ ㈁ ㈂ ㈃ ㈄ ㈅ ㈆\n㈇ ㈈ ㈉ ㈊ ㈋ ㈌ ㈍",
+            font = PaintboxGame.gameInstance.unifontFont
+        ).also { label ->
             Anchor.TopLeft.configure(label, offsetX = 32f, offsetY = 48f)
             label.bounds.width.set(325f)
             label.bounds.height.set(75f)
@@ -195,12 +209,16 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
         }
 
         bg += TextLabel("").also { label ->
-            label.internalTextBlock.set(TextBlock(listOf(
-                    TextRun(main.debugFont, "Regular font.\n"),
-                    TextRun(main.debugFontItalic, "Italic font.\n"),
-                    TextRun(main.debugFontBold, "Bold font.\n"),
-                    TextRun(main.debugFontBoldItalic, "Bold-italic font."),
-            )))
+            label.internalTextBlock.set(
+                TextBlock(
+                    listOf(
+                        TextRun(main.debugFont, "Regular font.\n"),
+                        TextRun(main.debugFontItalic, "Italic font.\n"),
+                        TextRun(main.debugFontBold, "Bold font.\n"),
+                        TextRun(main.debugFontBoldItalic, "Bold-italic font."),
+                    )
+                )
+            )
 //            label.setScaleXY(0.5f)
             Anchor.BottomLeft.configure(label, offsetX = 32f, offsetY = -32f)
             label.bounds.width.set(325f)
@@ -384,7 +402,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
 //                }
 //            }
 //        }
-        
+
 //        bg += ScrollBar(ScrollBar.Orientation.VERTICAL).apply {
 //            Anchor.CentreRight.configure(this, offsetX = -100f, offsetY = -200f)
 //            this.bounds.width.set(20f)
@@ -445,19 +463,19 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
                 r.addChild(scrollPane)
             })
         }
-        
+
         bg += Slider().apply {
             Anchor.CentreRight.configure(this, offsetX = -100f - 50f, offsetY = 100f)
             this.bounds.width.set(200f)
             this.bounds.height.set(30f)
         }
-        
-        bg += ColumnarHBox(listOf(1, 1, 1), false).apply { 
+
+        bg += ColumnarHBox(listOf(1, 1, 1), false).apply {
             Anchor.BottomCentre.configure(this, offsetY = -25f)
             this.bindWidthToParent(multiplier = 0.6f)
             this.bounds.height.set(50f)
             this.spacing.set(4f)
-            
+
             this[0].addChild(RectElement(Color.RED))
             this[1].addChild(RectElement(Color.GREEN))
             this[2].addChild(RectElement(Color.BLUE))
@@ -465,13 +483,13 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
                 RectElement(Color.WHITE)
             }
         }
-        
-        bg += ColumnarVBox(listOf(1, 1, 1), true).apply { 
+
+        bg += ColumnarVBox(listOf(1, 1, 1), true).apply {
             Anchor.BottomRight.configure(this, offsetY = -25f, offsetX = -50f)
             this.bounds.width.set(25f)
             this.bindHeightToParent(multiplier = 0.4f, adjust = -50f)
             this.spacing.set(4f)
-            
+
             this[0].addChild(RectElement(Color.RED))
             this[1].addChild(RectElement(Color.GREEN))
             this[2].addChild(RectElement(Color.BLUE))
@@ -479,12 +497,12 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
                 RectElement(Color.WHITE)
             }
         }
-        
+
         bg += RectElement(Color(0f, 0f, 0f, 0.75f)).apply {
             Anchor.TopLeft.configure(this, offsetX = 50f, offsetY = 150f)
             this.bounds.width.set(200f)
             this.bounds.height.set(30f)
-            this += TextField().apply { 
+            this += TextField().apply {
                 this.textColor.set(Color(1f, 1f, 1f, 1f))
                 this.padding.set(Insets(2f))
                 this.text.set("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
@@ -494,7 +512,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             Anchor.TopLeft.configure(this, offsetX = 50f, offsetY = 190f)
             this.bounds.width.set(200f)
             this.bounds.height.set(30f)
-            this += TextField().apply { 
+            this += TextField().apply {
                 this.textColor.set(Color(1f, 1f, 1f, 1f))
                 this.padding.set(Insets(2f))
                 this.text.set("Second text field Second text field Second text field")
@@ -508,7 +526,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
                 this.textField.textColor.set(Color.WHITE)
             }
         }
-        
+
     }
 
     override fun render(delta: Float) {

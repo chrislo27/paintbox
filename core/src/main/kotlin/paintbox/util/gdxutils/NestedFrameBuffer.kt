@@ -13,14 +13,15 @@ import java.nio.IntBuffer
 
 /**
  * Kotlin implementation of https://github.com/crykn/guacamole/blob/master/gdx/src/main/java/de/damios/guacamole/gdx/graphics/NestableFrameBuffer.java.
- * 
+ *
  * Not using guacamole to avoid dependencies.
  */
 class NestedFrameBuffer : FrameBuffer {
 
     companion object {
-        
-        private val INT_BUFFER: IntBuffer = ByteBuffer.allocateDirect(16 * Int.SIZE_BYTES).order(ByteOrder.nativeOrder()).asIntBuffer()
+
+        private val INT_BUFFER: IntBuffer =
+            ByteBuffer.allocateDirect(16 * Int.SIZE_BYTES).order(ByteOrder.nativeOrder()).asIntBuffer()
 
         /**
          * Returns the currently bound framebuffer handle.
@@ -39,19 +40,20 @@ class NestedFrameBuffer : FrameBuffer {
         fun getViewport(rect: MutIntRect) {
             val buf = INT_BUFFER
             Gdx.gl.glGetIntegerv(GL20.GL_VIEWPORT, buf)
-            
+
             rect.x = buf.get(0)
             rect.y = buf.get(1)
             rect.width = buf.get(2)
             rect.height = buf.get(3)
         }
     }
-    
+
     private var prevFBOHandle: Int = -1
     private var prevViewport: MutIntRect = MutIntRect(0, 0, 0, 0)
 
     constructor(format: Pixmap.Format, width: Int, height: Int, hasDepth: Boolean)
             : super(format, width, height, hasDepth)
+
     constructor(format: Pixmap.Format, width: Int, height: Int, hasDepth: Boolean, hasStencil: Boolean)
             : super(format, width, height, hasDepth, hasStencil)
 
@@ -77,7 +79,7 @@ class NestedFrameBuffer : FrameBuffer {
         if (currentBoundHandle != this.framebufferHandle) {
             error("Currently bound framebuffer ($currentBoundHandle) doesn't match. Check begin/end order.")
         }
-        
+
         Gdx.gl20.glBindFramebuffer(GL20.GL_FRAMEBUFFER, prevFBOHandle)
         Gdx.gl20.glViewport(x, y, width, height)
     }

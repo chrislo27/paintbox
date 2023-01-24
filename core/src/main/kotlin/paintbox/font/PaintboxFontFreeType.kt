@@ -12,12 +12,12 @@ import kotlin.math.roundToInt
 
 /**
  * A wrapper around a [FreeTypeFontGenerator].
- * 
+ *
  * The [params] passed in will be copied with the [ftfParameter]'s font and border size.
  */
 open class PaintboxFontFreeType(
     params: PaintboxFontParams,
-    val ftfParameter: FreeTypeFontGenerator.FreeTypeFontParameter
+    val ftfParameter: FreeTypeFontGenerator.FreeTypeFontParameter,
 ) : PaintboxFont(params.copy(fontSize = ftfParameter.size, borderSize = ftfParameter.borderWidth)) {
 
     companion object {
@@ -28,7 +28,7 @@ open class PaintboxFontFreeType(
 
     private var isInBegin: Boolean = false
     private var isLoaded: Boolean = false
-    
+
     private var currentFontNum: Long = Long.MIN_VALUE + 1
     override val currentFontNumber: Long get() = currentFontNum
     override val currentFontNumberVar: ReadOnlyLongVar = LongVar(currentFontNum)
@@ -44,7 +44,7 @@ open class PaintboxFontFreeType(
             if (value !== field) {
                 currentFontNum++
                 (currentFontNumberVar as LongVar).set(currentFontNum)
-                
+
 //                val current = field
 //                if (current != null) {
 //                    current.dispose()
@@ -53,9 +53,9 @@ open class PaintboxFontFreeType(
             }
             field = value
         }
-    
+
     private var afterLoad: PaintboxFontFreeType.(BitmapFont) -> Unit = {}
-    
+
     override fun begin(areaWidth: Float, areaHeight: Float): BitmapFont {
         if (isInBegin) {
             if (PaintboxFont.LENIENT_BEGIN_END) {
@@ -82,21 +82,21 @@ open class PaintboxFontFreeType(
                 font.data.setScale(scale, scale)
             }
         }
-        
+
         return currentFont!!
     }
 
     override fun end() {
         if (!isInBegin && !PaintboxFont.LENIENT_BEGIN_END) error("Cannot call end before begin")
         isInBegin = false
-        
+
         // Sets font back to scaleXY = 1.0
         val currentFont = this.currentFont
         if (currentFont != null) {
             this.fontDataInfo.applyToFont(currentFont)
         }
     }
-    
+
     override fun resize(width: Int, height: Int) {
         this.dispose()
         lastWindowSize = WindowSize(width, height)
@@ -105,18 +105,21 @@ open class PaintboxFontFreeType(
             load()
         }
     }
-    
+
     private fun load() {
         val windowSize = this.lastWindowSize
         val params = this.params.getOrCompute()
         val referenceSize = params.referenceSize
-        val scale: Float = if (!params.scaleToReferenceSize) 1f else min(windowSize.width.toFloat() / referenceSize.width, windowSize.height.toFloat() / referenceSize.height)
-        
+        val scale: Float = if (!params.scaleToReferenceSize) 1f else min(
+            windowSize.width.toFloat() / referenceSize.width,
+            windowSize.height.toFloat() / referenceSize.height
+        )
+
         if (this.upscaledFactor != scale) {
             this.dispose()
             val oldFactor = this.upscaledFactor
             this.upscaledFactor = scale
-            
+
             val newParam = ftfParameter.copy()
             val oldParams = params
             newParam.size = (oldParams.fontSize * scale).toInt()
@@ -127,11 +130,11 @@ open class PaintboxFontFreeType(
             val generatedFont = generator.generateFont(newParam)
             this.generator = generator
             this.currentFont = generatedFont
-            
+
             this.afterLoad(generatedFont)
             this.fontDataInfo.copyFromFont(generatedFont)
         }
-        
+
         this.isLoaded = true
     }
 

@@ -58,28 +58,32 @@ fun BitmapFont.scaleMul(coefficient: Float) {
     this.scaleMul(coefficient, coefficient)
 }
 
-fun BitmapFont.drawCompressed(batch: SpriteBatch, text: String, x: Float, y: Float, width: Float,
-                              align: Int): GlyphLayout {
+fun BitmapFont.drawCompressed(
+    batch: SpriteBatch, text: String, x: Float, y: Float, width: Float,
+    align: Int,
+): GlyphLayout {
     val font = this
     val textWidth = this.getTextWidth(text)
     val oldScaleX = font.data.scaleX
     var newScaleX = oldScaleX
-    
+
     if (textWidth > 0f && textWidth > width) {
         newScaleX = (width / textWidth) * oldScaleX
     }
     if (newScaleX == 0f)
         newScaleX = 0.01f
-    
+
     font.data.setScale(newScaleX, font.data.scaleY)
     val layout = font.draw(batch, text, x, y, width, align, false)
     font.data.setScale(oldScaleX, font.data.scaleY)
-    
+
     return layout
 }
 
-fun BitmapFont.drawConstrained(batch: SpriteBatch, text: String, x: Float, y: Float, width: Float, height: Float,
-                               align: Int): GlyphLayout {
+fun BitmapFont.drawConstrained(
+    batch: SpriteBatch, text: String, x: Float, y: Float, width: Float, height: Float,
+    align: Int,
+): GlyphLayout {
     val font = this
     val textWidth = this.getTextWidth(text)
     val textHeight = this.getTextHeight(text, width, true)
@@ -87,13 +91,13 @@ fun BitmapFont.drawConstrained(batch: SpriteBatch, text: String, x: Float, y: Fl
     val oldScaleY = font.data.scaleY
     var newScaleX = oldScaleX
     var newScaleY = oldScaleY
-    
+
     if (textWidth > 0f && textWidth > width) {
         newScaleX = (width / textWidth) * oldScaleX
     }
     if (newScaleX == 0f)
         newScaleX = 0.01f
-    
+
     if (textHeight > 0f && textHeight > height) {
         newScaleY = (height / textHeight) * oldScaleY
     }
@@ -103,36 +107,36 @@ fun BitmapFont.drawConstrained(batch: SpriteBatch, text: String, x: Float, y: Fl
     font.data.setScale(newScaleX, newScaleY)
     val layout = font.draw(batch, text, x, y, width, align, true)
     font.data.setScale(oldScaleX, oldScaleY)
-    
+
     return layout
 }
 
 fun FreeTypeFontGenerator.FreeTypeFontParameter.copy(): FreeTypeFontGenerator.FreeTypeFontParameter =
-        FreeTypeFontGenerator.FreeTypeFontParameter().also {
-            it.size = this.size
-            it.mono = this.mono
-            it.hinting = this.hinting
-            it.color = this.color.cpy()
-            it.gamma = this.gamma
-            it.renderCount = this.renderCount
-            it.borderColor = this.borderColor.cpy()
-            it.borderGamma = this.borderGamma
-            it.borderStraight = this.borderStraight
-            it.borderWidth = this.borderWidth
-            it.characters = this.characters
-            it.shadowColor = this.shadowColor.cpy()
-            it.shadowOffsetX = this.shadowOffsetX
-            it.shadowOffsetY = this.shadowOffsetY
-            it.spaceX = this.spaceX
-            it.spaceY = this.spaceY
-            it.kerning = this.kerning
-            it.flip = this.flip
-            it.genMipMaps = this.genMipMaps
-            it.incremental = this.incremental
-            it.minFilter = this.minFilter
-            it.magFilter = this.magFilter
-            it.padTop = this.padTop
-            it.padBottom = this.padBottom
-            it.padLeft = this.padLeft
-            it.padRight = this.padRight
-        }
+    FreeTypeFontGenerator.FreeTypeFontParameter().also {
+        it.size = this.size
+        it.mono = this.mono
+        it.hinting = this.hinting
+        it.color = this.color.cpy()
+        it.gamma = this.gamma
+        it.renderCount = this.renderCount
+        it.borderColor = this.borderColor.cpy()
+        it.borderGamma = this.borderGamma
+        it.borderStraight = this.borderStraight
+        it.borderWidth = this.borderWidth
+        it.characters = this.characters
+        it.shadowColor = this.shadowColor.cpy()
+        it.shadowOffsetX = this.shadowOffsetX
+        it.shadowOffsetY = this.shadowOffsetY
+        it.spaceX = this.spaceX
+        it.spaceY = this.spaceY
+        it.kerning = this.kerning
+        it.flip = this.flip
+        it.genMipMaps = this.genMipMaps
+        it.incremental = this.incremental
+        it.minFilter = this.minFilter
+        it.magFilter = this.magFilter
+        it.padTop = this.padTop
+        it.padBottom = this.padBottom
+        it.padLeft = this.padLeft
+        it.padRight = this.padRight
+    }

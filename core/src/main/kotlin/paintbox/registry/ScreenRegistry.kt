@@ -23,7 +23,7 @@ object ScreenRegistry : Disposable {
     }
 
     inline fun <reified S : PaintboxScreen> getNonNullAs(key: String): S =
-            getAs<S>(key) ?: throw IllegalArgumentException("No screen found with key $key")
+        getAs<S>(key) ?: throw IllegalArgumentException("No screen found with key $key")
 
     operator fun plusAssign(pair: Pair<String, PaintboxScreen>) {
         add(pair.first, pair.second)

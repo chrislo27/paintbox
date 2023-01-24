@@ -15,10 +15,10 @@ import kotlin.math.roundToInt
 
 
 class SolidBorder(initColor: Color) : Border {
-    
+
     val color: Var<Color> = Var(Color(1f, 1f, 1f, 1f).set(initColor))
     val roundedCorners: BooleanVar = BooleanVar(false)
-    
+
     constructor() : this(Color.WHITE)
     constructor(binding: Var.Context.() -> Color) : this() {
         color.bind(binding)
@@ -65,7 +65,8 @@ class SolidBorder(initColor: Color) : Border {
             val topBottomWidth = width - insets.left - insets.right
             batch.fillRect(x + insets.left, y - height, topBottomWidth, insets.bottom)
             batch.fillRect(x + insets.left, y - insets.top, topBottomWidth, insets.top)
-            var roundedRect: TextureRegion = paintboxSpritesheet.getRoundedCornerForRadius(max(insets.left, insets.top).roundToInt())
+            var roundedRect: TextureRegion =
+                paintboxSpritesheet.getRoundedCornerForRadius(max(insets.left, insets.top).roundToInt())
             batch.draw(roundedRect, x, y - insets.top, insets.left, insets.top) // TL
             roundedRect = paintboxSpritesheet.getRoundedCornerForRadius(max(insets.left, insets.bottom).roundToInt())
             batch.draw(roundedRect, x, y - height + insets.bottom, insets.left, -insets.bottom) // BL
@@ -84,5 +85,5 @@ class SolidBorder(initColor: Color) : Border {
         ColorStack.pop()
         batch.packedColor = lastColor
     }
-    
+
 }

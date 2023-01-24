@@ -32,7 +32,9 @@ fun Input.isButtonJustReleased(button: Int): Boolean {
 }
 
 fun Input.isControlDown(): Boolean {
-    return isKeyPressed(Input.Keys.CONTROL_LEFT) || isKeyPressed(Input.Keys.CONTROL_RIGHT) || (SharedLibraryLoader.isMac && isKeyPressed(Input.Keys.SYM))
+    return isKeyPressed(Input.Keys.CONTROL_LEFT) || isKeyPressed(Input.Keys.CONTROL_RIGHT) || (SharedLibraryLoader.isMac && isKeyPressed(
+        Input.Keys.SYM
+    ))
 }
 
 fun Input.isAltDown(): Boolean {

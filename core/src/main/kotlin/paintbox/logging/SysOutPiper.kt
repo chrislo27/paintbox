@@ -92,10 +92,10 @@ object SysOutPiper {
 
         newOut = BranchedOutputStream(oldOut, fileStream)
         newErr = BranchedOutputStream(oldErr, fileStream)
-        
+
         System.setOut(PrintStream(newOut))
         System.setErr(PrintStream(newErr))
-        
+
         Runtime.getRuntime().addShutdownHook(thread(start = false) {
             StreamUtils.closeQuietly(fileStream)
         })

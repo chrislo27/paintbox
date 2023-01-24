@@ -9,8 +9,7 @@ import paintbox.util.gdxutils.fillRect
 
 internal abstract class TestPbScreen(override val main: TestGame) : PaintboxScreen()
 
-internal class TestGame(paintboxSettings: PaintboxSettings)
-    : PaintboxGame(paintboxSettings) {
+internal class TestGame(paintboxSettings: PaintboxSettings) : PaintboxGame(paintboxSettings) {
 
     override fun getTitle(): String {
         return "TestGame"
@@ -30,7 +29,7 @@ internal class TestScreen(main: TestGame) : TestPbScreen(main) {
         batch.begin()
         batch.setColor(1f, 1f, 1f, 1f)
         batch.fillRect(0f, 0f, Gdx.graphics.width + 0f, Gdx.graphics.height + 0f)
-        
+
         batch.end()
         super.render(delta)
     }

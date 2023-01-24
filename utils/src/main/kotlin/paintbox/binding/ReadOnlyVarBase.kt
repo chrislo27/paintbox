@@ -42,20 +42,21 @@ fun Long.toConstVar(): ReadOnlyLongVar = ReadOnlyLongVar.const(this)
  * An abstract class that implements [ReadOnlyVar]'s listener and invalidation support.
  */
 abstract class ReadOnlyVarBase<T> : ReadOnlyVar<T> {
-    
+
     companion object {
+
         private fun <T> createMutableSet(initialCapacity: Int): MutableSet<T> = LinkedHashSet(initialCapacity)
     }
-    
+
     protected var invalidated: Boolean = true
     private var isNotifyingListeners: Boolean = false
     private var listeners: MutableSet<VarChangedListener<T>> = createMutableSet(4)
 
     protected open fun notifyListeners() {
         val shouldChangeFlag = !isNotifyingListeners
-        
+
         if (shouldChangeFlag) isNotifyingListeners = true
-        
+
         var anyNeedToBeDisposed = 0
         listeners.forEach { l ->
             l.onChange(this)
@@ -63,9 +64,9 @@ abstract class ReadOnlyVarBase<T> : ReadOnlyVar<T> {
                 anyNeedToBeDisposed += 1
             }
         }
-        
+
         if (shouldChangeFlag) isNotifyingListeners = false
-        
+
         if (anyNeedToBeDisposed > 0) {
             if (isNotifyingListeners) {
                 val ls = listeners
@@ -78,7 +79,7 @@ abstract class ReadOnlyVarBase<T> : ReadOnlyVar<T> {
             }
         }
     }
-    
+
     override fun addListener(listener: VarChangedListener<T>) {
         if (listener !in listeners) {
             if (isNotifyingListeners) {
@@ -105,14 +106,14 @@ abstract class ReadOnlyVarBase<T> : ReadOnlyVar<T> {
             this.notifyListeners()
         }
     }
-    
+
     private fun copyListenersWith(listener: VarChangedListener<T>) {
         listeners = LinkedHashSet<VarChangedListener<T>>(listeners.size + 1).apply {
             this.addAll(listeners)
             this.add(listener)
         }
     }
-    
+
     private fun copyListenersWithout(listener: VarChangedListener<T>) {
         listeners = createMutableSet<VarChangedListener<T>>(listeners.size - 1).apply {
             var removed = false
@@ -131,6 +132,7 @@ abstract class ReadOnlyVarBase<T> : ReadOnlyVar<T> {
  * Used by [ReadOnlyVar.const] as an internal implementation.
  */
 internal class ReadOnlyConstVar<T>(private val value: T) : ReadOnlyVarBase<T>() {
+
     override fun getOrCompute(): T {
         return value
     }

@@ -16,23 +16,24 @@ import paintbox.binding.Var
 abstract class LocalizationBase(val baseHandle: FileHandle, val localePicker: LocalePickerBase) {
 
     companion object {
+
         val DEFAULT_BASE_HANDLE: FileHandle by lazy {
             Gdx.files.internal("localization/default")
         }
     }
 
     val bundles: ReadOnlyVar<List<NamedLocaleBundle>> = Var(listOf())
-    val bundlesMap: ReadOnlyVar<Map<NamedLocale, NamedLocaleBundle>> = Var.bind { 
+    val bundlesMap: ReadOnlyVar<Map<NamedLocale, NamedLocaleBundle>> = Var.bind {
         bundles.use().associateBy { it.namedLocale }
     }
-    val currentBundle: ReadOnlyVar<NamedLocaleBundle?> = Var.eagerBind { 
+    val currentBundle: ReadOnlyVar<NamedLocaleBundle?> = Var.eagerBind {
         bundlesMap.use()[localePicker.currentLocale.use()]
     }
-    
+
     init {
         loadBundles()
     }
-    
+
     protected fun loadBundles() {
         val list = loadBundlesFromLocalePicker(baseHandle)
         (bundles as Var).set(list)
@@ -100,7 +101,11 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val localePicker: Lo
     }
 
     protected fun createNamedLocaleBundle(locale: NamedLocale, baseHandle: FileHandle): NamedLocaleBundle {
-        return NamedLocaleBundle(locale, I18NBundle.createBundle(baseHandle, locale.locale, "UTF-8"), baseHandle.pathWithoutExtension())
+        return NamedLocaleBundle(
+            locale,
+            I18NBundle.createBundle(baseHandle, locale.locale, "UTF-8"),
+            baseHandle.pathWithoutExtension()
+        )
     }
 
     protected fun loadBundlesFromLocalePicker(basePropertiesHandle: FileHandle): List<NamedLocaleBundle> {
@@ -118,7 +123,15 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val localePicker: Lo
         }
 
         missing.filter { it.second.isNotEmpty() }.forEach {
-            Paintbox.LOGGER.warn("Missing ${it.second.size} keys for bundle \"${it.first.bundleName}\" for language ${it.first.namedLocale}${if (showAllKeys) ":${it.second.joinToString(separator = "") { i -> "\n  * $i" }}" else ""}")
+            Paintbox.LOGGER.warn(
+                "Missing ${it.second.size} keys for bundle \"${it.first.bundleName}\" for language ${it.first.namedLocale}${
+                    if (showAllKeys) ":${
+                        it.second.joinToString(
+                            separator = ""
+                        ) { i -> "\n  * $i" }
+                    }" else ""
+                }"
+            )
         }
     }
 

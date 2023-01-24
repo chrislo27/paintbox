@@ -17,35 +17,36 @@ import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
 
 
-open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont)
-    : Control<CheckBox>(), Toggle {
-    
+open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont) : Control<CheckBox>(), Toggle {
+
     companion object {
+
         const val CHECKBOX_SKIN_ID: String = "CheckBox"
 
         private val DEFAULT_ACTION: () -> Unit = { }
         private val DEFAULT_CHECK_ACTION: (Boolean) -> Unit = { }
-        
+
         init {
             DefaultSkins.register(CHECKBOX_SKIN_ID, SkinFactory { element: CheckBox ->
                 CheckBoxSkin(element)
             })
         }
     }
-    
+
     enum class CheckType {
         CHECKMARK, X,
     }
-    
+
     enum class BoxAlign {
         LEFT, RIGHT;
     }
-    
+
     val color: Var<Color> = Var(Color(0f, 0f, 0f, 1f))
     val disabledColor: Var<Color> = Var(Color(0.5f, 0.5f, 0.5f, 1f))
     val textLabel: TextLabel = TextLabel(text, font)
     val imageNode: ImageNode = ImageNode(null, ImageRenderingMode.MAINTAIN_ASPECT_RATIO)
-    val currentColor: ReadOnlyVar<Color> = Var.bind { if (apparentDisabledState.use()) disabledColor.use() else color.use() }
+    val currentColor: ReadOnlyVar<Color> =
+        Var.bind { if (apparentDisabledState.use()) disabledColor.use() else color.use() }
 
     val checkType: Var<CheckType> = Var(CheckType.CHECKMARK)
     val checkedState: BooleanVar = BooleanVar(false)
@@ -56,7 +57,7 @@ open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont)
     var onSelected: () -> Unit = DEFAULT_ACTION
     var onUnselected: () -> Unit = DEFAULT_ACTION
     var onCheckChanged: (newState: Boolean) -> Unit = DEFAULT_CHECK_ACTION
-    
+
     init {
         val height: ReadOnlyFloatVar = FloatVar {
             contentZone.height.use()
@@ -64,28 +65,30 @@ open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont)
         textLabel.bounds.x.bind { if (boxAlignment.use() == BoxAlign.LEFT) height.use() else 0f }
         textLabel.bindWidthToParent { -height.use() }
         textLabel.margin.set(Insets(2f))
-        imageNode.bounds.x.bind { if (boxAlignment.use() == BoxAlign.LEFT) 0f else ((imageNode.parent.use()?.bounds?.width?.use()
-                ?: 0f) - height.use()) }
+        imageNode.bounds.x.bind {
+            if (boxAlignment.use() == BoxAlign.LEFT) 0f else ((imageNode.parent.use()?.bounds?.width?.use()
+                ?: 0f) - height.use())
+        }
         imageNode.bounds.width.bind { height.use() }
-        imageNode.textureRegion.bind { 
+        imageNode.textureRegion.bind {
             val type = checkType.use()
             val state = checkedState.use()
             getTextureRegionForType(type, state)
         }
         imageNode.margin.set(Insets(2f))
-        
+
         textLabel.renderAlign.bind { if (boxAlignment.use() == BoxAlign.LEFT) RenderAlign.left else RenderAlign.right }
         textLabel.textAlign.bind { if (boxAlignment.use() == BoxAlign.LEFT) TextAlign.LEFT else TextAlign.RIGHT }
-        
+
         textLabel.textColor.bind { currentColor.use() }
         imageNode.tint.bind { currentColor.use() }
-        
+
         this.addChild(textLabel)
         this.addChild(imageNode)
     }
-    
+
     init {
-        setOnAction { 
+        setOnAction {
             checkedState.invert()
         }
         checkedState.addListener {
@@ -106,7 +109,7 @@ open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont)
 
     constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
             : this({ bindable.use() }, font)
-    
+
     open fun getTextureRegionForType(type: CheckType, state: Boolean): TextureRegion {
         val spritesheet = PaintboxGame.paintboxSpritesheet
         return if (!state) spritesheet.checkboxEmpty else when (type) {
@@ -130,5 +133,5 @@ open class CheckBoxSkin(element: CheckBox) : Skin<CheckBox>(element) {
     override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
         // NO-OP
     }
-    
+
 }

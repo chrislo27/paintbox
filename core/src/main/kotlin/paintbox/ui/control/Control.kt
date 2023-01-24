@@ -37,7 +37,8 @@ abstract class Control<SELF : Control<SELF>>
 
     final override val isHoveredOver: ReadOnlyBooleanVar = BooleanVar(false)
     final override val isPressedDown: ReadOnlyBooleanVar = BooleanVar(false)
-    final override val pressedState: ReadOnlyVar<PressedState> = HasPressedState.createDefaultPressedStateVar(isHoveredOver, isPressedDown)
+    final override val pressedState: ReadOnlyVar<PressedState> =
+        HasPressedState.createDefaultPressedStateVar(isHoveredOver, isPressedDown)
 
     init {
         addInputEventListener { event ->
@@ -45,6 +46,7 @@ abstract class Control<SELF : Control<SELF>>
                 is MouseEntered -> {
                     (isHoveredOver as BooleanVar).set(true)
                 }
+
                 is MouseExited -> {
                     (isHoveredOver as BooleanVar).set(false)
                 }
@@ -56,6 +58,7 @@ abstract class Control<SELF : Control<SELF>>
                             (isPressedDown as BooleanVar).set(true)
                         }
                     }
+
                     is ClickReleased -> {
                         if (event.button == Input.Buttons.LEFT && isPressedDown.get()) {
                             (isPressedDown as BooleanVar).set(false)

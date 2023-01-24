@@ -4,6 +4,7 @@ import kotlin.reflect.KProperty
 
 
 interface SettableLazy<T> {
+
     /**
      * The value will be initialized on first-get (but NOT first-set).
      */
@@ -24,10 +25,10 @@ interface SettableLazy<T> {
 private class SettableLazyImpl<T>(private val initBlock: () -> T) : SettableLazy<T> {
 
     private val lock: Any = this
-    
+
     @Volatile
     private var inited: Boolean = false
-    
+
     @Volatile
     private var backing: T? = null
 
@@ -36,7 +37,7 @@ private class SettableLazyImpl<T>(private val initBlock: () -> T) : SettableLazy
             if (!isInitialized()) {
                 initFirstTime()
             }
-            
+
             @Suppress("UNCHECKED_CAST")
             return (backing as T)
         }

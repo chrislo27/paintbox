@@ -9,15 +9,17 @@ import kotlin.math.min
 fun AutoCloseable.closeQuietly() {
     try {
         this.close()
-    } catch (ignored: Throwable) {}
+    } catch (ignored: Throwable) {
+    }
 }
 
 
 // https://stackoverflow.com/questions/4332264/wrapping-a-bytebuffer-with-an-inputstream/6603018#6603018
 
 class ByteBufferBackedInputStream(buf: ByteBuffer) : InputStream() {
+
     var buf: ByteBuffer
-    
+
     override fun read(): Int {
         return if (!buf.hasRemaining()) {
             -1
@@ -40,6 +42,7 @@ class ByteBufferBackedInputStream(buf: ByteBuffer) : InputStream() {
 }
 
 class ByteBufferBackedOutputStream(var buf: ByteBuffer) : OutputStream() {
+
     override fun write(b: Int) {
         buf.put(b.toByte())
     }

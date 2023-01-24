@@ -4,6 +4,7 @@ package paintbox.util
 class ListOfOnes(override val size: Int) : List<Int>, RandomAccess {
 
     private inner class Iter(val startIndex: Int = 0) : ListIterator<Int> {
+
         private var index: Int = startIndex
         override fun hasNext(): Boolean = index < size
         override fun next(): Int {
@@ -11,6 +12,7 @@ class ListOfOnes(override val size: Int) : List<Int>, RandomAccess {
             index++
             return 1
         }
+
         override fun nextIndex(): Int = index
         override fun hasPrevious(): Boolean = index > 0
         override fun previousIndex(): Int = index - 1

@@ -4,10 +4,11 @@ import com.badlogic.gdx.Graphics
 
 
 data class MonitorInfo(val name: String, val virtualX: Int, val virtualY: Int) {
-    
+
     companion object {
+
         private val encodedRegex: Regex = """(\d+)\|(\d+)\|(.*)""".toRegex()
-        
+
         fun fromMonitor(monitor: Graphics.Monitor): MonitorInfo {
             return MonitorInfo(monitor.name ?: "", monitor.virtualX, monitor.virtualY)
         }
@@ -29,9 +30,9 @@ data class MonitorInfo(val name: String, val virtualX: Int, val virtualY: Int) {
     fun doesMonitorMatch(monitor: Graphics.Monitor): Boolean {
         return monitor.name == this.name && monitor.virtualX == this.virtualX && monitor.virtualY == this.virtualY
     }
-    
+
     fun toEncodedString(): String = "${virtualX}|${virtualY}|$name"
-    
+
     override fun toString(): String {
         return "$name at ${virtualX}x${virtualY}"
     }

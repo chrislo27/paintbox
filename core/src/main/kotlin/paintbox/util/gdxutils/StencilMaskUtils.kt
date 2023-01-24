@@ -15,7 +15,7 @@ import kotlin.contracts.contract
 inline fun ShapeRenderer.prepareStencilMask(
     batch: SpriteBatch, clearDepthBuffer: Boolean = true,
     inverted: Boolean = false,
-    drawing: ShapeRenderer.() -> Unit
+    drawing: ShapeRenderer.() -> Unit,
 ): SpriteBatch {
     contract {
         callsInPlace(drawing, InvocationKind.AT_MOST_ONCE)
@@ -49,7 +49,7 @@ inline fun SpriteBatch.useStencilMask(drawing: () -> Unit) {
     contract {
         callsInPlace(drawing, InvocationKind.EXACTLY_ONCE)
     }
-    
+
     drawing()
     this.flush()
     Gdx.gl.glDisable(GL20.GL_DEPTH_TEST)

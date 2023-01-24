@@ -18,10 +18,10 @@ import java.util.*
 import kotlin.math.min
 
 
-open class Button(text: String, font: PaintboxFont = UIElement.defaultFont)
-    : Control<Button>(), HasLabelComponent {
+open class Button(text: String, font: PaintboxFont = UIElement.defaultFont) : Control<Button>(), HasLabelComponent {
 
     companion object {
+
         const val BUTTON_SKIN_ID: String = "Button"
         private val DEFAULT_PADDING: Insets = Insets(2f)
 
@@ -30,13 +30,15 @@ open class Button(text: String, font: PaintboxFont = UIElement.defaultFont)
                 ButtonSkin(element)
             })
         }
-        
+
         fun createInternalTextBlockVar(button: Button): Var<TextBlock> {
             return Var {
                 val markup: Markup? = button.markup.use()
                 (markup?.parse(button.text.use())
-                        ?: TextRun(button.font.use(), button.text.use(), Color.WHITE,
-                                /*button.scaleX.useF(), button.scaleY.useF()*/ 1f, 1f).toTextBlock()).also { textBlock ->
+                    ?: TextRun(
+                        button.font.use(), button.text.use(), Color.WHITE,
+                        /*button.scaleX.useF(), button.scaleY.useF()*/ 1f, 1f
+                    ).toTextBlock()).also { textBlock ->
                     if (button.doLineWrapping.use()) {
                         textBlock.lineWrapping.set(button.contentZone.width.use() / button.scaleX.use())
                     }
@@ -54,7 +56,7 @@ open class Button(text: String, font: PaintboxFont = UIElement.defaultFont)
     val textAlign: Var<TextAlign> = Var { TextAlign.fromInt(renderAlign.use()) }
     val doXCompression: BooleanVar = BooleanVar(true)
     val doLineWrapping: BooleanVar = BooleanVar(false)
-    
+
     /**
      * The [Markup] object to use. If null, no markup parsing is done. If not null,
      * then the markup determines the TextBlock (and other values like [textColor] are ignored).
@@ -70,17 +72,17 @@ open class Button(text: String, font: PaintboxFont = UIElement.defaultFont)
             : this("", font) {
         text.bind(binding)
     }
-    
+
     constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
             : this({ bindable.use() }, font)
-    
+
     init {
         this.padding.set(DEFAULT_PADDING)
     }
 
     @Suppress("RemoveRedundantQualifierName")
     override fun getDefaultSkinID(): String = Button.BUTTON_SKIN_ID
-    
+
 }
 
 open class ButtonSkin(element: Button) : Skin<Button>(element) {
@@ -153,20 +155,38 @@ open class ButtonSkin(element: Button) : Skin<Button>(element) {
             batch.fillRect(rectX, rectY - rectH, rectW, rectH)
         } else {
             val roundedRect: TextureRegion = paintboxSpritesheet.getRoundedCornerForRadius(roundedRad)
-            batch.fillRect(rectX + roundedRad, rectY - rectH + roundedRad, rectW - roundedRad * 2, rectH - roundedRad * 2)
+            batch.fillRect(
+                rectX + roundedRad,
+                rectY - rectH + roundedRad,
+                rectW - roundedRad * 2,
+                rectH - roundedRad * 2
+            )
             batch.fillRect(rectX, rectY - rectH + roundedRad, (roundedRad).toFloat(), rectH - roundedRad * 2)
-            batch.fillRect(rectX + rectW - roundedRad, rectY - rectH + roundedRad, (roundedRad).toFloat(), rectH - roundedRad * 2)
+            batch.fillRect(
+                rectX + rectW - roundedRad,
+                rectY - rectH + roundedRad,
+                (roundedRad).toFloat(),
+                rectH - roundedRad * 2
+            )
             batch.fillRect(rectX + roundedRad, rectY - rectH, rectW - roundedRad * 2, (roundedRad).toFloat())
             batch.fillRect(rectX + roundedRad, rectY - roundedRad, rectW - roundedRad * 2, (roundedRad).toFloat())
             val roundedCornersSet = roundedCorners
-            batch.draw(if (Corner.TOP_LEFT in roundedCornersSet) roundedRect else spritesheetFill,
-                    rectX, rectY - roundedRad, (roundedRad).toFloat(), (roundedRad).toFloat()) // TL
-            batch.draw(if (Corner.BOTTOM_LEFT in roundedCornersSet) roundedRect else spritesheetFill,
-                    rectX, rectY - rectH + roundedRad, (roundedRad).toFloat(), (-roundedRad).toFloat()) // BL
-            batch.draw(if (Corner.TOP_RIGHT in roundedCornersSet) roundedRect else spritesheetFill,
-                    rectX + rectW, rectY - roundedRad, (-roundedRad).toFloat(), (roundedRad).toFloat()) // TR
-            batch.draw(if (Corner.BOTTOM_RIGHT in roundedCornersSet) roundedRect else spritesheetFill,
-                    rectX + rectW, rectY - rectH + roundedRad, (-roundedRad).toFloat(), (-roundedRad).toFloat()) // BR
+            batch.draw(
+                if (Corner.TOP_LEFT in roundedCornersSet) roundedRect else spritesheetFill,
+                rectX, rectY - roundedRad, (roundedRad).toFloat(), (roundedRad).toFloat()
+            ) // TL
+            batch.draw(
+                if (Corner.BOTTOM_LEFT in roundedCornersSet) roundedRect else spritesheetFill,
+                rectX, rectY - rectH + roundedRad, (roundedRad).toFloat(), (-roundedRad).toFloat()
+            ) // BL
+            batch.draw(
+                if (Corner.TOP_RIGHT in roundedCornersSet) roundedRect else spritesheetFill,
+                rectX + rectW, rectY - roundedRad, (-roundedRad).toFloat(), (roundedRad).toFloat()
+            ) // TR
+            batch.draw(
+                if (Corner.BOTTOM_RIGHT in roundedCornersSet) roundedRect else spritesheetFill,
+                rectX + rectW, rectY - rectH + roundedRad, (-roundedRad).toFloat(), (-roundedRad).toFloat()
+            ) // BR
         }
         batch.packedColor = lastPackedColor
         ColorStack.pop()
@@ -207,8 +227,10 @@ open class ButtonSkin(element: Button) : Skin<Button>(element) {
             }
 
             batch.color = tmpColor // Sets the text colour and opacity
-            text.drawCompressed(batch, textX + xOffset, textY - textH + yOffset,
-                    if (compressX) (textW) else 0f, element.textAlign.getOrCompute(), scaleX, scaleY)
+            text.drawCompressed(
+                batch, textX + xOffset, textY - textH + yOffset,
+                if (compressX) (textW) else 0f, element.textAlign.getOrCompute(), scaleX, scaleY
+            )
             ColorStack.pop()
         }
 

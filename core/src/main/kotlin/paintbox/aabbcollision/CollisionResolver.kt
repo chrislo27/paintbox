@@ -126,8 +126,10 @@ class CollisionResolver {
         val borrowed = tempResults
         borrowed.clear()
 
-        broadphase.set(body.bounds.getX(), body.bounds.getY(), body.bounds.getWidth(),
-                       body.bounds.getHeight())
+        broadphase.set(
+            body.bounds.getX(), body.bounds.getY(), body.bounds.getWidth(),
+            body.bounds.getHeight()
+        )
         broadphase.setX(broadphase.getX() + Math.min(0f, body.velocity.x))
         broadphase.setY(broadphase.getY() + Math.min(0f, body.velocity.y))
         broadphase.setWidth(body.bounds.getWidth() + Math.abs(body.velocity.x))

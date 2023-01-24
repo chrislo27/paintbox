@@ -20,9 +20,10 @@ import kotlin.math.min
 open class UIElement : UIBounds() {
 
     companion object {
+
         private val DEFAULT_MULTIPLIER_BINDING: Var.Context.() -> Float = { 1f }
         private const val CLIP_RECT_BUFFER: Float = 16f
-        
+
         private var defaultFontOverride: PaintboxFont? = null
 
         /**
@@ -105,8 +106,10 @@ open class UIElement : UIBounds() {
     }
 
     @Suppress("RedundantModalityModifier")
-    final fun render(originX: Float, originY: Float, batch: SpriteBatch,
-                     currentClipRect: Rectangle, uiOriginX: Float, uiOriginY: Float) {
+    final fun render(
+        originX: Float, originY: Float, batch: SpriteBatch,
+        currentClipRect: Rectangle, uiOriginX: Float, uiOriginY: Float,
+    ) {
         if (!visible.get()) return
 
         val clip = doClipping.get()
@@ -116,7 +119,7 @@ open class UIElement : UIBounds() {
         // uiOriginX/Y represent where the 0,0 point is for the children in UI coordinates
         val newUIOriginX = uiOriginX + childOriginX
         val newUIOriginY = uiOriginY + childOriginY
-        
+
         renderOptionallyWithClip(originX, originY, batch, clip) { _, _, _ ->
             this.renderSelf(originX, originY, batch)
 
@@ -130,18 +133,24 @@ open class UIElement : UIBounds() {
                 val minY = max(currentClipRect.y, suggestedClipY)
                 val maxX = min(currentClipRect.x + currentClipRect.width, suggestedClipX + suggestedClipWidth)
                 val maxY = min(currentClipRect.y + currentClipRect.height, suggestedClipY + suggestedClipHeight)
-                val newClipRect = RectangleStack.getAndPush().set(minX - CLIP_RECT_BUFFER, minY - CLIP_RECT_BUFFER,
-                        (maxX - minX) + CLIP_RECT_BUFFER * 2, (maxY - minY) + CLIP_RECT_BUFFER * 2)
-                
-                this.renderChildren(originX + childOriginX, originY - childOriginY, batch,
-                        newClipRect, newUIOriginX, newUIOriginY)
-                
+                val newClipRect = RectangleStack.getAndPush().set(
+                    minX - CLIP_RECT_BUFFER, minY - CLIP_RECT_BUFFER,
+                    (maxX - minX) + CLIP_RECT_BUFFER * 2, (maxY - minY) + CLIP_RECT_BUFFER * 2
+                )
+
+                this.renderChildren(
+                    originX + childOriginX, originY - childOriginY, batch,
+                    newClipRect, newUIOriginX, newUIOriginY
+                )
+
                 RectangleStack.pop()
             } else {
-                this.renderChildren(originX + childOriginX, originY - childOriginY, batch,
-                        currentClipRect, newUIOriginX, newUIOriginY)
+                this.renderChildren(
+                    originX + childOriginX, originY - childOriginY, batch,
+                    currentClipRect, newUIOriginX, newUIOriginY
+                )
             }
-            
+
             this.renderSelfAfterChildren(originX, originY, batch)
 
             val borderStyle = this.borderStyle.getOrCompute()
@@ -150,7 +159,7 @@ open class UIElement : UIBounds() {
             }
         }
     }
-    
+
     open fun shouldRenderBorder(borderStyle: Border): Boolean {
         return true
     }
@@ -158,10 +167,12 @@ open class UIElement : UIBounds() {
     protected open fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
     }
 
-    private fun renderChildren(originX: Float, originY: Float, batch: SpriteBatch,
-                               currentClipRect: Rectangle, uiOriginX: Float, uiOriginY: Float) {
+    private fun renderChildren(
+        originX: Float, originY: Float, batch: SpriteBatch,
+        currentClipRect: Rectangle, uiOriginX: Float, uiOriginY: Float,
+    ) {
         if (children.isEmpty()) return
-        
+
         val tmpRect = RectangleStack.getAndPush()
         for (child in children) {
             val childX = uiOriginX + child.bounds.x.get()
@@ -184,7 +195,7 @@ open class UIElement : UIBounds() {
     fun addChild(atIndex: Int, child: UIElement): Boolean {
         if (child !in children) {
             child.parent.getOrCompute()?.removeChild(child)
-            
+
             val childrenCopy = ArrayList<UIElement>(children.size + 1)
             childrenCopy.addAll(children)
             childrenCopy.add(atIndex, child)
@@ -192,7 +203,7 @@ open class UIElement : UIBounds() {
             child.parent.set(this)
             this.onChildAdded(child, atIndex)
             child.onAddedToParent(this)
-            
+
             return true
         }
         return false
@@ -233,7 +244,7 @@ open class UIElement : UIBounds() {
             childSceneRoot?.setFocusedElement(null)
         }
 
-        children = children.toMutableList().apply { 
+        children = children.toMutableList().apply {
             removeAt(index)
         }
         child.parent.set(null)
@@ -242,7 +253,7 @@ open class UIElement : UIBounds() {
 
         return true
     }
-    
+
     fun removeAllChildren() {
         val childrenSize = children.size
         if (childrenSize > 0) {
@@ -276,7 +287,7 @@ open class UIElement : UIBounds() {
      */
     protected open fun onRemovedFromParent(oldParent: UIElement) {
     }
-    
+
     operator fun contains(other: UIElement): Boolean {
         return other in children
     }
@@ -360,9 +371,11 @@ open class UIElement : UIBounds() {
         val rootWidth: Float = rootBounds?.width?.get() ?: width
         val rootHeight: Float = rootBounds?.height?.get() ?: height
 
-        val camWidth = (viewport?.screenWidth ?: Gdx.graphics.width).toFloat() //sceneRoot.getOrCompute()?.bounds?.width?.get() ?: Gdx.graphics.width.toFloat()
-        val camHeight = (viewport?.screenHeight ?: Gdx.graphics.height).toFloat() //sceneRoot.getOrCompute()?.bounds?.height?.get() ?: Gdx.graphics.height.toFloat()
-        
+        val camWidth = (viewport?.screenWidth
+            ?: Gdx.graphics.width).toFloat() //sceneRoot.getOrCompute()?.bounds?.width?.get() ?: Gdx.graphics.width.toFloat()
+        val camHeight = (viewport?.screenHeight
+            ?: Gdx.graphics.height).toFloat() //sceneRoot.getOrCompute()?.bounds?.height?.get() ?: Gdx.graphics.height.toFloat()
+
         val scissorX = (originX + x) / rootWidth * camWidth
         val scissorY = ((originY - y) / rootHeight) * camHeight
         val scissorW = (width / rootWidth) * camWidth
@@ -370,15 +383,17 @@ open class UIElement : UIBounds() {
         val scissor = RectangleStack.getAndPush().set(scissorX, scissorY - scissorH, scissorW, scissorH)
 
         val pushScissor = if (root?.applyViewport?.get() == true)
-            ScissorStack.pushScissor(scissor, viewport?.screenX ?: 0, viewport?.screenY ?: 0) 
-        else ScissorStack.pushScissor(scissor, 0,0)
+            ScissorStack.pushScissor(scissor, viewport?.screenX ?: 0, viewport?.screenY ?: 0)
+        else ScissorStack.pushScissor(scissor, 0, 0)
         return pushScissor
     }
 
     fun clipBegin(originX: Float, originY: Float): Boolean {
         val bounds = this.bounds
-        return clipBegin(originX, originY, bounds.x.get(), bounds.y.get(),
-                bounds.width.get(), bounds.height.get())
+        return clipBegin(
+            originX, originY, bounds.x.get(), bounds.y.get(),
+            bounds.width.get(), bounds.height.get()
+        )
     }
 
     fun clipEnd() {
@@ -387,7 +402,7 @@ open class UIElement : UIBounds() {
             RectangleStack.pop()
         }
     }
-    
+
 
     @Suppress("SimpleRedundantLet")
     fun bindVarToParentWidth(varr: FloatVar, adjust: Float = 0f, multiplier: Float = 1f) {
@@ -404,7 +419,11 @@ open class UIElement : UIBounds() {
     }
 
     @Suppress("SimpleRedundantLet")
-    fun bindVarToParentWidth(varr: FloatVar, multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+    fun bindVarToParentWidth(
+        varr: FloatVar,
+        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: Var.Context.() -> Float,
+    ) {
         varr.bind {
             (this@UIElement.parent.use()?.let { p -> p.contentZone.width.use() }
                 ?: 0f) * multiplierBinding() + adjustBinding()
@@ -412,13 +431,17 @@ open class UIElement : UIBounds() {
     }
 
     @Suppress("SimpleRedundantLet")
-    fun bindVarToParentHeight(varr: FloatVar, multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+    fun bindVarToParentHeight(
+        varr: FloatVar,
+        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: Var.Context.() -> Float,
+    ) {
         varr.bind {
             (this@UIElement.parent.use()?.let { p -> p.contentZone.height.use() }
                 ?: 0f) * multiplierBinding() + adjustBinding()
         }
     }
-    
+
     fun bindVarToSelfHeight(varr: FloatVar, adjust: Float = 0f, multiplier: Float = 1f) {
         val thisBounds = this.bounds
         varr.bind {
@@ -433,21 +456,29 @@ open class UIElement : UIBounds() {
         }
     }
 
-    fun bindVarToSelfHeight(varr: FloatVar, multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+    fun bindVarToSelfHeight(
+        varr: FloatVar,
+        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: Var.Context.() -> Float,
+    ) {
         val thisBounds = this.bounds
         varr.bind {
             thisBounds.height.use() * multiplierBinding() + adjustBinding()
         }
     }
 
-    fun bindVarToSelfWidth(varr: FloatVar, multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+    fun bindVarToSelfWidth(
+        varr: FloatVar,
+        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: Var.Context.() -> Float,
+    ) {
         val thisBounds = this.bounds
         varr.bind {
             thisBounds.width.use() * multiplierBinding() + adjustBinding()
         }
     }
 
-    
+
     fun bindWidthToParent(adjust: Float = 0f, multiplier: Float = 1f) {
         bindVarToParentWidth(this.bounds.width, adjust, multiplier)
     }
@@ -456,11 +487,17 @@ open class UIElement : UIBounds() {
         bindVarToParentHeight(this.bounds.height, adjust, multiplier)
     }
 
-    fun bindWidthToParent(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+    fun bindWidthToParent(
+        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: Var.Context.() -> Float,
+    ) {
         bindVarToParentWidth(this.bounds.width, multiplierBinding, adjustBinding)
     }
 
-    fun bindHeightToParent(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+    fun bindHeightToParent(
+        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: Var.Context.() -> Float,
+    ) {
         bindVarToParentHeight(this.bounds.height, multiplierBinding, adjustBinding)
     }
 
@@ -472,14 +509,20 @@ open class UIElement : UIBounds() {
         bindVarToSelfWidth(this.bounds.height, adjust, multiplier)
     }
 
-    fun bindWidthToSelfHeight(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+    fun bindWidthToSelfHeight(
+        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: Var.Context.() -> Float,
+    ) {
         bindVarToSelfHeight(this.bounds.width, multiplierBinding, adjustBinding)
     }
 
-    fun bindHeightToSelfWidth(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+    fun bindHeightToSelfWidth(
+        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: Var.Context.() -> Float,
+    ) {
         bindVarToSelfWidth(this.bounds.height, multiplierBinding, adjustBinding)
     }
-    
+
     fun bindXToParentWidth(adjust: Float = 0f, multiplier: Float = 1f) {
         bindVarToParentWidth(this.bounds.x, adjust, multiplier)
     }
@@ -488,16 +531,24 @@ open class UIElement : UIBounds() {
         bindVarToParentHeight(this.bounds.y, adjust, multiplier)
     }
 
-    fun bindXToParentWidth(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+    fun bindXToParentWidth(
+        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: Var.Context.() -> Float,
+    ) {
         bindVarToParentWidth(this.bounds.x, multiplierBinding, adjustBinding)
     }
 
-    fun bindYToParentHeight(multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING, adjustBinding: Var.Context.() -> Float) {
+    fun bindYToParentHeight(
+        multiplierBinding: Var.Context.() -> Float = DEFAULT_MULTIPLIER_BINDING,
+        adjustBinding: Var.Context.() -> Float,
+    ) {
         bindVarToParentHeight(this.bounds.y, multiplierBinding, adjustBinding)
     }
 
-    protected inline fun renderOptionallyWithClip(originX: Float, originY: Float, batch: SpriteBatch, clip: Boolean,
-                                                  renderFunc: (originX: Float, originY: Float, batch: SpriteBatch) -> Unit) {
+    protected inline fun renderOptionallyWithClip(
+        originX: Float, originY: Float, batch: SpriteBatch, clip: Boolean,
+        renderFunc: (originX: Float, originY: Float, batch: SpriteBatch) -> Unit,
+    ) {
         if (clip) {
             batch.flush()
             if (clipBegin(originX, originY)) {

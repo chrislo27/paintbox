@@ -8,8 +8,10 @@ import paintbox.util.WindowSize
 
 
 class PaintboxFontUnifont
-    : PaintboxFontFreeType(PaintboxFontParams(Gdx.files.internal("paintbox/fonts/unifont/unifont.otf"), 16, 0f,
-        false, WindowSize(1280, 720)), FreeTypeFontGenerator.FreeTypeFontParameter().apply {
+    : PaintboxFontFreeType(PaintboxFontParams(
+    Gdx.files.internal("paintbox/fonts/unifont/unifont.otf"), 16, 0f,
+    false, WindowSize(1280, 720)
+), FreeTypeFontGenerator.FreeTypeFontParameter().apply {
     magFilter = Texture.TextureFilter.Linear
     minFilter = Texture.TextureFilter.Linear
     genMipMaps = false

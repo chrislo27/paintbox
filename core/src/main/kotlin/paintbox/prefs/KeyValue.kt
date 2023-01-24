@@ -9,8 +9,9 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 abstract class KeyValue<T>(val key: String, val defaultValue: T) {
-    
+
     companion object {
+
         fun Preferences.getInt(kv: KeyValue<kotlin.Int>) {
             val prefs: Preferences = this
             if (prefs.contains(kv.key)) {
@@ -112,8 +113,8 @@ abstract class KeyValue<T>(val key: String, val defaultValue: T) {
     abstract fun load(prefs: Preferences)
     abstract fun persist(prefs: Preferences)
 
-    class Int(key: String, defaultValue: kotlin.Int, val min: kotlin.Int, val max: kotlin.Int)
-        : KeyValue<kotlin.Int>(key, defaultValue) {
+    class Int(key: String, defaultValue: kotlin.Int, val min: kotlin.Int, val max: kotlin.Int) :
+        KeyValue<kotlin.Int>(key, defaultValue) {
 
         override val value: IntVar = IntVar(defaultValue)
 
@@ -126,8 +127,7 @@ abstract class KeyValue<T>(val key: String, val defaultValue: T) {
         }
     }
 
-    class Bool(key: String, defaultValue: kotlin.Boolean)
-        : KeyValue<Boolean>(key, defaultValue) {
+    class Bool(key: String, defaultValue: kotlin.Boolean) : KeyValue<Boolean>(key, defaultValue) {
 
         override val value: BooleanVar = BooleanVar(defaultValue)
 
@@ -140,8 +140,7 @@ abstract class KeyValue<T>(val key: String, val defaultValue: T) {
         }
     }
 
-    class Str(key: String, defaultValue: String)
-        : KeyValue<String>(key, defaultValue) {
+    class Str(key: String, defaultValue: String) : KeyValue<String>(key, defaultValue) {
 
         override val value: Var<String> = Var(defaultValue)
 
@@ -154,8 +153,8 @@ abstract class KeyValue<T>(val key: String, val defaultValue: T) {
         }
     }
 
-    class WindowSize(key: String, defaultValue: paintbox.util.WindowSize)
-        : KeyValue<paintbox.util.WindowSize>(key, defaultValue) {
+    class WindowSize(key: String, defaultValue: paintbox.util.WindowSize) :
+        KeyValue<paintbox.util.WindowSize>(key, defaultValue) {
 
         override val value: Var<paintbox.util.WindowSize> = Var(defaultValue)
 
@@ -168,8 +167,8 @@ abstract class KeyValue<T>(val key: String, val defaultValue: T) {
         }
     }
 
-    class MonitorInfo(key: String, defaultValue: paintbox.util.MonitorInfo?)
-        : KeyValue<paintbox.util.MonitorInfo?>(key, defaultValue) {
+    class MonitorInfo(key: String, defaultValue: paintbox.util.MonitorInfo?) :
+        KeyValue<paintbox.util.MonitorInfo?>(key, defaultValue) {
 
         override val value: Var<paintbox.util.MonitorInfo?> = Var(defaultValue)
 

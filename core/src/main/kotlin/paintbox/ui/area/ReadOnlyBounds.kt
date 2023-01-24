@@ -7,17 +7,19 @@ import paintbox.binding.ReadOnlyVar
 
 
 interface ReadOnlyBounds {
-    
+
     val x: ReadOnlyFloatVar
     val y: ReadOnlyFloatVar
     val width: ReadOnlyFloatVar
     val height: ReadOnlyFloatVar
-    
+
     fun toRectangle(): Rectangle {
-        return Rectangle(this.x.get(), this.y.get(),
-                this.width.get(), this.height.get())
+        return Rectangle(
+            this.x.get(), this.y.get(),
+            this.width.get(), this.height.get()
+        )
     }
-    
+
     /**
      * Returns true if the x/y point is within this bounds locally.
      */

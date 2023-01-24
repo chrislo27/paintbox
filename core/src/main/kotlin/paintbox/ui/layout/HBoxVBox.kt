@@ -24,14 +24,16 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
      */
 
     interface BoxAlign {
+
         val internalAlignment: InternalAlignment
     }
-    
+
     protected inner class ElementData(val element: UIElement, var index: Int, var dimension: Float) {
+
         var position: Float = 0f
         var nextSpacing: Float = 0f
-        
-        val sizeListener: VarChangedListener<Float> = VarChangedListener { 
+
+        val sizeListener: VarChangedListener<Float> = VarChangedListener {
             this@AbstractHVBox.attemptLayout(index)
         }
     }
@@ -63,17 +65,17 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
      * The minimum size to use when [autoSizeToChildren] is true. Default zero.
      */
     val autoSizeMinimumSize: FloatVar = FloatVar(0f)
-    
+
     /**
      * The maximum size to use when [autoSizeToChildren] is true. Default positive infinity.
      */
     val autoSizeMaximumSize: FloatVar = FloatVar(Float.POSITIVE_INFINITY)
-    
+
     /**
      * If true, elements act as if they were in reverse order.
      */
     val reverseLayout: BooleanVar = BooleanVar(false)
-    
+
     // TODO autosizing doesn't work with non-MIN internal alignment
     protected val internalAlignment: Var<InternalAlignment> = Var(InternalAlignment.MIN)
     private var isDoingLayout: Boolean = false
@@ -100,7 +102,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
                 reLayout()
             }
         }
-        
+
         autoSizeToChildren.addListener {
             if (it.getOrCompute()) {
                 doAutosize()
@@ -122,7 +124,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
      * Returns either the width or height var for this box from [contentZone].
      */
     protected abstract fun getThisDimensional(): ReadOnlyFloatVar
-    
+
     /**
      * Returns either the width or height var for an element.
      */
@@ -141,7 +143,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
     /**
      * Sets [disableLayouts] to true, runs the [func], then sets [disableLayouts] to false
      * and does a [full layout][reLayout].
-     * 
+     *
      * This is intended as an optimization when adding a set of children to avoid constant layout recomputations.
      */
     @OptIn(ExperimentalContracts::class)
@@ -160,7 +162,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
     fun reLayout() {
         attemptLayout(0)
     }
-    
+
     protected fun attemptLayout(index: Int) {
         if (isDoingLayout || disableLayouts.get()) return
         if (index >= elementCache.size) {
@@ -170,7 +172,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
             }
             return
         }
-        
+
         isDoingLayout = true
         try {
             var idx = index
@@ -217,7 +219,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
                     pos.set(d.position + offset)
                 }
             }
-            
+
             // Autosize if necessary
             if (autoSizeToChildren.get()) {
                 doAutosize()
@@ -248,10 +250,10 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
         val index = oldIndex.takeIf { currentCache.getOrNull(oldIndex)?.element == oldChild }
             ?: currentCache.indexOfFirst { it.element == oldChild }
         if (index < 0) return
-        
+
         val removedData = elementCache.removeAt(index)
         getDimensional(oldChild).removeListener(removedData.sizeListener)
-        
+
         for (i in (index + 1) until currentCache.size) {
             currentCache[i].index = i - 1
         }
@@ -264,7 +266,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
  * [bounds.x][Bounds.x] to be changed, and should NOT have their width depend on their own x.
  */
 open class HBox : AbstractHVBox<HBox.Align>() {
-    
+
     enum class Align(override val internalAlignment: InternalAlignment) : BoxAlign {
         LEFT(InternalAlignment.MIN), CENTRE(InternalAlignment.MIDDLE), RIGHT(InternalAlignment.MAX);
     }
@@ -276,7 +278,7 @@ open class HBox : AbstractHVBox<HBox.Align>() {
     override val align: Var<Align> = Var(Align.LEFT)
 
     init {
-        this.internalAlignment.bind { 
+        this.internalAlignment.bind {
             align.use().internalAlignment
         }
         this.bounds.width.addListener {
@@ -299,7 +301,7 @@ open class HBox : AbstractHVBox<HBox.Align>() {
     override fun doAutosize() {
         sizeWidthToChildren(autoSizeMinimumSize.get(), autoSizeMaximumSize.get())
     }
-    
+
     override fun sizeWidthToChildren(minimumWidth: Float, maximumWidth: Float): Float {
         // In an HBox, the last child in the flow determines the width (left to right -> last, right to left -> first)
         val last = if (rightToLeft.get()) children.firstOrNull() else children.lastOrNull()
@@ -325,7 +327,7 @@ open class HBox : AbstractHVBox<HBox.Align>() {
  * [bounds.y][Bounds.y] to be changed, and should NOT have their height depend on their own y.
  */
 open class VBox : AbstractHVBox<VBox.Align>() {
-    
+
     enum class Align(override val internalAlignment: InternalAlignment) : BoxAlign {
         TOP(InternalAlignment.MIN), CENTRE(InternalAlignment.MIDDLE), BOTTOM(InternalAlignment.MAX);
     }
@@ -360,7 +362,7 @@ open class VBox : AbstractHVBox<VBox.Align>() {
     override fun doAutosize() {
         sizeHeightToChildren(autoSizeMinimumSize.get(), autoSizeMaximumSize.get())
     }
-    
+
     override fun sizeHeightToChildren(minimumHeight: Float, maximumHeight: Float): Float {
         // In an VBox, the last child in the flow determines the width (top to bottom -> last, bottom to top -> first)
         val last = if (bottomToTop.get()) children.firstOrNull() else children.lastOrNull()

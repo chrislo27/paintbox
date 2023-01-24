@@ -8,7 +8,8 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
 
     private var binding: GenericBinding<T>
     private var currentValue: T? = null
-    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet() // Cannot be generic since it can depend on any other Var
+    private var dependencies: Set<ReadOnlyVar<Any?>> =
+        emptySet() // Cannot be generic since it can depend on any other Var
 
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
@@ -24,7 +25,7 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
     constructor(computation: Var.Context.() -> T) {
         binding = GenericBinding.Compute(computation)
     }
-    
+
     constructor(eager: Boolean, computation: Var.Context.() -> T) : this(computation) {
         if (eager) {
             getOrCompute()
@@ -78,6 +79,7 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
                 }
                 @Suppress("UNCHECKED_CAST") (currentValue as T) // Cannot be currentValue!! since the actual type of T may be nullable
             }
+
             is GenericBinding.Compute -> {
                 if (!invalidated) {
                     @Suppress("UNCHECKED_CAST") (currentValue as T)
@@ -93,6 +95,7 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
                     result
                 }
             }
+
             is GenericBinding.SideEffecting -> {
                 if (invalidated) {
                     val ctx = Var.Context()
@@ -119,7 +122,7 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
 
         class Compute<T>(val computation: Var.Context.() -> T) : GenericBinding<T>()
 
-        class SideEffecting<T>(var item: T, val sideEffectingComputation: Var.Context.(existing: T) -> T)
-            : GenericBinding<T>()
+        class SideEffecting<T>(var item: T, val sideEffectingComputation: Var.Context.(existing: T) -> T) :
+            GenericBinding<T>()
     }
 }

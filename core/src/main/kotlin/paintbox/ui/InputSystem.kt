@@ -12,7 +12,7 @@ import paintbox.util.sumOfFloat
  * will always receive inputs.
  */
 class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
-    
+
     private enum class EventHandleResult {
         NOT_HANDLED,
         FILTERED_OUT,
@@ -28,8 +28,8 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
      */
     val mouseVector: Vector2
         get() = vector
-    
-    
+
+
     private fun propagateEventForLayer(layer: SceneRoot.Layer, evt: InputEvent): UIElement? {
         val lastPath = layer.lastHoveredElementPath
         var acceptedElement: UIElement? = null
@@ -77,7 +77,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         }
         return null
     }
-    
+
     private fun dispatchFocusedEvent(evt: FocusedInputEvent): Boolean {
         val currentFocused = sceneRoot.currentFocusedElement.getOrCompute()
         if (currentFocused != null && currentFocused is UIElement /* instanceof should always be true but check is for smart-casting */) {
@@ -98,7 +98,12 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         return EventHandleResult.NOT_HANDLED
     }
 
-    private fun updateDeepmostElementForMouseLocation(layer: SceneRoot.Layer, x: Float, y: Float, triggerTooltips: Boolean): Boolean {
+    private fun updateDeepmostElementForMouseLocation(
+        layer: SceneRoot.Layer,
+        x: Float,
+        y: Float,
+        triggerTooltips: Boolean,
+    ): Boolean {
         val lastPath: MutableList<UIElement> = layer.lastHoveredElementPath
         if (lastPath.isEmpty()) {
             val newPath = layer.root.pathToForInput(x, y)
@@ -129,9 +134,10 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         }
         // offsets should be the absolute x/y of the parent of cursor
         while (cursor != null && (
-                        !cursor.borderZone.containsPointLocal(x - offX, y - offY)
-                                || !cursor.apparentVisibility.get()
-                        )) {
+                    !cursor.borderZone.containsPointLocal(x - offX, y - offY)
+                            || !cursor.apparentVisibility.get()
+                    )
+        ) {
             val removed = lastPath.removeLast()
             onMouseExited(removed, x, y)
             removed.fireSingularEvent(MouseExited(x, y))
@@ -165,7 +171,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
                     if (cursor != null) {
                         offX -= cursor.contentZone.x.get()
                         offY -= cursor.contentZone.y.get()
-                    }  
+                    }
                 } while (lastRemoved !== clipCursor)
             }
             clipCursor = clipCursor.parent.getOrCompute()
@@ -197,8 +203,10 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
     private fun updateDeepmostElementForMouseLocation(x: Float, y: Float) {
         var wasTooltipTriggered = false
         for (layer in sceneRoot.allLayersReversed) {
-            wasTooltipTriggered = updateDeepmostElementForMouseLocation(layer, x, y,
-                    layer.enableTooltips && !wasTooltipTriggered)
+            wasTooltipTriggered = updateDeepmostElementForMouseLocation(
+                layer, x, y,
+                layer.enableTooltips && !wasTooltipTriggered
+            )
                     || wasTooltipTriggered || layer.shouldEatTooltipAccess()
         }
     }
@@ -242,16 +250,17 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
 
         val touch = dispatchEventBasedOnMouse(TouchDown(vec.x, vec.y, button, pointer))
         val click = dispatchEventBasedOnMouse(ClickPressed(vec.x, vec.y, button))
-        val allLayersPaths: Map<SceneRoot.Layer, List<UIElement>> = sceneRoot.allLayers.associateWith { it.lastHoveredElementPath.toList() }
+        val allLayersPaths: Map<SceneRoot.Layer, List<UIElement>> =
+            sceneRoot.allLayers.associateWith { it.lastHoveredElementPath.toList() }
         clickPressedList[button] = ClickPressedState(allLayersPaths, click)
         pointerPressedButton[pointer] = button
 
         return touch != null || click != null
     }
-    
+
     private inline fun propagateEventFromClickPressedState(
         previousClick: ClickPressedState,
-        eventFactory: (element: UIElement, layer: SceneRoot.Layer, lastHoveredElementPath: List<UIElement>) -> InputEvent
+        eventFactory: (element: UIElement, layer: SceneRoot.Layer, lastHoveredElementPath: List<UIElement>) -> InputEvent,
     ): Boolean {
         var anyClick = false
         @Suppress("ReplaceManualRangeWithIndicesCalls")
@@ -281,7 +290,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
                     }
                 }
             }
-            
+
             if (anyClick) {
                 break@layerOuter
             }
@@ -301,10 +310,12 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         if (previousClick != null) {
             clickPressedList.remove(button)
             anyClick = propagateEventFromClickPressedState(previousClick) { element, layer, lastHoveredElementPath ->
-                ClickReleased(vec.x, vec.y, button,
+                ClickReleased(
+                    vec.x, vec.y, button,
                     element === previousClick.accepted?.second,
                     element in lastHoveredElementPath,
-                    element in layer.lastHoveredElementPath && element.apparentVisibility.get())
+                    element in layer.lastHoveredElementPath && element.apparentVisibility.get()
+                )
             }
         }
         pointerPressedButton.remove(pointer)
@@ -322,8 +333,10 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
             val previousClick = clickPressedList[pressedButton]
             if (previousClick != null) {
                 anyClick = propagateEventFromClickPressedState(previousClick) { element, layer, _ ->
-                    TouchDragged(vec.x, vec.y, pointer, 
-                        element in layer.lastHoveredElementPath && element.apparentVisibility.get())
+                    TouchDragged(
+                        vec.x, vec.y, pointer,
+                        element in layer.lastHoveredElementPath && element.apparentVisibility.get()
+                    )
                 }
             }
         }
@@ -341,6 +354,8 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         return dispatchEventBasedOnMouse(Scrolled(amountX, amountY)) != null
     }
 
-    private data class ClickPressedState(val lastHoveredElementPathPerLayer: Map<SceneRoot.Layer, List<UIElement>>,
-                                         val accepted: Pair<SceneRoot.Layer, UIElement>?)
+    private data class ClickPressedState(
+        val lastHoveredElementPathPerLayer: Map<SceneRoot.Layer, List<UIElement>>,
+        val accepted: Pair<SceneRoot.Layer, UIElement>?,
+    )
 }

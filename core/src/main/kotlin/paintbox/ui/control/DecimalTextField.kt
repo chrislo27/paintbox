@@ -11,7 +11,7 @@ import java.text.DecimalFormat
 open class DecimalTextField(
     startingValue: Float,
     decimalFormat: DecimalFormat = DecimalFormats["0.0##"],
-    font: PaintboxFont = UIElement.defaultFont
+    font: PaintboxFont = UIElement.defaultFont,
 ) : TextField(font) {
 
     val decimalFormat: Var<DecimalFormat> = Var(decimalFormat)
@@ -22,7 +22,7 @@ open class DecimalTextField(
     val allowNegatives: ReadOnlyBooleanVar = BooleanVar {
         minimumValue.use() < 0f
     }
-    
+
     private var updating: Boolean = false
 
     init {
@@ -73,7 +73,7 @@ open class DecimalTextField(
             text.set("")
         }
     }
-    
+
     fun setValue(value: Float) {
         var coerced = value.coerceIn(minimumValue.get(), maximumValue.get())
         if (integersOnly.get()) {

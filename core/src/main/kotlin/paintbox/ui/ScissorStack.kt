@@ -10,7 +10,7 @@ import kotlin.math.roundToInt
 
 
 object ScissorStack {
-    
+
     private val stack: MutableList<Rectangle> = mutableListOf()
 
     /**
@@ -23,7 +23,7 @@ object ScissorStack {
             Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST)
         } else {
             if (!(scissor.x + scissor.y + scissor.width + scissor.height).isFinite()) return false
-            
+
             // Merge scissors
             val parent = stack.last()
             val minX = max(parent.x, scissor.x)
@@ -40,11 +40,13 @@ object ScissorStack {
             scissor.height = max(1f, maxY - minY)
         }
         stack += scissor
-        HdpiUtils.glScissor(scissor.x.toInt() + screenX, scissor.y.toInt() + screenY,
-                scissor.width.toInt(), scissor.height.toInt())
+        HdpiUtils.glScissor(
+            scissor.x.toInt() + screenX, scissor.y.toInt() + screenY,
+            scissor.width.toInt(), scissor.height.toInt()
+        )
         return true
     }
-    
+
     fun popScissor(): Rectangle? {
         val last = stack.removeLastOrNull() ?: return null
         if (stack.isEmpty()) {
@@ -55,7 +57,7 @@ object ScissorStack {
         }
         return last
     }
-    
+
     private fun Rectangle.normalize() {
         val rect = this
         rect.x = rect.x.roundToInt().toFloat()

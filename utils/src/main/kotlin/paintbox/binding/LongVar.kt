@@ -6,8 +6,9 @@ package paintbox.binding
  * Provides the [get] method which is a primitive-type long.
  */
 interface ReadOnlyLongVar : SpecializedReadOnlyVar<Long>, ReadOnlyVar<Long> {
-    
+
     companion object {
+
         /**
          * Returns a constant value [ReadOnlyLongVar]. The implementation used is memory optimized and doesn't
          * have dependencies like [LongVar] would.
@@ -24,15 +25,18 @@ interface ReadOnlyLongVar : SpecializedReadOnlyVar<Long>, ReadOnlyVar<Long> {
      */
     fun get(): Long
 
-    @Deprecated("Use ReadOnlyLongVar.get() instead to avoid explicit boxing",
-            replaceWith = ReplaceWith("this.get()"),
-            level = DeprecationLevel.ERROR)
+    @Deprecated(
+        "Use ReadOnlyLongVar.get() instead to avoid explicit boxing",
+        replaceWith = ReplaceWith("this.get()"),
+        level = DeprecationLevel.ERROR
+    )
     override fun getOrCompute(): Long {
         return get() // WILL BE BOXED!
     }
 }
 
 internal class ReadOnlyConstLongVar(private val value: Long) : ReadOnlyVarBase<Long>(), ReadOnlyLongVar {
+
     override fun get(): Long {
         return value
     }
@@ -47,7 +51,8 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
 
     private var binding: LongBinding
     private var currentValue: Long = 0L
-    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet() // Cannot be generic since it can depend on any other Var
+    private var dependencies: Set<ReadOnlyVar<Any?>> =
+        emptySet() // Cannot be generic since it can depend on any other Var
 
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
@@ -62,7 +67,7 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
     constructor(computation: Var.Context.() -> Long) {
         binding = LongBinding.Compute(computation)
     }
-    
+
     constructor(eager: Boolean, computation: Var.Context.() -> Long) : this(computation) {
         if (eager) {
             get()
@@ -119,6 +124,7 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
                 }
                 this.currentValue
             }
+
             is LongBinding.Compute -> {
                 if (!invalidated) {
                     currentValue
@@ -134,6 +140,7 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
                     result
                 }
             }
+
             is LongBinding.SideEffecting -> {
                 if (invalidated) {
                     val ctx = Var.Context()
@@ -151,11 +158,13 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
         }
         return result
     }
-    
-    
-    @Deprecated("Use LongVar.get() instead to avoid explicit boxing",
-            replaceWith = ReplaceWith("this.get()"),
-            level = DeprecationLevel.ERROR)
+
+
+    @Deprecated(
+        "Use LongVar.get() instead to avoid explicit boxing",
+        replaceWith = ReplaceWith("this.get()"),
+        level = DeprecationLevel.ERROR
+    )
     override fun getOrCompute(): Long {
         return get() // WILL BE BOXED!
     }
@@ -174,7 +183,7 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
         this.set(newState)
         return newState
     }
-    
+
     /**
      * Increments this value by 1 and returns the ORIGINAL value.
      */
@@ -255,7 +264,8 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
 
         class Compute(val computation: Var.Context.() -> Long) : LongBinding()
 
-        class SideEffecting(var item: Long, val sideEffectingComputation: Var.Context.(existing: Long) -> Long) : LongBinding()
+        class SideEffecting(var item: Long, val sideEffectingComputation: Var.Context.(existing: Long) -> Long) :
+            LongBinding()
     }
 }
 

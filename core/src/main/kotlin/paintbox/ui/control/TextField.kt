@@ -24,9 +24,10 @@ import kotlin.math.min
 /**
  * A single-line text field.
  */
-open class TextField(font: PaintboxFont = UIElement.defaultFont)
-    : Control<TextField>(), Focusable {
+open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextField>(), Focusable {
+
     companion object {
+
         const val TEXT_FIELD_SKIN_ID: String = "TextField"
 
         const val BACKSPACE: Char = 8.toChar()
@@ -49,7 +50,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
             })
         }
     }
-    
+
     protected enum class KeyMode {
         NONE, MOVE_LEFT, MOVE_RIGHT, //BACKSPACE, DELETE
     }
@@ -59,11 +60,12 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
     private var keyRepeatTimer: Float = 0f
     private var keymode: KeyMode = KeyMode.NONE
     private val caretPos: IntVar = IntVar(0)
+
     /**
      * -1 if there is no selection.
      */
     private val selectionStart: IntVar = IntVar(-1)
-    
+
     val font: Var<PaintboxFont> = Var(font)
     val text: Var<String> = Var("")
     val emptyHintText: Var<String> = Var("")
@@ -79,9 +81,9 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
     val textColor: Var<Color> = Var(Color(0f, 0f, 0f, 1f))
     val selectionHighlightColor: Var<Color> = Var(Color(0f, 0.6f, 1f, 1f))
     val caretWidth: FloatVar = FloatVar(DEFAULT_CARET_WIDTH)
-    
+
     override val focusGroup: Var<FocusGroup?> = Var(null)
-    
+
     protected val renderedText: ReadOnlyVar<String> = Var {
         translateTextToRenderable(text.use(), isPassword.use(), newlineWrapChar.use())
     }
@@ -124,13 +126,13 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
 
     init {
         this.doClipping.set(true)
-        
+
         this.text.addListener {
             val newLength = it.getOrCompute().length
             if (caretPos.get() > newLength) setCaret(newLength)
             if (selectionStart.get() > newLength) setSelectionStart(newLength)
         }
-        
+
         this.apparentDisabledState.addListener {
             if (it.getOrCompute() && this.hasFocus.get()) {
                 requestUnfocus()
@@ -149,6 +151,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
                         consumed = true
                     }
                 }
+
                 is ClickReleased -> {
                     if (event.button == Input.Buttons.LEFT) {
                         val selectionPos = selectionStart.get()
@@ -159,24 +162,28 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
                         }
                     }
                 }
+
                 is TouchDragged -> {
                     if (pressedState.getOrCompute().pressed) {
                         moveCaretFromMouse(event)
                         consumed = false // TouchDragged should not be consumed
                     }
                 }
+
                 is KeyTyped -> {
                     if (hasFocus.get()) {
                         onKeyTyped(event.character)
                         consumed = true
                     }
                 }
+
                 is KeyDown -> {
                     if (hasFocus.get()) {
                         onKeyDown(event.keycode)
                         consumed = true
                     }
                 }
+
                 is KeyUp -> {
                     if (hasFocus.get()) {
                         onKeyUp(event.keycode)
@@ -207,7 +214,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
 
         return clamped
     }
-    
+
     fun setSelectionStart(position: Int): Int {
         val clamped = position.coerceIn(-1, text.getOrCompute().length)
         selectionStart.set(clamped)
@@ -220,9 +227,9 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
 
     protected open fun translateTextToRenderable(text: String, isPassword: Boolean, newlineWrapChar: Char): String {
         return (if (isPassword) BULLET.toString().repeat(text.length) else text)
-                .replace("\r\n", "$newlineWrapChar")
-                .replace('\r', newlineWrapChar)
-                .replace('\n', newlineWrapChar)
+            .replace("\r\n", "$newlineWrapChar")
+            .replace('\r', newlineWrapChar)
+            .replace('\n', newlineWrapChar)
     }
 
     protected open fun onKeyTyped(character: Char) {
@@ -230,7 +237,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
         val control = Gdx.input.isControlDown()
         val alt = Gdx.input.isAltDown()
         val shift = Gdx.input.isShiftDown()
-        
+
         when (character) {
             TAB -> {
                 val focusGroup = this.focusGroup.getOrCompute()
@@ -240,7 +247,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
                     } else {
                         focusGroup.focusNext(this)
                     }
-                    
+
                     if (nextFocusable is TextField) {
                         val t = nextFocusable.text.getOrCompute()
                         if (t.isNotEmpty()) {
@@ -250,6 +257,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
                     }
                 }
             }
+
             BACKSPACE -> {
                 val currentText = text.getOrCompute()
                 val caret = caretPos.get()
@@ -268,6 +276,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
                     }
                 }
             }
+
             DELETE -> {
                 val currentText = text.getOrCompute()
                 val caret = caretPos.get()
@@ -286,6 +295,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
                     }
                 }
             }
+
             ENTER_ANDROID, ENTER_DESKTOP -> {
                 if (canInputNewlines.get() && shift && !alt && !control && inputFilter.getOrCompute().invoke('\n')) {
                     deleteSelectionIfAny()
@@ -300,6 +310,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
                     enterPressedAction.invoke()
                 }
             }
+
             else -> {
                 if (character < 32.toChar()) return
                 val charLimit = characterLimit.get()
@@ -329,11 +340,13 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
                 keyRepeatTimer = KEY_REPEAT_INITIAL_TIME
                 moveCaretFromKeypress()
             }
+
             Input.Keys.RIGHT -> {
                 keymode = KeyMode.MOVE_RIGHT
                 keyRepeatTimer = KEY_REPEAT_INITIAL_TIME
                 moveCaretFromKeypress()
             }
+
             Input.Keys.HOME -> {
                 keymode = KeyMode.NONE
                 if (shift) {
@@ -343,6 +356,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
                 }
                 setCaret(0)
             }
+
             Input.Keys.END -> {
                 keymode = KeyMode.NONE
                 if (shift) {
@@ -352,25 +366,30 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
                 }
                 setCaret(Int.MAX_VALUE)
             }
+
             Input.Keys.ESCAPE -> {
                 requestUnfocus()
             }
+
             Input.Keys.V -> {
                 if (control && !shift && !alt) {
                     attemptPaste()
                 }
             }
+
             Input.Keys.C -> {
                 if (doesSelectionExist() && control && !shift && !alt) {
                     attemptCopy()
                 }
             }
+
             Input.Keys.X -> {
                 if (doesSelectionExist() && control && !shift && !alt) {
                     attemptCopy()
                     deleteSelectionIfAny()
                 }
             }
+
             Input.Keys.A -> {
                 val t = text.getOrCompute()
                 if (t.isNotEmpty() && control && !shift && !alt) {
@@ -383,6 +402,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
                     }
                 }
             }
+
             Input.Keys.INSERT -> {
                 if (doesSelectionExist() && control && !shift && !alt) {
                     attemptCopy()
@@ -392,14 +412,14 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
             }
         }
     }
-    
+
     fun doesSelectionExist(): Boolean {
         val selection = selectionStart.get()
         val caret = caretPos.get()
         val currentText = text.getOrCompute()
         return selection >= 0 && selection != caret && currentText.isNotEmpty()
     }
-    
+
     protected fun deleteSelectionIfAny() {
         val selection = selectionStart.get()
         val caret = caretPos.get()
@@ -416,7 +436,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
             setSelectionStart(-1)
         }
     }
-    
+
     fun attemptPaste() {
         if (!canPasteText.get()) return
         val charLimit = characterLimit.get()
@@ -428,12 +448,12 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
 
             if (data.all(inputFilter.getOrCompute())) {
                 var pasteText = data
-                
+
                 deleteSelectionIfAny()
-                
+
                 val currentText = text.getOrCompute()
                 val caret = caretPos.get()
-                
+
                 val totalSize = pasteText.length + currentText.length
                 if (charLimit > 0 && totalSize > charLimit) {
                     pasteText = pasteText.substring(0, charLimit - currentText.length)
@@ -446,7 +466,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
         } catch (ignored: Exception) {
         }
     }
-    
+
     fun attemptCopy() {
         if (doesSelectionExist()) {
             val selectionPos = selectionStart.get()
@@ -467,6 +487,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
             Input.Keys.LEFT -> {
                 if (keymode == KeyMode.MOVE_LEFT) keymode = KeyMode.NONE
             }
+
             Input.Keys.RIGHT -> {
                 if (keymode == KeyMode.MOVE_RIGHT) keymode = KeyMode.NONE
             }
@@ -485,7 +506,8 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
         lastMouseInside.x = event.x - lastMouseInside.x
         lastMouseInside.y = event.y - lastMouseInside.y
 
-        val xInContent = (lastMouseInside.x - contentZone.x.get())//.coerceIn(0f, contentZone.width.getOrCompute().coerceAtLeast(0f))
+        val xInContent =
+            (lastMouseInside.x - contentZone.x.get())//.coerceIn(0f, contentZone.width.getOrCompute().coerceAtLeast(0f))
         val cursorX = xInContent + xOffset.get()
         // Calculate where the caret should go.
         val pos = characterPositions.getOrCompute().toList()
@@ -513,7 +535,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
         Vector2Stack.pop()
         resetCaretBlinkTimer()
     }
-    
+
     protected fun doKeyRepeatAction() {
         val keymode = this.keymode
         when (keymode) {
@@ -529,7 +551,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
         val wordJump = Gdx.input.isControlDown()
         val selectionKey = Gdx.input.isShiftDown()
         val currentCaret = caretPos.get()
-        
+
         if (selectionKey) {
             if (selectionStart.get() < 0) {
                 setSelectionStart(currentCaret)
@@ -537,7 +559,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
         } else {
             setSelectionStart(-1)
         }
-        
+
         if (keymode == KeyMode.MOVE_LEFT) {
             if (wordJump) {
                 setCaret(getNextWordPosFromCaret(-1))
@@ -554,7 +576,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
             resetCaretBlinkTimer()
         }
     }
-    
+
     protected fun getNextWordPosFromCaret(dir: Int): Int {
         val currentCaret = caretPos.get()
         val currentText = text.getOrCompute()
@@ -596,6 +618,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
     override fun getDefaultSkinID(): String = TextField.TEXT_FIELD_SKIN_ID
 
     open class TextFieldSkin(element: TextField) : Skin<TextField>(element) {
+
         override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
             val renderBounds = element.contentZone
             val rectX = renderBounds.x.get() + originX
@@ -636,7 +659,12 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
                 tmpColor.a *= opacity
                 batch.color = tmpColor
                 bitmapFont.color = tmpColor
-                bitmapFont.draw(batch, element.renderedText.getOrCompute(), rectX - overallOffsetX, rectY - (rectH - layout.height) / 2f)
+                bitmapFont.draw(
+                    batch,
+                    element.renderedText.getOrCompute(),
+                    rectX - overallOffsetX,
+                    rectY - (rectH - layout.height) / 2f
+                )
 
                 val emptyHintText = element.emptyHintText.getOrCompute()
                 if (!hasFocusNow && element.text.getOrCompute().isEmpty() && emptyHintText.isNotEmpty()) {
@@ -657,7 +685,12 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont)
                     val charPos = element.characterPositions.getOrCompute()
                     val posX = if (caretPos in 0 until charPos.size) charPos[caretPos] else 0f
                     val caretWidth = element.caretWidth.get()
-                    batch.fillRect(rectX - overallOffsetX + posX, rectY - (rectH + caretHeight) / 2f, caretWidth, caretHeight)
+                    batch.fillRect(
+                        rectX - overallOffsetX + posX,
+                        rectY - (rectH + caretHeight) / 2f,
+                        caretWidth,
+                        caretHeight
+                    )
                 }
             }
 

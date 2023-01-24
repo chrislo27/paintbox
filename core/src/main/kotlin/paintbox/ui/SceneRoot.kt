@@ -21,19 +21,20 @@ import paintbox.util.gdxutils.drawRect
  * The [SceneRoot] element has the position 0, 0 and always has the width and height of the UI screen space.
  */
 class SceneRoot(val viewport: Viewport) : UIElement() {
-    
+
     companion object {
+
         val DEFAULT_DEBUG_OUTLINE_COLOR: Color = Color(0f, 1f, 0f, 1f)
     }
 
     data class MousePosition(val x: FloatVar, val y: FloatVar)
-    
+
     val camera: Camera = viewport.camera
 
     /**
      * An optional camera that can be used if the scene root is being rendered to a framebuffer first and then
      * transformed later with another camera. This is used to make sure input vectors are transformed correctly.
-     * 
+     *
      * This assumes that [applyViewport] is false.
      */
     var postRenderCamera: Camera? = null
@@ -75,13 +76,13 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
 
     private val _currentFocused: Var<Focusable?> = Var(null)
     val currentFocusedElement: ReadOnlyVar<Focusable?> = _currentFocused
-    
+
     val debugOutlineColor: Var<Color> = Var(DEFAULT_DEBUG_OUTLINE_COLOR.cpy())
-    
+
     constructor(camera: OrthographicCamera) : this(NoOpViewport(camera)) {
         applyViewport.set(false)
     }
-    
+
     init {
         (sceneRoot as Var).set(this)
         this.doClipping.bind { applyViewport.use() }
@@ -130,7 +131,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         dialogLayer.root.addInputEventListener { _ ->
             rootDialogElement != null // Dialog layer eats all input when active
         }
-        
+
         // Remove dropdowns if scrolled
         addInputEventListener { e ->
             if (e is Scrolled && dropdownContextMenu != null) {
@@ -146,7 +147,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         if (applyViewport.get()) {
             viewport.apply()
         }
-        
+
         (frameUpdateTrigger as BooleanVar).invert()
         updateMouseVector()
         updateTooltipPosition()
@@ -158,8 +159,9 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
             val layerBounds = layerRoot.bounds
             val originX = layerBounds.x.get()
             val originY = layerBounds.y.get() + layerBounds.height.get()
-            
-            val currentClipRect = RectangleStack.getAndPush().set(layerBounds.x.get(), layerBounds.y.get(), layerBounds.width.get(), layerBounds.height.get())
+
+            val currentClipRect = RectangleStack.getAndPush()
+                .set(layerBounds.x.get(), layerBounds.y.get(), layerBounds.width.get(), layerBounds.height.get())
             layerRoot.render(originX, originY, batch, currentClipRect, layerBounds.x.get(), layerBounds.y.get())
             RectangleStack.pop()
         }
@@ -234,9 +236,11 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         viewport.update(Gdx.graphics.width, Gdx.graphics.height)
         val camera = this.camera
         val zoom = (camera as? OrthographicCamera)?.zoom ?: 1f
-        resize(camera.viewportWidth, camera.viewportHeight,
-                camera.position.x - (zoom * camera.viewportWidth / 2.0f),
-                camera.position.y - (zoom * camera.viewportHeight / 2.0f))
+        resize(
+            camera.viewportWidth, camera.viewportHeight,
+            camera.position.x - (zoom * camera.viewportWidth / 2.0f),
+            camera.position.y - (zoom * camera.viewportHeight / 2.0f)
+        )
     }
 
     fun <E> setFocusedElement(element: E?)
@@ -380,7 +384,12 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
      * This does NOT connect the parent-child
      * relationship. One should call [ContextMenu.addChildMenu] for that.
      */
-    fun addContextMenuToScene(contextMenu: ContextMenu, layer: Layer, suggestOffsetX: Float = 0f, suggestOffsetY: Float = 0f) {
+    fun addContextMenuToScene(
+        contextMenu: ContextMenu,
+        layer: Layer,
+        suggestOffsetX: Float = 0f,
+        suggestOffsetY: Float = 0f,
+    ) {
         // Add to the provided layer scene
         // Compute the width/height layouts
         // Position the context menu according to its parent (if any)
@@ -437,7 +446,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
 
     fun isContextMenuActive(): Boolean = rootContextMenu != null
     fun getCurrentRootContextMenu(): UIElement? = rootContextMenu
-    
+
     fun isDialogActive(): Boolean = rootDialogElement != null
     fun getCurrentRootDialog(): UIElement? = rootDialogElement
 
@@ -456,11 +465,13 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
      */
     fun screenToUI(vector: Vector2): Vector2 {
         tmpVec3.set(vector, 0f) // tmpVec3 is top-down, screen width/height
-        
+
         val prCamera = this.postRenderCamera
         if (prCamera != null) {
-            prCamera.unproject(tmpVec3, viewport.screenX.toFloat(), viewport.screenY.toFloat(),
-                    viewport.screenWidth.toFloat(), viewport.screenHeight.toFloat())
+            prCamera.unproject(
+                tmpVec3, viewport.screenX.toFloat(), viewport.screenY.toFloat(),
+                viewport.screenWidth.toFloat(), viewport.screenHeight.toFloat()
+            )
             vector.x = tmpVec3.x
             vector.y = prCamera.viewportHeight - tmpVec3.y
         } else {
@@ -468,7 +479,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
             vector.x = tmpVec3.x
             vector.y = viewport.worldHeight - tmpVec3.y
         }
-        
+
         return vector
     }
 
@@ -484,21 +495,26 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         val prCamera = this.postRenderCamera
         if (prCamera != null) {
             tmpVec3.y = prCamera.viewportHeight - tmpVec3.y
-            prCamera.project(tmpVec3, viewport.screenX.toFloat(), viewport.screenY.toFloat(),
-                    viewport.screenWidth.toFloat(), viewport.screenHeight.toFloat())
+            prCamera.project(
+                tmpVec3, viewport.screenX.toFloat(), viewport.screenY.toFloat(),
+                viewport.screenWidth.toFloat(), viewport.screenHeight.toFloat()
+            )
         } else {
             tmpVec3.y = viewport.worldHeight - tmpVec3.y
             viewport.project(tmpVec3)
         }
-        
+
         vector.x = tmpVec3.x
         vector.y = Gdx.graphics.height - tmpVec3.y
-        
+
         return vector
     }
 
-    inner class Layer(val name: String, val enableTooltips: Boolean, val exclusiveTooltipAccess: Boolean,
-                      rootElement: UIElement = Pane()) {
+    inner class Layer(
+        val name: String, val enableTooltips: Boolean, val exclusiveTooltipAccess: Boolean,
+        rootElement: UIElement = Pane(),
+    ) {
+
         /**
          * Used by [InputSystem] for mouse-path tracking.
          */

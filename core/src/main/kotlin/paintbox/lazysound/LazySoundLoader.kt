@@ -10,21 +10,27 @@ import com.badlogic.gdx.utils.Array
 
 
 class LazySoundLoader(resolver: FileHandleResolver) : SynchronousAssetLoader<LazySound, LazySoundLoaderParameter>(
-		resolver) {
-	override fun getDependencies(fileName: String?, file: FileHandle?,
-								 parameter: LazySoundLoaderParameter?): Array<AssetDescriptor<Any>>? {
-		return null
-	}
+    resolver
+) {
 
-	override fun load(assetManager: AssetManager?, fileName: String?, file: FileHandle,
-					  parameter: LazySoundLoaderParameter?): LazySound {
-		val ls = LazySound(file)
+    override fun getDependencies(
+        fileName: String?, file: FileHandle?,
+        parameter: LazySoundLoaderParameter?,
+    ): Array<AssetDescriptor<Any>>? {
+        return null
+    }
 
-		if (!LazySound.loadLazilyWithAssetManager)
-			ls.sound
+    override fun load(
+        assetManager: AssetManager?, fileName: String?, file: FileHandle,
+        parameter: LazySoundLoaderParameter?,
+    ): LazySound {
+        val ls = LazySound(file)
 
-		return ls
-	}
+        if (!LazySound.loadLazilyWithAssetManager)
+            ls.sound
+
+        return ls
+    }
 }
 
 class LazySoundLoaderParameter : AssetLoaderParameters<LazySound>()

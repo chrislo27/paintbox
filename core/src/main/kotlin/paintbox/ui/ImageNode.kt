@@ -14,7 +14,6 @@ import kotlin.math.max
 import kotlin.math.min
 
 
-
 enum class ImageRenderingMode {
 
     /**
@@ -34,9 +33,10 @@ enum class ImageRenderingMode {
 
 }
 
-open class ImageNode(tex: TextureRegion? = null,
-                     renderingMode: ImageRenderingMode = ImageRenderingMode.MAINTAIN_ASPECT_RATIO)
-    : UIElement() {
+open class ImageNode(
+    tex: TextureRegion? = null,
+    renderingMode: ImageRenderingMode = ImageRenderingMode.MAINTAIN_ASPECT_RATIO,
+) : UIElement() {
 
     val textureRegion: Var<TextureRegion?> = Var(tex)
     val tint: Var<Color> = Var(Color(1f, 1f, 1f, 1f))
@@ -49,12 +49,14 @@ open class ImageNode(tex: TextureRegion? = null,
     val scaleX: FloatVar = FloatVar { scale.use() }
     val scaleY: FloatVar = FloatVar { scale.use() }
 
-    constructor(binding: Var.Context.() -> TextureRegion?,
-                renderingMode: ImageRenderingMode = ImageRenderingMode.MAINTAIN_ASPECT_RATIO)
+    constructor(
+        binding: Var.Context.() -> TextureRegion?,
+        renderingMode: ImageRenderingMode = ImageRenderingMode.MAINTAIN_ASPECT_RATIO,
+    )
             : this(null, renderingMode) {
         textureRegion.bind(binding)
     }
-    
+
     fun useOneScaleForBothAxes() {
         scaleX.bind { scale.use() }
         scaleY.bind { scale.use() }
@@ -85,10 +87,13 @@ open class ImageNode(tex: TextureRegion? = null,
             val rot = rotation.get()
             when (val renderingMode = this.renderingMode.getOrCompute()) {
                 ImageRenderingMode.FULL -> {
-                    batch.draw(tex, x, y - h,
-                            rotPointX * w, rotPointY * h,
-                            w, h, scaleX, scaleY, rot)
+                    batch.draw(
+                        tex, x, y - h,
+                        rotPointX * w, rotPointY * h,
+                        w, h, scaleX, scaleY, rot
+                    )
                 }
+
                 ImageRenderingMode.MAINTAIN_ASPECT_RATIO, ImageRenderingMode.OVERSIZE -> {
                     val aspectWidth = w / tex.regionWidth
                     val aspectHeight = h / tex.regionHeight
@@ -112,11 +117,13 @@ open class ImageNode(tex: TextureRegion? = null,
                     val ry: Float = yOffset
 
 
-                    batch.draw(tex, x + rx, y + ry - h,
-                            rotPointX * rw, rotPointY * rh,
-                            rw, rh,
-                            scaleX, scaleY,
-                            rot)
+                    batch.draw(
+                        tex, x + rx, y + ry - h,
+                        rotPointX * rw, rotPointY * rh,
+                        rw, rh,
+                        scaleX, scaleY,
+                        rot
+                    )
                 }
             }
 
@@ -132,8 +139,11 @@ open class ImageIcon
 
     constructor(tex: TextureRegion?, renderingMode: ImageRenderingMode = ImageRenderingMode.MAINTAIN_ASPECT_RATIO)
             : super(tex, renderingMode)
-    
-    constructor(binding: Var.Context.() -> TextureRegion?, renderingMode: ImageRenderingMode = ImageRenderingMode.MAINTAIN_ASPECT_RATIO)
+
+    constructor(
+        binding: Var.Context.() -> TextureRegion?,
+        renderingMode: ImageRenderingMode = ImageRenderingMode.MAINTAIN_ASPECT_RATIO,
+    )
             : super(binding, renderingMode)
 
     override val tooltipElement: Var<UIElement?> = Var(null)
@@ -142,15 +152,14 @@ open class ImageIcon
 /**
  * A full-render image node, but with uv settings to control the render window of the top-left/bottom-right corners encompassed.
  */
-open class ImageWindowNode(tex: TextureRegion? = null)
-    : UIElement() {
+open class ImageWindowNode(tex: TextureRegion? = null) : UIElement() {
 
     val textureRegion: Var<TextureRegion?> = Var(tex)
     val tint: Var<Color> = Var(Color(1f, 1f, 1f, 1f))
-    val windowU: FloatVar = FloatVar(0f) 
-    val windowV: FloatVar = FloatVar(0f) 
-    val windowU2: FloatVar = FloatVar(1f) 
-    val windowV2: FloatVar = FloatVar(1f) 
+    val windowU: FloatVar = FloatVar(0f)
+    val windowV: FloatVar = FloatVar(0f)
+    val windowU2: FloatVar = FloatVar(1f)
+    val windowV2: FloatVar = FloatVar(1f)
 
     constructor(binding: Var.Context.() -> TextureRegion?)
             : this(null) {
@@ -174,21 +183,22 @@ open class ImageWindowNode(tex: TextureRegion? = null)
             val y = originY - renderBounds.y.get()
             val w = renderBounds.width.get()
             val h = renderBounds.height.get()
-            
+
             val u = this.windowU.get()
             val v = this.windowV.get()
             val u2 = this.windowU2.get()
             val v2 = this.windowV2.get()
 
-            batch.drawUV(tex.texture,
-                    x + w * u,
-                    y - h + h * v,
-                    w * (u2 - u),
-                    h * (v2 - v),
-                    MathUtils.lerp(tex.u, tex.u2, u),
-                    MathUtils.lerp(tex.v, tex.v2, v),
-                    MathUtils.lerp(tex.u, tex.u2, u2),
-                    MathUtils.lerp(tex.v, tex.v2, v2)
+            batch.drawUV(
+                tex.texture,
+                x + w * u,
+                y - h + h * v,
+                w * (u2 - u),
+                h * (v2 - v),
+                MathUtils.lerp(tex.u, tex.u2, u),
+                MathUtils.lerp(tex.v, tex.v2, v),
+                MathUtils.lerp(tex.u, tex.u2, u2),
+                MathUtils.lerp(tex.v, tex.v2, v2)
             )
 
             ColorStack.pop()

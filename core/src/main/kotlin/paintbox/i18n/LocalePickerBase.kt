@@ -9,21 +9,23 @@ import java.util.*
 
 /**
  * Holds a [NamedLocale] and can attempt to find the closest one given a setting.
- * 
- * Can be used across multiple [LocalizationBase]s to synchronize their bundle state. 
+ *
+ * Can be used across multiple [LocalizationBase]s to synchronize their bundle state.
  */
 open class LocalePickerBase(val langDefFile: FileHandle) {
-    
+
     companion object {
+
         val DEFAULT_LANG_DEFINITION_FILE: FileHandle by lazy {
             Gdx.files.internal("localization/langs.json")
         }
     }
 
-    val namedLocales: List<NamedLocale> = getBundlesFromLangFile().takeUnless { it.isEmpty() } ?: error("Loaded locales must be non-empty. Loaded from $langDefFile")
+    val namedLocales: List<NamedLocale> = getBundlesFromLangFile().takeUnless { it.isEmpty() }
+        ?: error("Loaded locales must be non-empty. Loaded from $langDefFile")
     val currentLocale: Var<NamedLocale> = Var(namedLocales.first())
-    
-    
+
+
     protected fun getBundlesFromLangFile(): List<NamedLocale> {
         return Json().fromJson(Array<LanguageObject>::class.java, langDefFile)
             .map(LanguageObject::toNamedLocale)
@@ -40,7 +42,7 @@ open class LocalePickerBase(val langDefFile: FileHandle) {
         if (localeStr == "") {
             return locales.find { it.locale == Locale.ROOT }
         }
-        
+
         val split = localeStr.split('_')
         val language = split.first()
         val country = split.getOrNull(1)
@@ -53,14 +55,14 @@ open class LocalePickerBase(val langDefFile: FileHandle) {
         } ?: locales.find {
             it.locale.language == language
         }
-        
+
         return correctLocaleBundle
     }
-    
+
     fun attemptToSetNamedLocale(localeStr: String): NamedLocale {
         val picked = attemptToFindNamedLocale(localeStr) ?: namedLocales.first()
         currentLocale.set(picked)
         return picked
     }
-    
+
 }

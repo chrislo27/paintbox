@@ -17,8 +17,8 @@ import paintbox.util.gdxutils.fillRect
 import org.lwjgl.glfw.GLFW
 
 
-internal class NewUITestGame(paintboxSettings: PaintboxSettings, val screenFactory: (NewUITestGame) -> Screen)
-    : PaintboxGame(paintboxSettings) {
+internal class NewUITestGame(paintboxSettings: PaintboxSettings, val screenFactory: (NewUITestGame) -> Screen) :
+    PaintboxGame(paintboxSettings) {
 
     override fun getTitle(): String {
         return "New UI test"
@@ -29,8 +29,8 @@ internal class NewUITestGame(paintboxSettings: PaintboxSettings, val screenFacto
         this.setScreen(screenFactory.invoke(this))
     }
 }
-internal class ScaledFontTestGame(paintboxSettings: PaintboxSettings)
-    : PaintboxGame(paintboxSettings) {
+
+internal class ScaledFontTestGame(paintboxSettings: PaintboxSettings) : PaintboxGame(paintboxSettings) {
 
     override fun getTitle(): String {
         return "ScaledFont test"
@@ -47,7 +47,7 @@ internal class ScaledFontTestGame(paintboxSettings: PaintboxSettings)
 
 internal class UIAnchorTestNestedScreen(override val main: NewUITestGame) : PaintboxScreen() {
 
-    val camera = OrthographicCamera().apply { 
+    val camera = OrthographicCamera().apply {
         this.setToOrtho(false, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         this.update()
     }
@@ -116,6 +116,7 @@ internal class UIAnchorTestNestedScreen(override val main: NewUITestGame) : Pain
 
 internal class TestColorElement(val color: Color) : UIElement() {
     companion object {
+
         private val TMP_COLOR: Color = Color(1f, 1f, 1f, 1f)
     }
 
@@ -128,7 +129,7 @@ internal class TestColorElement(val color: Color) : UIElement() {
             if (!doClickFlash) return@addInputEventListener false
             if (evt is ClickPressed) {
                 if (evt.button == Input.Buttons.LEFT) {
-                    Gdx.app.postRunnable { 
+                    Gdx.app.postRunnable {
                         isMouseDown = true
                     }
 //                    println((this as UIBounds).toString())

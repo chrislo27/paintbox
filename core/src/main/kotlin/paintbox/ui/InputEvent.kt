@@ -3,13 +3,13 @@ package paintbox.ui
 
 /**
  * Handles and optionally filters an [InputEvent].
- * 
+ *
  * Events are filtered "top-down" (from the parent to the child) and are handled "bottom-up" (child to parent).
- * 
+ *
  * By default, events are always filtered through and are not stopped.
- * 
+ *
  * **Special cases:** Not all events flow from the parent to the child. Some events only target a specific element,
- * such as [MouseEntered] and [MouseExited]. In these cases, the [filter] and [handle] functions act as expected, 
+ * such as [MouseEntered] and [MouseExited]. In these cases, the [filter] and [handle] functions act as expected,
  * but with a chain of exactly one element.
  */
 fun interface InputEventListener {
@@ -22,7 +22,7 @@ fun interface InputEventListener {
 
     /**
      * Called to filter the [event]. Return true to continue propagating the event, false to stop it and cancel it.
-     * 
+     *
      * The default behaviour is to let the event though.
      */
     fun filter(event: InputEvent): Boolean {
@@ -64,13 +64,15 @@ class TouchUp(x: Float, y: Float, val button: Int, val pointer: Int) : MouseInpu
 
 /**
  * Represents the gdx touchDragged event in InputProcessor.
- * 
+ *
  * It is **strongly suggested** to NOT consume this event so it can be correctly propagated to other elements,
  * otherwise there may be unexpected behaviour, such as the event not firing when the mouse is dragging
  * out of bounds of the element.
  */
-class TouchDragged(x: Float, y: Float, val pointer: Int,
-                   val isCurrentlyWithinBounds: Boolean) : MouseInputEvent(x, y)
+class TouchDragged(
+    x: Float, y: Float, val pointer: Int,
+    val isCurrentlyWithinBounds: Boolean,
+) : MouseInputEvent(x, y)
 
 /**
  * Fired when the mouse enters this UI element.
@@ -93,5 +95,7 @@ class ClickPressed(x: Float, y: Float, val button: Int) : MouseInputEvent(x, y)
  *
  * It is **strongly suggested** to NOT consume this event so it can be correctly propagated to other elements.
  */
-class ClickReleased(x: Float, y: Float, val button: Int, val consumedPrior: Boolean,
-                    val wasWithinBounds: Boolean, val isCurrentlyWithinBounds: Boolean) : MouseInputEvent(x, y)
+class ClickReleased(
+    x: Float, y: Float, val button: Int, val consumedPrior: Boolean,
+    val wasWithinBounds: Boolean, val isCurrentlyWithinBounds: Boolean,
+) : MouseInputEvent(x, y)

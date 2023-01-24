@@ -35,6 +35,7 @@ interface HasTooltip {
      * A default implementation of [HasTooltip] that can be delegated to. The default element is null.
      */
     open class DefaultImpl : HasTooltip {
+
         override val tooltipElement: Var<UIElement?> = Var(null)
     }
 }
@@ -58,12 +59,12 @@ open class Tooltip
 
     constructor(binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
             : super(binding, font)
-    
+
     constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
             : super(bindable, font)
 
     open fun defaultOnTooltipStarted() {
         this.resizeBoundsToContent(limitWidth = this.maxWidth.get(), limitHeight = this.maxHeight.get())
     }
-    
+
 }

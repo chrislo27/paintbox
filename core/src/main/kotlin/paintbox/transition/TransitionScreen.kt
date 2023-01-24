@@ -13,15 +13,17 @@ import kotlin.math.absoluteValue
  * During a transition, only the render method is called for the entry and destination screens.
  *
  */
-open class TransitionScreen(override val main: PaintboxGame,
-                            val entryScreen: Screen?, val destScreen: Screen?,
-                            entryTransition: Transition?, destTransition: Transition?)
-    : PaintboxScreen() {
-    
+open class TransitionScreen(
+    override val main: PaintboxGame,
+    val entryScreen: Screen?, val destScreen: Screen?,
+    entryTransition: Transition?, destTransition: Transition?,
+) : PaintboxScreen() {
+
     companion object {
+
         private val NO_OP_CALLBACK: () -> Unit = {}
     }
-    
+
     enum class Substate {
         PRE_ENTRY,
         DURING_ENTRY,
@@ -35,7 +37,7 @@ open class TransitionScreen(override val main: PaintboxGame,
     val duration: Float = (this.entryTransition.duration + this.destTransition.duration).absoluteValue
     var timeElapsed: Float = 0f
         private set
-    
+
     var onStart: () -> Unit = NO_OP_CALLBACK
     var onEntryStart: () -> Unit = NO_OP_CALLBACK
     var onEntryEnd: () -> Unit = NO_OP_CALLBACK
@@ -101,13 +103,13 @@ open class TransitionScreen(override val main: PaintboxGame,
                 skipTimeUpdateForNFrames = 1
             }
         }
-        
+
         val lastScreenDiffers = lastScreen != screen
         if (lastScreenDiffers) {
             (screen as? PaintboxScreen)?.showTransition() ?: (screen?.show())
             lastScreen = screen
         }
-        
+
         transition.render(this) { screen?.render(delta) }
 
         if (transition.overrideDone) {

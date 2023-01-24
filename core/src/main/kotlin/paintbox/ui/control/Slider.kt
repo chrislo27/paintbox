@@ -24,7 +24,9 @@ import kotlin.math.sign
  * A [Slider] is a scroll bar intended to be used with a [ScrollPane].
  */
 open class Slider : Control<Slider>() {
+
     companion object {
+
         const val SLIDER_SKIN_ID: String = "Slider"
         const val MIN_DEFAULT: Float = 0f
         const val MAX_DEFAULT: Float = 100f
@@ -51,7 +53,7 @@ open class Slider : Control<Slider>() {
         maximum.addListener {
             setValue(_value.get())
         }
-        
+
         val lastMouseRelativeToRoot = Vector2(0f, 0f)
         addInputEventListener { event ->
             if (event is MouseInputEvent && (event is TouchDragged || event is ClickPressed)) {
@@ -59,10 +61,17 @@ open class Slider : Control<Slider>() {
                     val lastMouseInside: Vector2 = this.getPosRelativeToRoot(lastMouseRelativeToRoot)
                     lastMouseRelativeToRoot.x = event.x - lastMouseInside.x
                     lastMouseRelativeToRoot.y = event.y - lastMouseInside.y
-                    
+
                     val endCap = bounds.height.get() * 0.4f
-                    setValue(convertPercentageToValue(((lastMouseRelativeToRoot.x - endCap) / (bounds.width.get() - endCap * 2)).coerceIn(0f, 1f)))
-                    
+                    setValue(
+                        convertPercentageToValue(
+                            ((lastMouseRelativeToRoot.x - endCap) / (bounds.width.get() - endCap * 2)).coerceIn(
+                                0f,
+                                1f
+                            )
+                        )
+                    )
+
                     event !is TouchDragged // TouchDragged should not be consumed
                 } else false
             } else if (event is Scrolled) {
@@ -131,18 +140,36 @@ open class Slider : Control<Slider>() {
             tmpColor.set(bgColorToUse.getOrCompute())
             tmpColor.a *= opacity
             batch.color = tmpColor
-            batch.fillRoundedRect(rectX + linePad, rectY - rectH * 0.5f - lineH * 0.5f, rectW - linePad * 2, lineH, lineH * 0.5f)
+            batch.fillRoundedRect(
+                rectX + linePad,
+                rectY - rectH * 0.5f - lineH * 0.5f,
+                rectW - linePad * 2,
+                lineH,
+                lineH * 0.5f
+            )
             tmpColor.set(filledColorToUse.getOrCompute())
             tmpColor.a *= opacity
             batch.color = tmpColor
             val valueAsPercent = element.convertValueToPercentage(element._value.get())
-            batch.fillRoundedRect(rectX + linePad, rectY - rectH * 0.5f - lineH * 0.5f,
-                    MathUtils.lerp((circleH * 0.5f).coerceAtMost(rectW * 0.5f), (rectW - circleH * 0.5f).coerceAtLeast(rectW * 0.5f), valueAsPercent), lineH, lineH * 0.5f)
+            batch.fillRoundedRect(
+                rectX + linePad, rectY - rectH * 0.5f - lineH * 0.5f,
+                MathUtils.lerp(
+                    (circleH * 0.5f).coerceAtMost(rectW * 0.5f),
+                    (rectW - circleH * 0.5f).coerceAtLeast(rectW * 0.5f),
+                    valueAsPercent
+                ), lineH, lineH * 0.5f
+            )
 
             val filledCircleMul = 0.97f
             tmpColor.mul(filledCircleMul, filledCircleMul, filledCircleMul, 1f)
             batch.color = tmpColor
-            batch.draw(PaintboxGame.paintboxSpritesheet.circleFilled, rectX + (valueAsPercent * (rectW - circleH)), rectY - rectH, circleH, circleH)
+            batch.draw(
+                PaintboxGame.paintboxSpritesheet.circleFilled,
+                rectX + (valueAsPercent * (rectW - circleH)),
+                rectY - rectH,
+                circleH,
+                circleH
+            )
 
             batch.packedColor = lastPackedColor
             ColorStack.pop()

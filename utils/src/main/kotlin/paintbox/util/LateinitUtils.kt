@@ -11,7 +11,7 @@ fun Any.anyUninitializedLateinits(): Boolean {
 
 fun Any.getUninitializedLateinits(): List<KProperty<*>> {
     return this::class.memberProperties
-            .filter { it.isLateinit }
-            .onEach { it.isAccessible = true }
-            .filter { it.javaField?.get(this) == null }
+        .filter { it.isLateinit }
+        .onEach { it.isAccessible = true }
+        .filter { it.javaField?.get(this) == null }
 }

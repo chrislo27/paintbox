@@ -6,6 +6,7 @@ import kotlin.math.absoluteValue
 
 
 class PaintboxSpritesheet(val texture: Texture) {
+
     val roundedCorner: TextureRegion = TextureRegion(texture, 0, 0, 32, 32)
     val roundedCorner7: TextureRegion = TextureRegion(texture, 34, 7, 7, 7)
     val roundedCorner6: TextureRegion = TextureRegion(texture, 34, 16, 6, 6)
@@ -15,7 +16,7 @@ class PaintboxSpritesheet(val texture: Texture) {
     val roundedCorner2: TextureRegion = TextureRegion(texture, 42, 16, 3, 3)
     val fill: TextureRegion = TextureRegion(texture, 36, 1, 2, 2)
     val logo128: TextureRegion = TextureRegion(texture, 0, 384, 128, 128)
-    
+
     val checkboxEmpty: TextureRegion = TextureRegion(texture, 1, 35, 64, 64)
     val checkboxCheck: TextureRegion = TextureRegion(texture, 68, 35, 64, 64)
     val checkboxX: TextureRegion = TextureRegion(texture, 135, 35, 64, 64)
@@ -25,10 +26,10 @@ class PaintboxSpritesheet(val texture: Texture) {
     val circleFilled: TextureRegion = TextureRegion(texture, 336, 35, 64, 64)
     val upArrow: TextureRegion = TextureRegion(texture, 51, 2, 30, 30)
     val upChevronArrow: TextureRegion = TextureRegion(texture, 83, 2, 30, 30)
-    val downChevronArrow: TextureRegion = TextureRegion(upChevronArrow).apply { 
+    val downChevronArrow: TextureRegion = TextureRegion(upChevronArrow).apply {
         flip(false, true)
     }
-    
+
     fun getRoundedCornerForRadius(rad: Int): TextureRegion {
         val radius = rad.absoluteValue
         return when {

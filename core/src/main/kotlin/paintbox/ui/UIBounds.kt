@@ -47,6 +47,7 @@ open class UIBounds {
      * The [contentZone] x is offset by this value.
      */
     val contentOffsetX: FloatVar = FloatVar(0f)
+
     /**
      * The [contentZone] y is offset by this value.
      */
@@ -75,7 +76,8 @@ open class UIBounds {
      * The content zone is the innermost rectangular area bounded by the [padding] insets, not including padding.
      * It is also impacted by [contentOffsetX] and [contentOffsetY].
      */
-    val contentZone: ReadOnlyBounds = createContentZone(marginZone, margin, border, padding, contentOffsetX, contentOffsetY)
+    val contentZone: ReadOnlyBounds =
+        createContentZone(marginZone, margin, border, padding, contentOffsetX, contentOffsetY)
 
     fun toLocalString(): String {
         val bounds = this.bounds
@@ -85,6 +87,7 @@ open class UIBounds {
     override fun toString(): String = toLocalString()
 
     companion object {
+
         fun createBorderZone(marginZoneBounds: ReadOnlyBounds, marginInsets: ReadOnlyVar<Insets>): ReadOnlyBounds {
             val xVar: FloatVar = FloatVar {
                 val insets = marginInsets.use()
@@ -119,14 +122,17 @@ open class UIBounds {
 
             return Bounds(xVar, yVar, wVar, hVar)
         }
-        
-        fun createPaddingZone(marginZoneBounds: ReadOnlyBounds, marginInsets: ReadOnlyVar<Insets>,
-                              borderInsets: ReadOnlyVar<Insets>): ReadOnlyBounds {
+
+        fun createPaddingZone(
+            marginZoneBounds: ReadOnlyBounds, marginInsets: ReadOnlyVar<Insets>,
+            borderInsets: ReadOnlyVar<Insets>,
+        ): ReadOnlyBounds {
             val xVar: FloatVar = FloatVar {
                 val mInsets = marginInsets.use()
                 val bInsets = borderInsets.use()
                 val minX = marginZoneBounds.x.use() + mInsets.left + bInsets.left
-                val maxX = minX + marginZoneBounds.width.use() - mInsets.right - mInsets.left - bInsets.right - bInsets.left
+                val maxX =
+                    minX + marginZoneBounds.width.use() - mInsets.right - mInsets.left - bInsets.right - bInsets.left
                 val width = if (maxX <= minX) 0f else (maxX - minX)
                 if (width <= 0f)
                     ((minX + maxX) / 2f)
@@ -136,7 +142,8 @@ open class UIBounds {
                 val mInsets = marginInsets.use()
                 val bInsets = borderInsets.use()
                 val minY = marginZoneBounds.y.use() + mInsets.top + bInsets.top
-                val maxY = minY + marginZoneBounds.height.use() - mInsets.bottom - mInsets.top - bInsets.bottom - bInsets.top
+                val maxY =
+                    minY + marginZoneBounds.height.use() - mInsets.bottom - mInsets.top - bInsets.bottom - bInsets.top
                 val height = if (maxY <= minY) 0f else (maxY - minY)
                 if (height <= 0f)
                     ((minY + maxY) / 2f)
@@ -146,29 +153,34 @@ open class UIBounds {
                 val mInsets = marginInsets.use()
                 val bInsets = borderInsets.use()
                 val minX = marginZoneBounds.x.use() + mInsets.left + bInsets.left
-                val maxX = minX + marginZoneBounds.width.use() - mInsets.right - mInsets.left - bInsets.right - bInsets.left
+                val maxX =
+                    minX + marginZoneBounds.width.use() - mInsets.right - mInsets.left - bInsets.right - bInsets.left
                 if (maxX <= minX) 0f else (maxX - minX)
             }
             val hVar: FloatVar = FloatVar {
                 val mInsets = marginInsets.use()
                 val bInsets = borderInsets.use()
                 val minY = marginZoneBounds.y.use() + mInsets.top + bInsets.top
-                val maxY = minY + marginZoneBounds.height.use() - mInsets.bottom - mInsets.top - bInsets.bottom - bInsets.top
+                val maxY =
+                    minY + marginZoneBounds.height.use() - mInsets.bottom - mInsets.top - bInsets.bottom - bInsets.top
                 if (maxY <= minY) 0f else (maxY - minY)
             }
 
             return Bounds(xVar, yVar, wVar, hVar)
         }
-        
-        fun createContentZone(marginZoneBounds: ReadOnlyBounds, marginInsets: ReadOnlyVar<Insets>,
-                              borderInsets: ReadOnlyVar<Insets>, paddingInsets: ReadOnlyVar<Insets>,
-                              contentOffsetX: FloatVar, contentOffsetY: FloatVar): ReadOnlyBounds {
+
+        fun createContentZone(
+            marginZoneBounds: ReadOnlyBounds, marginInsets: ReadOnlyVar<Insets>,
+            borderInsets: ReadOnlyVar<Insets>, paddingInsets: ReadOnlyVar<Insets>,
+            contentOffsetX: FloatVar, contentOffsetY: FloatVar,
+        ): ReadOnlyBounds {
             val xVar: FloatVar = FloatVar {
                 val mInsets = marginInsets.use()
                 val bInsets = borderInsets.use()
                 val pInsets = paddingInsets.use()
                 val minX = marginZoneBounds.x.use() + mInsets.left + bInsets.left + pInsets.left
-                val maxX = minX + marginZoneBounds.width.use() - mInsets.right - mInsets.left - bInsets.right - bInsets.left - pInsets.right - pInsets.left
+                val maxX =
+                    minX + marginZoneBounds.width.use() - mInsets.right - mInsets.left - bInsets.right - bInsets.left - pInsets.right - pInsets.left
                 val width = if (maxX <= minX) 0f else (maxX - minX)
                 (if (width <= 0f)
                     ((minX + maxX) / 2f)
@@ -179,7 +191,8 @@ open class UIBounds {
                 val bInsets = borderInsets.use()
                 val pInsets = paddingInsets.use()
                 val minY = marginZoneBounds.y.use() + mInsets.top + bInsets.top + pInsets.top
-                val maxY = minY + marginZoneBounds.height.use() - mInsets.bottom - mInsets.top - bInsets.bottom - bInsets.top - pInsets.bottom - pInsets.top
+                val maxY =
+                    minY + marginZoneBounds.height.use() - mInsets.bottom - mInsets.top - bInsets.bottom - bInsets.top - pInsets.bottom - pInsets.top
                 val height = if (maxY <= minY) 0f else (maxY - minY)
                 (if (height <= 0f)
                     ((minY + maxY) / 2f)
@@ -190,7 +203,8 @@ open class UIBounds {
                 val bInsets = borderInsets.use()
                 val pInsets = paddingInsets.use()
                 val minX = marginZoneBounds.x.use() + mInsets.left + bInsets.left + pInsets.left
-                val maxX = minX + marginZoneBounds.width.use() - mInsets.right - mInsets.left - bInsets.right - bInsets.left - pInsets.right - pInsets.left
+                val maxX =
+                    minX + marginZoneBounds.width.use() - mInsets.right - mInsets.left - bInsets.right - bInsets.left - pInsets.right - pInsets.left
                 if (maxX <= minX) 0f else (maxX - minX)
             }
             val hVar: FloatVar = FloatVar {
@@ -198,28 +212,29 @@ open class UIBounds {
                 val bInsets = borderInsets.use()
                 val pInsets = paddingInsets.use()
                 val minY = marginZoneBounds.y.use() + mInsets.top + bInsets.top + pInsets.top
-                val maxY = minY + marginZoneBounds.height.use() - mInsets.bottom - mInsets.top - bInsets.bottom - bInsets.top - pInsets.bottom - pInsets.top
+                val maxY =
+                    minY + marginZoneBounds.height.use() - mInsets.bottom - mInsets.top - bInsets.bottom - bInsets.top - pInsets.bottom - pInsets.top
                 if (maxY <= minY) 0f else (maxY - minY)
             }
 
             return Bounds(xVar, yVar, wVar, hVar)
         }
-        
+
         // Below are older, recursive-capable zone bounds factories, but they were replaced to due to poorer performance.
         // The newer ones only use the true (margin) bounds of the entity + insets to compute everything,
         // rather than cascading everything.
-        
+
         @Deprecated("Use a specialized zone creation method instead")
         fun createZoneBounds(outerZoneBounds: ReadOnlyBounds, outerInsets: ReadOnlyVar<Insets>): ReadOnlyBounds {
             val xVar: FloatVar = FloatVar {
-                    val insets = outerInsets.use()
-                    val minX = outerZoneBounds.x.use() + insets.left
-                    val maxX = minX + outerZoneBounds.width.use() - insets.right - insets.left
-                    val width = if (maxX <= minX) 0f else (maxX - minX)
-                    if (width <= 0f)
-                        ((minX + maxX) / 2f)
-                    else (minX)
-                }
+                val insets = outerInsets.use()
+                val minX = outerZoneBounds.x.use() + insets.left
+                val maxX = minX + outerZoneBounds.width.use() - insets.right - insets.left
+                val width = if (maxX <= minX) 0f else (maxX - minX)
+                if (width <= 0f)
+                    ((minX + maxX) / 2f)
+                else (minX)
+            }
             val yVar: FloatVar = FloatVar {
                 val insets = outerInsets.use()
                 val minY = outerZoneBounds.y.use() + insets.top
@@ -246,8 +261,10 @@ open class UIBounds {
         }
 
         @Deprecated("Use createContentZone() instead")
-        fun createZoneBoundsWithChildOffset(outerZoneBounds: ReadOnlyBounds, outerInsets: ReadOnlyVar<Insets>,
-                                            contentOffsetX: FloatVar, contentOffsetY: FloatVar): ReadOnlyBounds {
+        fun createZoneBoundsWithChildOffset(
+            outerZoneBounds: ReadOnlyBounds, outerInsets: ReadOnlyVar<Insets>,
+            contentOffsetX: FloatVar, contentOffsetY: FloatVar,
+        ): ReadOnlyBounds {
             val wVar: FloatVar = FloatVar {
                 val insets = outerInsets.use()
                 val minX = outerZoneBounds.x.use() + insets.left

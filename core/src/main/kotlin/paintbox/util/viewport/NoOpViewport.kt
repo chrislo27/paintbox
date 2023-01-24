@@ -13,13 +13,13 @@ import com.badlogic.gdx.utils.viewport.Viewport
  * A [Viewport] that doesn't adjust the camera nor glViewport at all.
  */
 class NoOpViewport(val camera: OrthographicCamera, val shouldResetViewportToScreen: Boolean = false) : Viewport() {
-    
+
     init {
         setCamera(camera)
         setWorldSize(camera.viewportWidth, camera.viewportHeight)
         setScreenBounds()
     }
-    
+
     override fun apply(centerCamera: Boolean) {
         setScreenBounds()
         if (shouldResetViewportToScreen) {
@@ -37,7 +37,7 @@ class NoOpViewport(val camera: OrthographicCamera, val shouldResetViewportToScre
         if (camera !== this.camera) return
         super.setCamera(camera)
     }
-    
+
     private fun setScreenBounds() {
         setScreenBounds(0, 0, Gdx.graphics.width, Gdx.graphics.height)
     }

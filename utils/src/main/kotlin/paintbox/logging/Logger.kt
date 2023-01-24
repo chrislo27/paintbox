@@ -18,7 +18,15 @@ open class Logger {
         val second = (millis / 1000) % 60
         val minute = millis / (1000 * 60) % 60
         val hour = millis / (1000 * 60 * 60) % 24
-        val text = "${String.format("%02d:%02d:%02d.%03d", hour, minute, second, millis % 1000)}: [${level.name}][${Thread.currentThread().name}] ${if (tag.isEmpty()) "" else "[$tag] "}$msg"
+        val text = "${
+            String.format(
+                "%02d:%02d:%02d.%03d",
+                hour,
+                minute,
+                second,
+                millis % 1000
+            )
+        }: [${level.name}][${Thread.currentThread().name}] ${if (tag.isEmpty()) "" else "[$tag] "}$msg"
 
         if (level.ordinal >= LogLevel.WARN.ordinal) {
             System.err.println(text)

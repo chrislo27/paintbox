@@ -9,19 +9,19 @@ import java.util.concurrent.ConcurrentHashMap
 class AnimationHandler {
 
     private data class AnimationTuple(
-        val animation: Animation, val varr: FloatVar, var accumulatedSeconds: Float, var alpha: Float = 0f
+        val animation: Animation, val varr: FloatVar, var accumulatedSeconds: Float, var alpha: Float = 0f,
     ) {
 
         private var onStartCalled: Boolean = false
         private var onCompleteCalled: Boolean = false
-        
+
         fun callOnStart() {
             if (!onStartCalled) {
                 onStartCalled = true
                 animation.onStart?.invoke()
             }
         }
-        
+
         fun callOnComplete() {
             if (!onCompleteCalled) {
                 onCompleteCalled = true
@@ -38,16 +38,16 @@ class AnimationHandler {
     val animationSpeed: FloatVar = FloatVar(1f)
 
     private val removeList: MutableSet<AnimationTuple> = mutableSetOf()
-    
+
     fun frameUpdate() {
         val delta = Gdx.graphics.deltaTime
         val speed = animationSpeed.get()
         val isInstant = speed <= 0f
-        
+
         animations.forEach { (_, tuple) ->
             val animation = tuple.animation
             tuple.accumulatedSeconds += delta
-            
+
             if (tuple.accumulatedSeconds >= 0f) {
                 tuple.callOnStart()
 
@@ -64,7 +64,7 @@ class AnimationHandler {
                 }
             }
         }
-        
+
         if (removeList.isNotEmpty()) {
             removeList.forEach { tuple -> animations.remove(tuple.varr, tuple) }
             removeList.clear()
@@ -79,14 +79,14 @@ class AnimationHandler {
         }
         animations[varr] = AnimationTuple(animation, varr, -animation.delay)
     }
-    
+
     fun cancelAnimation(animation: Animation) {
         val existing = animations.entries.firstOrNull { it.value.animation == animation } ?: return
         animations.remove(existing.key)
         existing.key.set(existing.value.animation.applyFunc(1f))
         existing.value.animation.onComplete?.invoke()
     }
-    
+
     fun cancelAnimationFor(varr: FloatVar): Animation? {
         val existing = animations.remove(varr)
         if (existing != null) {

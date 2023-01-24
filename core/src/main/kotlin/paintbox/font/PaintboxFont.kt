@@ -23,14 +23,14 @@ import kotlin.contracts.contract
  *
  * To use the [BitmapFont], call [useFont] and use the supplied font parameter.
  */
-abstract class PaintboxFont(params: PaintboxFontParams)
-    : Disposable {
-    
+abstract class PaintboxFont(params: PaintboxFontParams) : Disposable {
+
     companion object {
+
         /**
          * If true, calling [PaintboxFont.begin] or [PaintboxFont.end] when it is inappropriate to do so will not
          * throw an exception.
-         * 
+         *
          * Used for crash screen behaviour.
          */
         var LENIENT_BEGIN_END: Boolean = false
@@ -40,16 +40,21 @@ abstract class PaintboxFont(params: PaintboxFontParams)
      * For caching the information in [BitmapFont.BitmapFontData] to prevent floating point error with repeated
      * multiply-and-divide for scaling.
      */
-    protected data class FontDataInfo(var scaleX: Float, var scaleY: Float,
-                                      var lineHeight: Float, var spaceXadvance: Float, var xHeight: Float,
-                                      var capHeight: Float, var ascent: Float, var descent: Float, var down: Float,
-                                      var padLeft: Float, var padRight: Float, var padTop: Float, var padBottom: Float) {
-        constructor(data: BitmapFont.BitmapFontData) : 
-                this(data.scaleX, data.scaleY, data.lineHeight, data.spaceXadvance, data.xHeight, data.capHeight,
-                        data.ascent, data.descent, data.down, data.padLeft, data.padRight, data.padTop, data.padBottom)
-        
+    protected data class FontDataInfo(
+        var scaleX: Float, var scaleY: Float,
+        var lineHeight: Float, var spaceXadvance: Float, var xHeight: Float,
+        var capHeight: Float, var ascent: Float, var descent: Float, var down: Float,
+        var padLeft: Float, var padRight: Float, var padTop: Float, var padBottom: Float,
+    ) {
+
+        constructor(data: BitmapFont.BitmapFontData) :
+                this(
+                    data.scaleX, data.scaleY, data.lineHeight, data.spaceXadvance, data.xHeight, data.capHeight,
+                    data.ascent, data.descent, data.down, data.padLeft, data.padRight, data.padTop, data.padBottom
+                )
+
         constructor() : this(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
-        
+
         fun applyToFont(bitmapFont: BitmapFont) {
             val data = bitmapFont.data
             data.scaleX = this.scaleX
@@ -66,7 +71,7 @@ abstract class PaintboxFont(params: PaintboxFontParams)
             data.padTop = this.padTop
             data.padBottom = this.padBottom
         }
-        
+
         fun copyFromFont(bitmapFont: BitmapFont) {
             val data = bitmapFont.data
             this.scaleX = data.scaleX
@@ -84,9 +89,9 @@ abstract class PaintboxFont(params: PaintboxFontParams)
             this.padBottom = data.padBottom
         }
     }
-    
+
     val params: Var<PaintboxFontParams> = Var(params)
-    
+
     protected val fontDataInfo: FontDataInfo = FontDataInfo()
 
     /**
@@ -96,15 +101,15 @@ abstract class PaintboxFont(params: PaintboxFontParams)
      */
     abstract val currentFontNumber: Long
     abstract val currentFontNumberVar: ReadOnlyLongVar
-    
+
     init {
         this.params.addListener {
-            Gdx.app.postRunnable { 
+            Gdx.app.postRunnable {
                 onParamsChanged()
             }
         }
     }
-    
+
 
     /**
      * Called by [PaintboxGame] whenever the window gets resized.
@@ -146,7 +151,7 @@ abstract class PaintboxFont(params: PaintboxFontParams)
      * unless [LENIENT_BEGIN_END] is true.
      */
     abstract fun end()
-    
+
     abstract fun onParamsChanged()
 
     @OptIn(ExperimentalContracts::class)
@@ -183,10 +188,13 @@ abstract class PaintboxFont(params: PaintboxFontParams)
 
 }
 
-data class PaintboxFontParams(val file: FileHandle,
-                              val fontSize: Int, val borderSize: Float,
-                              val scaleToReferenceSize: Boolean, val referenceSize: WindowSize,
-                              val loadPriority: LoadPriority = LoadPriority.LAZY) {
+data class PaintboxFontParams(
+    val file: FileHandle,
+    val fontSize: Int, val borderSize: Float,
+    val scaleToReferenceSize: Boolean, val referenceSize: WindowSize,
+    val loadPriority: LoadPriority = LoadPriority.LAZY,
+) {
+
     enum class LoadPriority {
         /**
          * Suggests that the [PaintboxFont] should try to actively load its resources when updated/resized.

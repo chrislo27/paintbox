@@ -15,10 +15,10 @@ import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
 
 
-open class RadioButton(text: String, font: PaintboxFont = UIElement.defaultFont)
-    : Control<RadioButton>(), Toggle {
+open class RadioButton(text: String, font: PaintboxFont = UIElement.defaultFont) : Control<RadioButton>(), Toggle {
 
     companion object {
+
         const val RADIO_BUTTON_SKIN_ID: String = "RadioButton"
 
         private val DEFAULT_ACTION: () -> Unit = { }

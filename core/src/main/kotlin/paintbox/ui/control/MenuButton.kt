@@ -9,19 +9,22 @@ import paintbox.ui.StringConverter
 import paintbox.ui.UIElement
 
 
-open class MenuButton<T>(startingList: List<T>, text: String, font: PaintboxFont = UIElement.defaultFont)
-    : Button(text, font), HasItemDropdown<T> {
+open class MenuButton<T>(startingList: List<T>, text: String, font: PaintboxFont = UIElement.defaultFont) :
+    Button(text, font), HasItemDropdown<T> {
 
     override val items: Var<List<T>> = Var(startingList)
+
     @Suppress("UNCHECKED_CAST")
-    override val itemStringConverter: Var<StringConverter<T>> = Var(ComboBox.DEFAULT_STRING_CONVERTER as StringConverter<T>)
+    override val itemStringConverter: Var<StringConverter<T>> =
+        Var(ComboBox.DEFAULT_STRING_CONVERTER as StringConverter<T>)
     override var onItemSelected: (T) -> Unit = {}
-    
+
     override val contextMenuDefaultWidth: FloatVar = FloatVar { this@MenuButton.bounds.width.use() }
     override val contextMenuMarkup: Var<Markup?> = Var.bind { this@MenuButton.markup.use() }
     override val contextMenuFont: Var<PaintboxFont> = Var.bind { this@MenuButton.font.use() }
-    override val contextMenuItemStrConverter: Var<StringConverter<T>> = Var.bind { this@MenuButton.itemStringConverter.use() }
-    
+    override val contextMenuItemStrConverter: Var<StringConverter<T>> =
+        Var.bind { this@MenuButton.itemStringConverter.use() }
+
     constructor(startingList: List<T>, binding: Var.Context.() -> String, font: PaintboxFont = UIElement.defaultFont)
             : this(startingList, "", font) {
         @Suppress("LeakingThis")

@@ -25,7 +25,7 @@ internal object TestDesktopLauncher {
     fun main(args: Array<String>) {
         // https://github.com/chrislo27/RhythmHeavenRemixEditor/issues/273
         System.setProperty("jna.nosys", "true")
-        
+
         val arguments = PaintboxArguments()
         val jcommander = JCommander.newBuilder().acceptUnknownOptions(false).addObject(arguments).build()
         jcommander.parse(*args)
@@ -52,8 +52,10 @@ internal object TestDesktopLauncher {
         }
 
         val logger = Logger()
-        val settings = PaintboxSettings(args.toList(), logger, null, Version(0, 1, 0), 
-                WindowSize(1280, 720), ResizeAction.ANY_SIZE, WindowSize(800, 450))
+        val settings = PaintboxSettings(
+            args.toList(), logger, null, Version(0, 1, 0),
+            WindowSize(1280, 720), ResizeAction.ANY_SIZE, WindowSize(800, 450)
+        )
         val test1: Pair<PaintboxGame, (PaintboxDesktopLauncher) -> Unit> by lazy {
             TestGame(settings) to {}
         }
@@ -69,12 +71,12 @@ internal object TestDesktopLauncher {
         val test5: Pair<PaintboxGame, (PaintboxDesktopLauncher) -> Unit> by lazy {
             NewUITestGame(settings) { UITextLabelAlignTestScreen(it) } to {}
         }
-        
+
         val selectedTest: Pair<PaintboxGame, (PaintboxDesktopLauncher) -> Unit> = test3
         getDefaultLauncher(selectedTest.first).apply {
             game.programLaunchArguments = args.toList()
             selectedTest.second.invoke(this)
         }
-                .launch()
+            .launch()
     }
 }

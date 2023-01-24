@@ -9,11 +9,11 @@ import paintbox.util.gdxutils.fillRect
 
 
 open class RectElement(initColor: Color) : UIElement() {
-    
+
     val color: Var<Color> = Var(Color(1f, 1f, 1f, 1f).set(initColor))
-    
+
     constructor() : this(Color.WHITE)
-    
+
     constructor(binding: Var.Context.() -> Color) : this() {
         color.bind(binding)
     }

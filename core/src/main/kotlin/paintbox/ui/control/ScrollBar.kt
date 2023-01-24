@@ -21,7 +21,9 @@ import paintbox.util.gdxutils.fillRoundedRect
  * A [ScrollBar] is a scroll bar intended to be used with a [ScrollPane].
  */
 open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
+
     companion object {
+
         const val SCROLLBAR_SKIN_ID: String = "ScrollBar"
         const val SCROLLBAR_INC_BUTTON_SKIN_ID: String = "ScrollBar_UnitIncreaseButton"
         const val MIN_DEFAULT: Float = 0f
@@ -96,6 +98,7 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
                 Orientation.VERTICAL -> {
                     this.bindHeightToParent { -(bounds.width.use() * 2) }
                 }
+
                 Orientation.HORIZONTAL -> {
                     this.bindWidthToParent { -(bounds.height.use() * 2) }
                 }
@@ -155,13 +158,20 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
 
     override fun getDefaultSkinID(): String = ScrollBar.SCROLLBAR_SKIN_ID
 
-    class UnitIncreaseButton(val scrollBar: ScrollBar, textureRegion: TextureRegion, val orientation: Orientation, val isIncrease: Boolean)
-        : Button("") {
+    class UnitIncreaseButton(
+        val scrollBar: ScrollBar,
+        textureRegion: TextureRegion,
+        val orientation: Orientation,
+        val isIncrease: Boolean,
+    ) : Button("") {
+
         val imageNode: ImageNode = ImageNode(textureRegion).apply {
-            this.rotation.set(when (orientation) {
-                Orientation.VERTICAL -> if (isIncrease) 180f else 0f
-                Orientation.HORIZONTAL -> if (isIncrease) 270f else 90f
-            })
+            this.rotation.set(
+                when (orientation) {
+                    Orientation.VERTICAL -> if (isIncrease) 180f else 0f
+                    Orientation.HORIZONTAL -> if (isIncrease) 270f else 90f
+                }
+            )
         }
 
         init {
@@ -170,12 +180,12 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
         }
     }
 
-    class ThumbPane(val scrollBar: ScrollBar)
-        : Pane(), HasPressedState {
+    class ThumbPane(val scrollBar: ScrollBar) : Pane(), HasPressedState {
 
         override val isHoveredOver: ReadOnlyBooleanVar = BooleanVar(false)
         override val isPressedDown: ReadOnlyBooleanVar = BooleanVar(false)
-        override val pressedState: ReadOnlyVar<PressedState> = HasPressedState.createDefaultPressedStateVar(isHoveredOver, isPressedDown)
+        override val pressedState: ReadOnlyVar<PressedState> =
+            HasPressedState.createDefaultPressedStateVar(isHoveredOver, isPressedDown)
         private val lastMouseRelativeToRoot = Vector2(0f, 0f)
         private val lastMouseInside: Vector2 = lastMouseRelativeToRoot
         private var pressedOrigin: Float = 0f
@@ -201,11 +211,13 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
                     is MouseExited -> {
                         (isHoveredOver as BooleanVar).set(false)
                     }
+
                     is ClickReleased -> {
                         if (event.button == Input.Buttons.LEFT && isPressedDown.get()) {
                             (isPressedDown as BooleanVar).set(false)
                         }
                     }
+
                     is MouseMoved -> {
                         if (mousePercent in currentThumbPosPercent..(currentThumbPosPercent + currentThumbWidthPercent)) {
                             (isHoveredOver as BooleanVar).set(true)
@@ -235,6 +247,7 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
                                 true
                             } else false
                         }
+
                         is TouchDragged -> {
                             if (pressedState.getOrCompute().pressed) {
                                 val newValue = scrollBar.convertPercentageToValue(mousePercent - pressedOrigin)
@@ -242,12 +255,14 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
                             }
                             false // TouchDragged should not be consumed
                         }
+
                         is ClickReleased -> {
                             if (isPressedDown.get()) {
                                 (isPressedDown as BooleanVar).set(false)
                                 true
                             } else false
                         }
+
                         else -> false
                     }
                 } else false
@@ -276,6 +291,7 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
                         (lastMouseInside.x) / (thumbBoundsWidth - thumbW)
                     else 0f
                 }
+
                 Orientation.VERTICAL -> {
                     if (thumbBoundsHeight - thumbH > 0f)
                         (lastMouseInside.y) / (thumbBoundsHeight - thumbH)
@@ -342,12 +358,14 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
             batch.fillRect(rectX, rectY - rectH, rectW, rectH)
 
             val pressedState = element.thumbArea.pressedState.getOrCompute()
-            tmpColor.set((when {
-                element.apparentDisabledState.get() -> disabledColor
-                pressedState.pressed -> thumbPressedColor
-                pressedState.hovered -> thumbHoveredColor
-                else -> thumbColor
-            }).getOrCompute())
+            tmpColor.set(
+                (when {
+                    element.apparentDisabledState.get() -> disabledColor
+                    pressedState.pressed -> thumbPressedColor
+                    pressedState.hovered -> thumbHoveredColor
+                    else -> thumbColor
+                }).getOrCompute()
+            )
             tmpColor.a *= opacity
             batch.color = tmpColor
             val thumb = element.thumbArea
@@ -362,20 +380,25 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
             val scrollableThumbArea = element.maximum.get() - element.minimum.get()
             when (element.orientation) {
                 Orientation.HORIZONTAL -> {
-                    batch.fillRoundedRect(rectX + thumbBounds.x.get()
-                            + (if (element.orientation == Orientation.HORIZONTAL) (currentValue / scrollableThumbArea * (thumbBounds.width.get() - thumbW)) else 0f),
-                            rectY - rectH + thumbBounds.y.get(),
-                            thumbW, thumbH, thumbH / 2f)
+                    batch.fillRoundedRect(
+                        rectX + thumbBounds.x.get()
+                                + (if (element.orientation == Orientation.HORIZONTAL) (currentValue / scrollableThumbArea * (thumbBounds.width.get() - thumbW)) else 0f),
+                        rectY - rectH + thumbBounds.y.get(),
+                        thumbW, thumbH, thumbH / 2f
+                    )
 //                    batch.fillRect(rectX + thumbBounds.x.getOrCompute()
 //                            + (if (element.orientation == Orientation.HORIZONTAL) (currentValue / scrollableThumbArea * (thumbBounds.width.getOrCompute() - thumbW)) else 0f),
 //                            rectY - rectH + thumbBounds.y.getOrCompute(),
 //                            thumbW, thumbH)
                 }
+
                 Orientation.VERTICAL -> {
-                    batch.fillRoundedRect(rectX + thumbBounds.x.get(),
-                            rectY - rectH + thumbBounds.y.get() + (thumbBounds.height.get() - thumbH)
-                                    - (if (element.orientation == Orientation.VERTICAL) (currentValue / scrollableThumbArea * (thumbBounds.height.get() - thumbH)) else 0f),
-                            thumbW, thumbH, thumbW / 2f)
+                    batch.fillRoundedRect(
+                        rectX + thumbBounds.x.get(),
+                        rectY - rectH + thumbBounds.y.get() + (thumbBounds.height.get() - thumbH)
+                                - (if (element.orientation == Orientation.VERTICAL) (currentValue / scrollableThumbArea * (thumbBounds.height.get() - thumbH)) else 0f),
+                        thumbW, thumbH, thumbW / 2f
+                    )
 //                    batch.fillRect(rectX + thumbBounds.x.getOrCompute(),
 //                            rectY - rectH + thumbBounds.y.getOrCompute() + (thumbBounds.height.getOrCompute() - thumbH)
 //                                    - (if (element.orientation == Orientation.VERTICAL) (currentValue / scrollableThumbArea * (thumbBounds.height.getOrCompute() - thumbH)) else 0f),

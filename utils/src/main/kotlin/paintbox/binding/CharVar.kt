@@ -10,6 +10,7 @@ import java.lang.Character.MIN_VALUE as nullChar
 interface ReadOnlyCharVar : SpecializedReadOnlyVar<Char>, ReadOnlyVar<Char> {
 
     companion object {
+
         /**
          * Returns a constant value [ReadOnlyCharVar]. The implementation used is memory optimized and doesn't
          * have dependencies like [CharVar] would.
@@ -26,15 +27,18 @@ interface ReadOnlyCharVar : SpecializedReadOnlyVar<Char>, ReadOnlyVar<Char> {
      */
     fun get(): Char
 
-    @Deprecated("Use ReadOnlyCharVar.get() instead to avoid explicit boxing",
-            replaceWith = ReplaceWith("this.get()"),
-            level = DeprecationLevel.ERROR)
+    @Deprecated(
+        "Use ReadOnlyCharVar.get() instead to avoid explicit boxing",
+        replaceWith = ReplaceWith("this.get()"),
+        level = DeprecationLevel.ERROR
+    )
     override fun getOrCompute(): Char {
         return get() // WILL BE BOXED!
     }
 }
 
 internal class ReadOnlyConstCharVar(private val value: Char) : ReadOnlyVarBase<Char>(), ReadOnlyCharVar {
+
     override fun get(): Char {
         return value
     }
@@ -49,7 +53,8 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
 
     private var binding: CharBinding
     private var currentValue: Char = nullChar
-    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet() // Cannot be generic since it can depend on any other Var
+    private var dependencies: Set<ReadOnlyVar<Any?>> =
+        emptySet() // Cannot be generic since it can depend on any other Var
 
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
@@ -121,6 +126,7 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
                 }
                 this.currentValue
             }
+
             is CharBinding.Compute -> {
                 if (!invalidated) {
                     currentValue
@@ -136,6 +142,7 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
                     result
                 }
             }
+
             is CharBinding.SideEffecting -> {
                 if (invalidated) {
                     val ctx = Var.Context()
@@ -155,9 +162,11 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
     }
 
 
-    @Deprecated("Use CharVar.get() instead to avoid explicit boxing",
-            replaceWith = ReplaceWith("this.get()"),
-            level = DeprecationLevel.ERROR)
+    @Deprecated(
+        "Use CharVar.get() instead to avoid explicit boxing",
+        replaceWith = ReplaceWith("this.get()"),
+        level = DeprecationLevel.ERROR
+    )
     override fun getOrCompute(): Char {
         return get() // WILL BE BOXED!
     }
@@ -174,6 +183,7 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
 
         class Compute(val computation: Var.Context.() -> Char) : CharBinding()
 
-        class SideEffecting(var item: Char, val sideEffectingComputation: Var.Context.(existing: Char) -> Char) : CharBinding()
+        class SideEffecting(var item: Char, val sideEffectingComputation: Var.Context.(existing: Char) -> Char) :
+            CharBinding()
     }
 }

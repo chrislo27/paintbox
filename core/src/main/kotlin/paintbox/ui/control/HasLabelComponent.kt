@@ -9,11 +9,11 @@ import paintbox.font.PaintboxFont
 
 /**
  * Indicates common text label-related fields for a [Control].
- * 
+ *
  * Shared by [TextLabel], [Button], [ComboBox], etc.
  */
 interface HasLabelComponent {
-    
+
     val text: ReadOnlyVar<String>
     val font: Var<PaintboxFont>
     val markup: Var<Markup?>
@@ -25,5 +25,5 @@ interface HasLabelComponent {
         this.scaleX.set(scaleXY)
         this.scaleY.set(scaleXY)
     }
-    
+
 }

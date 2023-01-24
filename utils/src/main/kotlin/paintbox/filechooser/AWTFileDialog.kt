@@ -13,7 +13,7 @@ import javax.swing.filechooser.FileNameExtensionFilter
  * Implementation of [IFileDialog] using Swing's [JFileChooser].
  */
 open class AWTFileDialog : IFileDialog {
-    
+
     companion object {
         init {
             try {
@@ -23,7 +23,7 @@ open class AWTFileDialog : IFileDialog {
             }
         }
     }
-    
+
     protected open fun createJFileChooser(currentDir: File?): JFileChooser {
         return object : JFileChooser(currentDir) {
             override fun createDialog(parent: Component?): JDialog {
@@ -51,7 +51,7 @@ open class AWTFileDialog : IFileDialog {
         if (filter != null) {
             fc.fileFilter = filter.toFNEF()
         }
-        
+
         if (fc.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
             callback(fc.selectedFile)
         } else {
@@ -75,7 +75,12 @@ open class AWTFileDialog : IFileDialog {
         }
     }
 
-    override fun openMultipleFiles(title: String, defaultFile: File?, filter: FileExtFilter?, callback: (List<File>) -> Unit) {
+    override fun openMultipleFiles(
+        title: String,
+        defaultFile: File?,
+        filter: FileExtFilter?,
+        callback: (List<File>) -> Unit,
+    ) {
         val fc = createJFileChooser(defaultFile?.parentOrSelf()).apply {
             this.fileSelectionMode = JFileChooser.FILES_ONLY
             this.isMultiSelectionEnabled = true
