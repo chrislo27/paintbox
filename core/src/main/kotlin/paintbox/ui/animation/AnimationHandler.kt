@@ -39,8 +39,7 @@ class AnimationHandler {
 
     private val removeList: MutableSet<AnimationTuple> = mutableSetOf()
 
-    fun frameUpdate() {
-        val delta = Gdx.graphics.deltaTime
+    fun frameUpdate(delta: Float) {
         val speed = animationSpeed.get()
         val isInstant = speed <= 0f
 

@@ -152,7 +152,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         updateMouseVector()
         updateTooltipPosition()
 
-        animations.frameUpdate()
+        animations.frameUpdate(Gdx.graphics.deltaTime)
 
         for (layer in allLayers) {
             val layerRoot = layer.root
