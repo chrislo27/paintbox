@@ -9,7 +9,9 @@ import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
 /**
- * Call this with the function to draw primitives, then draw sprites with [useStencilMask]
+ * Call this with the function to draw primitives, then draw sprites with [useStencilMask].
+ * 
+ * This requires that there is a **depth** buffer available in the current frame buffer.
  */
 @OptIn(ExperimentalContracts::class)
 inline fun ShapeRenderer.prepareStencilMask(
