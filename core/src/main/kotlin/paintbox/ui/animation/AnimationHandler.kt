@@ -83,7 +83,7 @@ class AnimationHandler {
         val existing = animations.entries.firstOrNull { it.value.animation == animation } ?: return
         animations.remove(existing.key)
         existing.key.set(existing.value.animation.applyFunc(1f))
-        existing.value.animation.onComplete?.invoke()
+        existing.value.callOnComplete()
     }
 
     fun cancelAnimationFor(varr: FloatVar): Animation? {
