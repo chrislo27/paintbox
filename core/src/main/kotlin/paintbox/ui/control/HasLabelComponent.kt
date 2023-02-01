@@ -19,6 +19,7 @@ interface HasLabelComponent {
     val markup: Var<Markup?>
     val scaleX: FloatVar
     val scaleY: FloatVar
+    val lineSpacingMultiplier: FloatVar
 
 
     fun setScaleXY(scaleXY: Float) {

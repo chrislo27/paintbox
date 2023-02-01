@@ -42,8 +42,8 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont) :
                 val markup: Markup? = label.markup.use()
                 (markup?.parse(label.text.use())
                     ?: TextRun(
-                        label.font.use(), label.text.use(), Color.WHITE,
-                        /*label.scaleX.use(), label.scaleY.use()*/ 1f, 1f
+                        label.font.use(), label.text.use(), Color.WHITE, 1f, 1f,
+                        lineHeightScale = label.lineSpacingMultiplier.use()
                     ).toTextBlock()).also { textBlock ->
                     if (label.doLineWrapping.use()) {
                         textBlock.lineWrapping.set(label.contentZone.width.use() / (if (label.doesScaleXAffectWrapping.use()) label.scaleX.use() else 1f))
@@ -101,6 +101,8 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont) :
      * Determines the y-scale the text is rendered at.
      */
     override val scaleY: FloatVar = FloatVar(1f)
+
+    override val lineSpacingMultiplier: FloatVar = FloatVar(1f)
 
     val doesScaleXAffectWrapping: BooleanVar = BooleanVar(true)
 

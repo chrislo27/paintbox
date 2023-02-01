@@ -36,8 +36,8 @@ open class Button(text: String, font: PaintboxFont = UIElement.defaultFont) : Co
                 val markup: Markup? = button.markup.use()
                 (markup?.parse(button.text.use())
                     ?: TextRun(
-                        button.font.use(), button.text.use(), Color.WHITE,
-                        /*button.scaleX.useF(), button.scaleY.useF()*/ 1f, 1f
+                        button.font.use(), button.text.use(), Color.WHITE, 1f, 1f,
+                        lineHeightScale = button.lineSpacingMultiplier.use()
                     ).toTextBlock()).also { textBlock ->
                     if (button.doLineWrapping.use()) {
                         textBlock.lineWrapping.set(button.contentZone.width.use() / button.scaleX.use())
@@ -51,6 +51,7 @@ open class Button(text: String, font: PaintboxFont = UIElement.defaultFont) : Co
     override val font: Var<PaintboxFont> = Var(font)
     override val scaleX: FloatVar = FloatVar(1f)
     override val scaleY: FloatVar = FloatVar(1f)
+    override val lineSpacingMultiplier: FloatVar = FloatVar(1f)
 
     val renderAlign: IntVar = IntVar(Align.center)
     val textAlign: Var<TextAlign> = Var { TextAlign.fromInt(renderAlign.use()) }

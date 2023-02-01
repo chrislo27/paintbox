@@ -44,7 +44,8 @@ open class ComboBox<T>(
                 markup?.parse(text)
                     ?: TextRun(
                         comboBox.font.use(), text, Color.WHITE,
-                        comboBox.scaleX.use(), comboBox.scaleY.use()
+                        comboBox.scaleX.use(), comboBox.scaleY.use(),
+                        lineHeightScale = comboBox.lineSpacingMultiplier.use()
                     ).toTextBlock()
             }
         }
@@ -68,6 +69,7 @@ open class ComboBox<T>(
     override val font: Var<PaintboxFont> = Var(font)
     override val scaleX: FloatVar = FloatVar(1f)
     override val scaleY: FloatVar = FloatVar(1f)
+    override val lineSpacingMultiplier: FloatVar = FloatVar(1f)
     val renderAlign: IntVar = IntVar(Align.left)
     val textAlign: Var<TextAlign> = Var { TextAlign.fromInt(renderAlign.use()) }
     val doXCompression: BooleanVar = BooleanVar(true)
