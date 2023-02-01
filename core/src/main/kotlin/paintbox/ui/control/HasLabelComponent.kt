@@ -26,4 +26,11 @@ interface HasLabelComponent {
         this.scaleY.set(scaleXY)
     }
 
+    /**
+     * Binds [markup] to [Markup.createWithSingleFont] using this [font].
+     */
+    fun useSingleFontMarkup(lenientMode: Boolean = false) {
+        markup.bind { Markup.createWithSingleFont(font.use(), lenientMode) }
+    }
+
 }

@@ -27,11 +27,11 @@ data class TextRun(
         scaleX: Float = 1f, scaleY: Float = 1f, offsetXEm: Float = 0f, offsetYEm: Float = 0f,
         carryOverOffsetX: Boolean = true, carryOverOffsetY: Boolean = false, xAdvanceEm: Float = 0f,
         lineHeightScale: Float = 1f,
-    )
-            : this(
+    ) : this(
         font, text, Color.argb8888(color), scaleX, scaleY,
         offsetXEm, offsetYEm, carryOverOffsetX, carryOverOffsetY, xAdvanceEm, lineHeightScale
     )
 
     fun toTextBlock(): TextBlock = TextBlock(listOf(this))
+
 }
