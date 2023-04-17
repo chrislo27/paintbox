@@ -10,8 +10,10 @@ import kotlin.math.roundToInt
 
 
 object ScissorStack {
+    
+    private data class ScissorRect(val rect: Rectangle, val screenX: Int, val screenY: Int)
 
-    private val stack: MutableList<Rectangle> = mutableListOf()
+    private val stack: MutableList<ScissorRect> = mutableListOf()
 
     /**
      * The scissor should be in screen coordinates with 0, 0 at the BOTTOM LEFT.
@@ -25,7 +27,8 @@ object ScissorStack {
             if (!(scissor.x + scissor.y + scissor.width + scissor.height).isFinite()) return false
 
             // Merge scissors
-            val parent = stack.last()
+            val parentData = stack.last()
+            val parent = parentData.rect
             val minX = max(parent.x, scissor.x)
             val maxX = min(parent.x + parent.width, scissor.x + scissor.width)
             if (maxX - minX < 1) return false
@@ -39,7 +42,7 @@ object ScissorStack {
             scissor.width = maxX - minX
             scissor.height = max(1f, maxY - minY)
         }
-        stack += scissor
+        stack += ScissorRect(scissor, screenX, screenY)
         HdpiUtils.glScissor(
             scissor.x.toInt() + screenX, scissor.y.toInt() + screenY,
             scissor.width.toInt(), scissor.height.toInt()
@@ -53,9 +56,13 @@ object ScissorStack {
             Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST)
         } else {
             val next = stack.last()
-            HdpiUtils.glScissor(next.x.toInt(), next.y.toInt(), next.width.toInt(), next.height.toInt())
+            val scissor = next.rect
+            HdpiUtils.glScissor(
+                scissor.x.toInt() + next.screenX, scissor.y.toInt() + next.screenY,
+                scissor.width.toInt(), scissor.height.toInt()
+            )
         }
-        return last
+        return last.rect
     }
 
     private fun Rectangle.normalize() {
