@@ -30,8 +30,6 @@ data class GdxRunnableTransition(
     private var complete: Boolean = false
     private var timeElapsed: Float = 0f
 
-    fun isStarted(): Boolean = started
-
     fun isCompleted(): Boolean = complete
 
     /**

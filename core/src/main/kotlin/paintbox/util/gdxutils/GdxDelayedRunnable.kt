@@ -1,17 +1,41 @@
 package paintbox.util.gdxutils
 
 
-object GdxDelayedRunnable {
+class GdxDelayedRunnable(val delaySec: Float, val action: () -> Unit) : Runnable {
 
-    inline fun create(delaySec: Float, crossinline action: () -> Unit): Runnable {
-        return GdxRunnableTransition(0f, 1f, delaySec.coerceAtLeast(0f)) { _, progress ->
+    private val runnableTransition: GdxRunnableTransition
+
+    private var isCancelled: Boolean = false
+    private var isCompleted: Boolean = false
+
+    init {
+        runnableTransition = GdxRunnableTransition(0f, 1f, delaySec.coerceAtLeast(0f)) { _, progress ->
             if (progress >= 1f) {
-                action()
+                attemptCompletion()
             }
         }
     }
 
-    inline operator fun invoke(delaySec: Float, crossinline action: () -> Unit): Runnable =
-        create(delaySec, action)
+    fun isCancelled(): Boolean = isCancelled
+    fun isCompleted(): Boolean = isCompleted
+
+    fun cancel() {
+        if (!isCancelled && !isCompleted) {
+            isCancelled = true
+        }
+    }
+
+    fun completeImmediately() {
+        attemptCompletion()
+    }
+
+    private fun attemptCompletion() {
+        if (!isCancelled && !isCompleted) {
+            isCompleted = true
+            action()
+        }
+    }
+
+    override fun run() = runnableTransition.run()
 
 }
