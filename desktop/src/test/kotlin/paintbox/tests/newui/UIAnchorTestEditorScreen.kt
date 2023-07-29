@@ -20,9 +20,9 @@ import paintbox.ui.control.*
 import paintbox.ui.element.RectElement
 import paintbox.ui.layout.ColumnarHBox
 import paintbox.ui.layout.ColumnarVBox
-import paintbox.util.MathHelper
 import paintbox.util.gdxutils.isControlDown
 import paintbox.util.DecimalFormats
+import paintbox.util.wave.WaveUtils
 
 internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : PaintboxScreen() {
 
@@ -247,7 +247,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             button.tooltipElement.set(Tooltip("Test tooltip text.").apply {
                 this.text.bind {
 //                    this@UIAnchorTestEditorScreen.root.frameUpdateTrigger.use()
-                    "Test: ${DecimalFormats.format("0.000", MathHelper.getTriangleWave(2f))}"
+                    "Test: ${DecimalFormats.format("0.000", WaveUtils.getTriangleWave(2f))}"
                 }
             })
 

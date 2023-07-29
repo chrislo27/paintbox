@@ -462,6 +462,10 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
         return false
     }
 
+    override fun touchCancelled(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        return false
+    }
+
     private fun addDebugFonts(cache: FontCache) {
         fun makeParam() = FreeTypeFontGenerator.FreeTypeFontParameter().apply {
             magFilter = Texture.TextureFilter.Linear

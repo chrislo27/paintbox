@@ -75,4 +75,8 @@ abstract class PaintboxScreen : Screen, InputProcessor, Disposable {
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         return false
     }
+
+    override fun touchCancelled(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        return false
+    }
 }

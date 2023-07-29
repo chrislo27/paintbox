@@ -87,4 +87,13 @@ open class ExceptionalInputMultiplexer(val exceptionHandler: (Throwable) -> Unit
         return false
     }
 
+    override fun touchCancelled(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        try {
+            return super.touchCancelled(screenX, screenY, pointer, button)
+        } catch (t: Throwable) {
+            t.printStackTrace()
+            exceptionHandler(t)
+        }
+        return false
+    }
 }

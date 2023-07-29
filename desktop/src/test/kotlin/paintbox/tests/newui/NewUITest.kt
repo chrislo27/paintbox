@@ -12,9 +12,9 @@ import paintbox.PaintboxGame
 import paintbox.PaintboxScreen
 import paintbox.PaintboxSettings
 import paintbox.ui.*
-import paintbox.util.MathHelper
 import paintbox.util.gdxutils.fillRect
 import org.lwjgl.glfw.GLFW
+import paintbox.util.wave.WaveUtils
 
 
 internal class NewUITestGame(paintboxSettings: PaintboxSettings, val screenFactory: (NewUITestGame) -> Screen) :
@@ -83,11 +83,11 @@ internal class UIAnchorTestNestedScreen(override val main: NewUITestGame) : Pain
         super.render(delta)
 
         if (Gdx.input.isKeyPressed(Input.Keys.F)) {
-            firstEle.bounds.x.set(MathUtils.lerp(100f, 600f, MathHelper.getSineWave(1.5f)))
-            secondEle.bounds.x.set(MathUtils.lerp(50f, 250f, MathHelper.getSineWave(1.5f)))
-            secondEle.bounds.y.set(MathUtils.lerp(0f, 100f, MathHelper.getSineWave(1.5f)))
-            thirdEle.bounds.x.set(MathUtils.lerp(25f, 125f, MathHelper.getSineWave(1.125f)))
-            thirdEle.bounds.y.set(MathUtils.lerp(0f, 50f, MathHelper.getSineWave(0.75f)))
+            firstEle.bounds.x.set(MathUtils.lerp(100f, 600f, WaveUtils.getSineWave(1.5f)))
+            secondEle.bounds.x.set(MathUtils.lerp(50f, 250f, WaveUtils.getSineWave(1.5f)))
+            secondEle.bounds.y.set(MathUtils.lerp(0f, 100f, WaveUtils.getSineWave(1.5f)))
+            thirdEle.bounds.x.set(MathUtils.lerp(25f, 125f, WaveUtils.getSineWave(1.125f)))
+            thirdEle.bounds.y.set(MathUtils.lerp(0f, 50f, WaveUtils.getSineWave(0.75f)))
         } else {
             firstEle.bounds.x.set(100f)
             secondEle.bounds.x.set(50f)

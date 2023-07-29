@@ -354,6 +354,11 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         return dispatchEventBasedOnMouse(Scrolled(amountX, amountY)) != null
     }
 
+    override fun touchCancelled(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+        // Note: Only relevant on iOS and Android which Paintbox does not support.
+        return touchUp(screenX, screenY, pointer, button)
+    }
+
     private data class ClickPressedState(
         val lastHoveredElementPathPerLayer: Map<SceneRoot.Layer, List<UIElement>>,
         val accepted: Pair<SceneRoot.Layer, UIElement>?,
