@@ -1,5 +1,3 @@
-rootProject.name = "paintbox"
-
 include 'utils' // Non-libGDX dependent utilities
 include 'core' // libGDX-dependent utilities
 include 'desktop' // Desktop launching specific component
