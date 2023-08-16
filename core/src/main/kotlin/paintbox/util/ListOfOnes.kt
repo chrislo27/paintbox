@@ -31,7 +31,7 @@ class ListOfOnes(override val size: Int) : List<Int>, RandomAccess {
     override fun hashCode(): Int = 1 + size
     override fun toString(): String = buildString {
         append('[')
-        for (i in 0 until size) {
+        for (i in 0..<size) {
             append('1')
             if (i < size - 1) {
                 append(", ")
@@ -45,7 +45,7 @@ class ListOfOnes(override val size: Int) : List<Int>, RandomAccess {
     override fun containsAll(elements: Collection<Int>): Boolean = isNotEmpty() && elements.all { it == 1 }
 
     override fun get(index: Int): Int {
-        if (index !in 0 until size) {
+        if (index !in 0..<size) {
             throw IndexOutOfBoundsException("Index out of bounds, got $index, should be in [0, $size)")
         }
         return 1
@@ -57,7 +57,7 @@ class ListOfOnes(override val size: Int) : List<Int>, RandomAccess {
     override fun iterator(): Iterator<Int> = this.Iter()
     override fun listIterator(): ListIterator<Int> = this.Iter()
     override fun listIterator(index: Int): ListIterator<Int> {
-        if (index !in 0 until size) throw IndexOutOfBoundsException("Index: $index")
+        if (index !in 0..<size) throw IndexOutOfBoundsException("Index: $index")
         return this.Iter(index)
     }
 

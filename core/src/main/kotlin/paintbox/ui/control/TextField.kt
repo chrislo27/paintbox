@@ -106,7 +106,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
         val advances = gl.runs.firstOrNull()?.xAdvances // We only care about the first line (first GlyphRun).
         if (advances != null) {
             var cumulative = 0f
-            for (i in 0 until advances.size) {
+            for (i in 0..<advances.size) {
                 val toAdd = cumulative + advances[i]
                 list.add(toAdd)
                 cumulative = toAdd
@@ -648,8 +648,8 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
                     batch.color = tmpColor
                     val charPos = element.characterPositions.getOrCompute()
                     val caretPos = element.caretPos.get()
-                    val caretPosX = if (caretPos in 0 until charPos.size) charPos[caretPos] else 0f
-                    val selectionX = if (selectionPosition in 0 until charPos.size) charPos[selectionPosition] else 0f
+                    val caretPosX = if (caretPos in 0..<charPos.size) charPos[caretPos] else 0f
+                    val selectionX = if (selectionPosition in 0..<charPos.size) charPos[selectionPosition] else 0f
                     val x = rectX - overallOffsetX + selectionX
                     batch.fillRect(x, rectY - (rectH + caretHeight) / 2f, caretPosX - selectionX, caretHeight)
                 }
@@ -682,7 +682,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
                     batch.color = tmpColor
                     val caretPos = element.caretPos.get()
                     val charPos = element.characterPositions.getOrCompute()
-                    val posX = if (caretPos in 0 until charPos.size) charPos[caretPos] else 0f
+                    val posX = if (caretPos in 0..<charPos.size) charPos[caretPos] else 0f
                     val caretWidth = element.caretWidth.get()
                     batch.fillRect(
                         rectX - overallOffsetX + posX,

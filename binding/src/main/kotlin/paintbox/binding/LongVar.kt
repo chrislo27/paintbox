@@ -260,7 +260,7 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
         /**
          * Represents a constant value. The value is actually stored in [LongVar.currentValue].
          */
-        object Const : LongBinding()
+        data object Const : LongBinding()
 
         class Compute(val computation: ContextBinding<Long>) : LongBinding()
 

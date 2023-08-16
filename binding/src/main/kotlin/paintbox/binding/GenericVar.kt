@@ -116,7 +116,7 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
     }
 
     private sealed class GenericBinding<out T> {
-        object Const : GenericBinding<Nothing>()
+        data object Const : GenericBinding<Nothing>()
 
         class Compute<T>(val computation: ContextBinding<T>) : GenericBinding<T>()
 

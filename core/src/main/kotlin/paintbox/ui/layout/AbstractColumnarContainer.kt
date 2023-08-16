@@ -116,7 +116,7 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
      * @see numSpacers
      */
     fun setSpacer(spacerIndex: Int, element: UIElement?): UIElement? {
-        require(spacerIndex in 0 until numSpacers) { "spacerIndex out of bounds, got $spacerIndex, must be in [0, $numSpacers)" }
+        require(spacerIndex in 0..<numSpacers) { "spacerIndex out of bounds, got $spacerIndex, must be in [0, $numSpacers)" }
 
         val last = spacersList[spacerIndex]
         if (last != null) {
@@ -133,12 +133,12 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
     }
 
     fun getSpacer(spacerIndex: Int): UIElement? {
-        require(spacerIndex in 0 until numSpacers) { "spacerIndex out of bounds, got $spacerIndex, must be in [0, $numSpacers)" }
+        require(spacerIndex in 0..<numSpacers) { "spacerIndex out of bounds, got $spacerIndex, must be in [0, $numSpacers)" }
         return spacersList[spacerIndex]
     }
 
     inline fun setAllSpacers(getter: (index: Int) -> UIElement?) {
-        (0 until numSpacers).forEach { idx ->
+        (0..<numSpacers).forEach { idx ->
             setSpacer(idx, getter(idx))
         }
     }

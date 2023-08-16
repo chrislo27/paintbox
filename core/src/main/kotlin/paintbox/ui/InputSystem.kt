@@ -36,7 +36,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         var anyFired = false
 
         // Filter
-        for (i in 0 until lastPath.size) {
+        for (i in 0..<lastPath.size) {
             val element = lastPath[i]
             val listeners = element.inputListeners.getOrCompute()
             if (listeners.any { l -> !l.filter(evt) }) {
@@ -268,7 +268,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
             val lastHoveredElementPath = previousClick.lastHoveredElementPathPerLayer.getValue(layer)
 
             // Filter
-            for (i in 0 until lastHoveredElementPath.size) {
+            for (i in 0..<lastHoveredElementPath.size) {
                 val element = lastHoveredElementPath[i]
                 val listeners = element.inputListeners.getOrCompute()
                 val evt = eventFactory(element, layer, lastHoveredElementPath)

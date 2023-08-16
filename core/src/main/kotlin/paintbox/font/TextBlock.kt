@@ -179,7 +179,7 @@ data class TextBlock(val runs: List<TextRun>) {
                                     // the second one, since the first original run will have been split.    
                                     val first = gl.runs[0]
                                     val wrapIndex = first.glyphs.size + 1
-                                    if (wrapIndex in 1 until text.length) { // wrapIndex will always be >= 1
+                                    if (wrapIndex in 1..<text.length) { // wrapIndex will always be >= 1
                                         val preChar = text[wrapIndex - 1]
                                         text = if (!font.data.isWhitespace(preChar)) {
                                             // If the char before the newline is not a breaking-allowed char, 
@@ -264,7 +264,7 @@ data class TextBlock(val runs: List<TextRun>) {
                 // GlyphLayout replaces it with the width of the last glyph instead. See GlyphLayout#adjustLastGlyph
                 val glyphRunXadv = glyphRun.xAdvances
                 var advanceWidth = 0f
-                for (i in 0 until glyphRun.glyphs.size) {
+                for (i in 0..<glyphRun.glyphs.size) {
                     advanceWidth += glyphRunXadv[i]
                 }
                 advanceWidth += glyphRun.glyphs.last().let { it.xadvance * font.data.scaleX }
@@ -417,7 +417,7 @@ data class TextBlock(val runs: List<TextRun>) {
 
                 if (shouldScaleX) {
                     layout.runs.forEach { run ->
-                        for (i in 0 until run.xAdvances.size) {
+                        for (i in 0..<run.xAdvances.size) {
                             run.xAdvances[i] *= globalScaleX
                         }
                     }
@@ -437,7 +437,7 @@ data class TextBlock(val runs: List<TextRun>) {
                     val colorStack: MutableList<Color> = tmpColorStack
 
                     // For each new colour, push it to ColorStack, then tint it.
-                    for (i in 0 until numColors) {
+                    for (i in 0..<numColors) {
                         val colorsIndex = i * 2 + 1
                         Color.abgr8888ToColor(tmpColor, colors[colorsIndex])
                         colorStack += ColorStack.getAndPush().set(tmpColor)
@@ -480,7 +480,7 @@ data class TextBlock(val runs: List<TextRun>) {
 
                 if (shouldScaleX) {
                     layout.runs.forEach { run ->
-                        for (i in 0 until run.xAdvances.size) {
+                        for (i in 0..<run.xAdvances.size) {
                             run.xAdvances[i] /= globalScaleX
                         }
                     }

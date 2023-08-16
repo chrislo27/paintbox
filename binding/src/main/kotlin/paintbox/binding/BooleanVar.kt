@@ -189,7 +189,7 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
         /**
          * Represents a constant value. The value is actually stored in [BooleanVar.currentValue].
          */
-        object Const : BooleanBinding()
+        data object Const : BooleanBinding()
 
         class Compute(val computation: ContextBinding<Boolean>) : BooleanBinding()
 

@@ -492,12 +492,7 @@ class Markup(
             }
         }
 
-        object EndTag : Symbol() {
-
-            override fun toString(): String {
-                return "EndTag"
-            }
-        }
+        data object EndTag : Symbol()
     }
 
     inner class Builder {

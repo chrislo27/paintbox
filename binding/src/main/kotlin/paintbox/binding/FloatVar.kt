@@ -177,7 +177,7 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
         /**
          * Represents a constant value. The value is actually stored in [FloatVar.currentValue].
          */
-        object Const : FloatBinding()
+        data object Const : FloatBinding()
 
         class Compute(val computation: ContextBinding<Float>) : FloatBinding()
 

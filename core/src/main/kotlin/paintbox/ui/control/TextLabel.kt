@@ -58,7 +58,7 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont) :
      */
     sealed class AutosizeBehavior {
 
-        object None : AutosizeBehavior()
+        data object None : AutosizeBehavior()
 
         /**
          * Autosizing is active.

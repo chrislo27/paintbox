@@ -16,7 +16,7 @@ sealed class Anchor {
      * The offsets are relative to the top left corner of the anchor parent.
      * Positive X offset is further RIGHT, positive Y offset is further DOWN.
      */
-    object TopLeft : Anchor() {
+    data object TopLeft : Anchor() {
 
         override fun xConfigure(element: UIElement, offsetX: Float) {
             element.bounds.x.set(offsetX)
@@ -43,7 +43,7 @@ sealed class Anchor {
      * The offsets are relative to the midpoint of the left edge of the anchor parent.
      * Positive X offset is further RIGHT, positive Y offset is further DOWN.
      */
-    object CentreLeft : Anchor() {
+    data object CentreLeft : Anchor() {
 
         override fun xConfigure(element: UIElement, offsetX: Float) {
             element.bounds.x.set(offsetX)
@@ -75,7 +75,7 @@ sealed class Anchor {
      * The offsets are relative to the bottom left corner of the anchor parent.
      * Positive X offset is further RIGHT, positive Y offset is further DOWN.
      */
-    object BottomLeft : Anchor() {
+    data object BottomLeft : Anchor() {
 
         override fun xConfigure(element: UIElement, offsetX: Float) {
             element.bounds.x.set(offsetX)
@@ -107,7 +107,7 @@ sealed class Anchor {
      * The offsets are relative to the top right corner of the anchor parent.
      * Positive X offset is further RIGHT, positive Y offset is further DOWN.
      */
-    object TopRight : Anchor() {
+    data object TopRight : Anchor() {
 
         override fun xConfigure(element: UIElement, offsetX: Float) {
             val parent = element.parent
@@ -138,7 +138,7 @@ sealed class Anchor {
      * The offsets are relative to the midpoint of the right edge of the anchor parent.
      * Positive X offset is further RIGHT, positive Y offset is further DOWN.
      */
-    object CentreRight : Anchor() {
+    data object CentreRight : Anchor() {
 
         override fun xConfigure(element: UIElement, offsetX: Float) {
             val parent = element.parent
@@ -174,7 +174,7 @@ sealed class Anchor {
      * The offsets are relative to the bottom right corner of the anchor parent.
      * Positive X offset is further RIGHT, positive Y offset is further DOWN.
      */
-    object BottomRight : Anchor() {
+    data object BottomRight : Anchor() {
 
         override fun xConfigure(element: UIElement, offsetX: Float) {
             val parent = element.parent
@@ -210,7 +210,7 @@ sealed class Anchor {
      * The offsets are relative to the midpoint of the top edge of the anchor parent.
      * Positive X offset is further RIGHT, positive Y offset is further DOWN.
      */
-    object TopCentre : Anchor() {
+    data object TopCentre : Anchor() {
 
         override fun xConfigure(element: UIElement, offsetX: Float) {
             val parent = element.parent
@@ -242,7 +242,7 @@ sealed class Anchor {
      * The offsets are relative to the midpoint of the bottom edge of the anchor parent.
      * Positive X offset is further RIGHT, positive Y offset is further DOWN.
      */
-    object BottomCentre : Anchor() {
+    data object BottomCentre : Anchor() {
 
         override fun xConfigure(element: UIElement, offsetX: Float) {
             val parent = element.parent
@@ -279,7 +279,7 @@ sealed class Anchor {
      * The offsets are relative to the centre-point of the anchor parent.
      * Positive X offset is further RIGHT, positive Y offset is further DOWN.
      */
-    object Centre : Anchor() {
+    data object Centre : Anchor() {
 
         override fun xConfigure(element: UIElement, offsetX: Float) {
             val parent = element.parent

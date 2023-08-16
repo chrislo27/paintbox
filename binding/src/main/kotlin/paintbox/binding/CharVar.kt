@@ -179,7 +179,7 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
         /**
          * Represents a constant value. The value is actually stored in [BooleanVar.currentValue].
          */
-        object Const : CharBinding()
+        data object Const : CharBinding()
 
         class Compute(val computation: ContextBinding<Char>) : CharBinding()
 

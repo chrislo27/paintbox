@@ -260,7 +260,7 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
         /**
          * Represents a constant value. The value is actually stored in [IntVar.currentValue].
          */
-        object Const : IntBinding()
+        data object Const : IntBinding()
 
         class Compute(val computation: ContextBinding<Int>) : IntBinding()
 

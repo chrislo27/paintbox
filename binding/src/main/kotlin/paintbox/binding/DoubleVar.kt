@@ -177,7 +177,7 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
         /**
          * Represents a constant value. The value is actually stored in [DoubleVar.currentValue].
          */
-        object Const : DoubleBinding()
+        data object Const : DoubleBinding()
 
         class Compute(val computation: ContextBinding<Double>) : DoubleBinding()
 

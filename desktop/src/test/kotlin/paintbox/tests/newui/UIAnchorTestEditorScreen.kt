@@ -82,7 +82,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
 //                lt.bounds.height.set(32f)
                 lt.bounds.width.set((buttonWidth + buttonSpacing) * (num + 2) - buttonSpacing)
 
-                (0 until num).forEach { i ->
+                (0..<num).forEach { i ->
                     lt += TestColorElement(Color(1f, 1f, 1f, 1f).fromHsv(360f * i / num, 0.9f, 0.8f)).apply {
                         this.bounds.x.set((buttonWidth + buttonSpacing * 2) * i)
                         this.bounds.y.set(0f)
@@ -105,7 +105,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
                 ct.bounds.y.set(4f)
                 ct.bounds.height.set(32f)
 
-                (0 until num).forEach { i ->
+                (0..<num).forEach { i ->
                     ct += TestColorElement(if (i == 0) Color.YELLOW else if (i == 1) Color.GREEN else Color.RED).apply {
                         this.bounds.x.set(36f * i)
                         this.bounds.y.set(0f)
@@ -135,7 +135,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
                 rt.bounds.height.set(32f)
                 rt.bounds.width.set((buttonWidth + buttonSpacing) * num - buttonSpacing)
 
-                (0 until num).forEach { i ->
+                (0..<num).forEach { i ->
                     rt += TestColorElement(Color(1f, 1f, 1f, 1f).fromHsv(360f * i / num, 0.9f, 0.8f)).apply {
                         Anchor.TopRight.configure(this, offsetX = -36f * i)
                         this.bounds.width.set(32f)

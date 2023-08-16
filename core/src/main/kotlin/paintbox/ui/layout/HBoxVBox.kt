@@ -185,7 +185,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
             val cacheSize = cache.size
             val spacingValue = spacing.get()
 
-            for (i in idx until cacheSize) {
+            for (i in idx..<cacheSize) {
                 val d = cache[i]
                 val element = d.element
                 d.position = acc
@@ -212,7 +212,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
                     InternalAlignment.MAX -> (thisSize - totalSize)
                 }
 
-                for (i in 0 until cacheSize) {
+                for (i in 0..<cacheSize) {
                     val d = elementCache[i]
                     val element = d.element
                     val pos = getPositional(element)
@@ -254,7 +254,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
         val removedData = elementCache.removeAt(index)
         getDimensional(oldChild).removeListener(removedData.sizeListener)
 
-        for (i in (index + 1) until currentCache.size) {
+        for (i in (index + 1)..<currentCache.size) {
             currentCache[i].index = i - 1
         }
         attemptLayout(index)
