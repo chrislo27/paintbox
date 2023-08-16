@@ -117,7 +117,7 @@ open class PaintboxFontFreeType(
 
         if (this.upscaledFactor != scale) {
             this.dispose()
-            val oldFactor = this.upscaledFactor
+//            val oldFactor = this.upscaledFactor
             this.upscaledFactor = scale
 
             val newParam = ftfParameter.copy()
