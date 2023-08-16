@@ -36,6 +36,14 @@ allprojects {
         mavenCentral()
 //        maven { url 'https://jitpack.io/' }
     }
+    
+    dependencies {
+        testImplementation "org.jetbrains.kotlin:kotlin-test"
+    }
+
+    test {
+        useJUnitPlatform()
+    }
 
     tasks.withType(KotlinCompilationTask).configureEach {
         compilerOptions {
