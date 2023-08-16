@@ -84,7 +84,8 @@ interface ReadOnlyVar<out T> {
     fun removeListener(listener: VarChangedListener<T>)
 
     /**
-     * Called by [InvalListener] to indicate that this var's contents are out of date.
+     * Called to indicate that this var's contents are out of date. This should propagate a notification to listeners.
+     * 
      * Should not do anything if already invalidated.
      */
     fun invalidate()

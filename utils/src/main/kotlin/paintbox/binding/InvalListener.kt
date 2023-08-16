@@ -6,7 +6,7 @@ import java.lang.ref.WeakReference
  * A listener that invalidates its parent in [weakParentRef] when a var (from [onChange]) changes.
  * It does not keep a strong reference to its parent.
  */
-class InvalListener<T>(parentVar: ReadOnlyVar<T>) : DisposableVarChangedListener<Any?> {
+internal class InvalListener<T>(parentVar: ReadOnlyVar<T>) : DisposableVarChangedListener<Any?> {
 
     private val weakParentRef: WeakReference<ReadOnlyVar<T>> = WeakReference(parentVar)
 

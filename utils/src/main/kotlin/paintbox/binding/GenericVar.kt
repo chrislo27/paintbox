@@ -16,7 +16,6 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
      */
     private val invalidationListener: VarChangedListener<Any?> = InvalListener(this)
 
-    @Suppress("UNCHECKED_CAST")
     constructor(item: T) {
         currentValue = item
         binding = GenericBinding.Const
@@ -43,7 +42,6 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
         // Note: do NOT call notifyListeners here.
     }
 
-    @Suppress("UNCHECKED_CAST")
     override fun set(item: T) {
         val existingBinding = binding
         if (existingBinding is GenericBinding.Const && currentValue == item) {
