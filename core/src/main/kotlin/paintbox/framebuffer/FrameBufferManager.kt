@@ -51,10 +51,10 @@ class FrameBufferManager(
 
     constructor(
         numBuffers: Int, commonBufferSettings: BufferSettings,
-        tag: String = "",
+        loggerTag: String = "",
         scaling: Scaling = Scaling.fit,
         referenceWindowSize: WindowSize = DEFAULT_REFERENCE_WINDOW_SIZE,
-    ) : this(List(numBuffers) { commonBufferSettings }, tag, scaling, referenceWindowSize)
+    ) : this(List(numBuffers) { commonBufferSettings }, loggerTag, scaling, referenceWindowSize)
 
 
     fun getFramebuffer(index: Int): NestedFrameBuffer? = framebuffers.getOrNull(index)
