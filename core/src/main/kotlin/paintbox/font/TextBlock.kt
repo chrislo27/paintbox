@@ -16,7 +16,7 @@ import paintbox.util.gdxutils.scaleMul
 /**
  * A cached list of [TextRun]s, with various metrics pre-computed.
  */
-data class TextBlock(val runs: List<TextRun>) {
+data class TextBlock(val runs: TextRunList) {
 
     /*
     TextBlock internal workings:
@@ -105,7 +105,7 @@ data class TextBlock(val runs: List<TextRun>) {
         }
     }
 
-    constructor(runs: List<TextRun>, wrapWidth: Float) : this(runs) {
+    constructor(runs: TextRunList, wrapWidth: Float) : this(runs) {
         this.lineWrapping.set(wrapWidth)
     }
 
