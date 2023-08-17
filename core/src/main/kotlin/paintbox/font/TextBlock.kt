@@ -541,5 +541,8 @@ class TextBlock(val runs: TextRunList) {
 
         batch.packedColor = batchColor
     }
-
+    
+    override fun toString(): String {
+        return "runs=[${runs}]"
+    }
 }
