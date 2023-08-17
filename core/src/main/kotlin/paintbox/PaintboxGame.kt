@@ -63,7 +63,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
 
     init {
         @Suppress("RedundantCompanionReference")
-        PaintboxGame.Companion.launchArguments = paintboxSettings.launchArguments
+        Companion.launchArguments = paintboxSettings.launchArguments
     }
 
     val startTimeMillis: Long = System.currentTimeMillis()
@@ -155,7 +155,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
             SysOutPiper.pipe(programLaunchArguments, this, logToFile)
         }
         Paintbox.LOGGER = paintboxSettings.logger
-        PaintboxGame.gameInstance = this
+        gameInstance = this
 
         originalResolution = WindowSize(Gdx.graphics.width, Gdx.graphics.height)
         resetCameras()

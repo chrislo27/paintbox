@@ -71,7 +71,7 @@ object SysOutPiper {
         builder.append("System Specifications:\n")
         builder.append("    Java Version: " + System.getProperty("java.version") + "\n")
         builder.append("    Java Vendor: ${System.getProperty("java.vendor")}\n")
-        builder.append("    Kotlin Version: ${kotlin.KotlinVersion.CURRENT}\n")
+        builder.append("    Kotlin Version: ${KotlinVersion.CURRENT}\n")
         builder.append("    OS Name: " + System.getProperty("os.name") + "\n")
         builder.append("    OS Version: " + System.getProperty("os.version") + "\n")
         builder.append("    OS Arch: " + System.getProperty("os.arch") + "\n")

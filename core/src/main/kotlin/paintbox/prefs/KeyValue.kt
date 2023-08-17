@@ -127,7 +127,7 @@ abstract class KeyValue<T>(val key: String, val defaultValue: T) {
         }
     }
 
-    class Bool(key: String, defaultValue: kotlin.Boolean) : KeyValue<Boolean>(key, defaultValue) {
+    class Bool(key: String, defaultValue: Boolean) : KeyValue<Boolean>(key, defaultValue) {
 
         override val value: BooleanVar = BooleanVar(defaultValue)
 

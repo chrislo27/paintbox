@@ -92,7 +92,7 @@ interface HasPressedState {
         override val isHoveredOver: ReadOnlyBooleanVar = BooleanVar(false)
         override val isPressedDown: ReadOnlyBooleanVar = BooleanVar(false)
         override val pressedState: ReadOnlyVar<PressedState> =
-            HasPressedState.createDefaultPressedStateVar(isHoveredOver, isPressedDown)
+            createDefaultPressedStateVar(isHoveredOver, isPressedDown)
 
     }
 }

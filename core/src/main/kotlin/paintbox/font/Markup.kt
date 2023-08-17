@@ -124,8 +124,7 @@ class Markup(
         companion object {
 
             val ALL_USING_DEFAULT_FONT: FontStyles = FontStyles(DEFAULT_FONT_NAME, DEFAULT_FONT_NAME, DEFAULT_FONT_NAME)
-            val ALL_USING_BOLD_ITALIC: FontStyles =
-                FontStyles(Markup.FONT_NAME_BOLD, Markup.FONT_NAME_ITALIC, Markup.FONT_NAME_BOLDITALIC)
+            val ALL_USING_BOLD_ITALIC: FontStyles = FontStyles(FONT_NAME_BOLD, FONT_NAME_ITALIC, FONT_NAME_BOLDITALIC)
         }
     }
 
