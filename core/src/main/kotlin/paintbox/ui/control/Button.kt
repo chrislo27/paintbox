@@ -204,10 +204,7 @@ open class ButtonSkin(element: Button) : Skin<Button>(element) {
             tmpColor.set(batch.color).mul(textColorToUse.getOrCompute())
             tmpColor.a *= opacity
 
-            if (text.isRunInfoInvalid()) {
-                // Prevents flickering when drawing on first frame due to bounds not being computed yet
-                text.computeLayouts()
-            }
+            text.computeLayoutsIfNeeded()
 
             val compressX = element.doXCompression.get()
             val align = element.renderAlign.get()

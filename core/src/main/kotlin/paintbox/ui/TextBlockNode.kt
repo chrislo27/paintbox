@@ -46,10 +46,7 @@ open class TextBlockNode(textBlock: TextBlock = TextBlock(emptyList())) : UIElem
         tmpColor.set(batch.color).mul(textColor.getOrCompute())
         tmpColor.a *= opacity
 
-        if (text.isRunInfoInvalid()) {
-            // Prevents flickering when drawing on first frame due to bounds not being computed yet
-            text.computeLayouts()
-        }
+        text.computeLayoutsIfNeeded()
 
         val compressX = doXCompression.get()
         val align = renderAlign.get()

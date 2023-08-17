@@ -193,9 +193,7 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont) :
         limitWidth: Float = 0f, limitHeight: Float = 0f,
     ) {
         val textBlock: TextBlock = this.internalTextBlock.getOrCompute()
-        if (textBlock.isRunInfoInvalid()) {
-            textBlock.computeLayouts()
-        }
+        textBlock.computeLayoutsIfNeeded()
         if (!affectWidth && !affectHeight) return
 
         val textWidth = textBlock.width * scaleX.get()
@@ -266,10 +264,7 @@ open class TextLabelSkin(element: TextLabel) : Skin<TextLabel>(element) {
         tmpColor.set(batch.color).mul(textColorToUse.getOrCompute())
         tmpColor.a *= opacity
 
-        if (text.isRunInfoInvalid()) {
-            // Prevents flickering when drawing on first frame due to bounds not being computed yet
-            text.computeLayouts()
-        }
+        text.computeLayoutsIfNeeded()
 
         val bgPaddingInsets = if (element.renderBackground.get()) element.bgPadding.getOrCompute() else Insets.ZERO
         val compressX = element.doXCompression.get()
@@ -375,9 +370,7 @@ class ScrollingTextLabelSkin(element: TextLabel) : TextLabelSkin(element) {
         tmpColor.set(batch.color).mul(textColorToUse.getOrCompute())
         tmpColor.a *= opacity
 
-        if (text.isRunInfoInvalid()) {
-            // Prevents flickering when drawing on first frame due to bounds not being computed yet
-            text.computeLayouts()
+        if (text.computeLayoutsIfNeeded()) {
             reset()
         }
 

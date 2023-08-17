@@ -126,6 +126,20 @@ data class TextBlock(val runs: List<TextRun>) {
         layoutInfoIsInvalid.set(true)
     }
 
+    /**
+     * May be used to prevent flickering in some UI elements -- the text bound info is usually only computed on first
+     * render, but some of that info may be used as part of the render parameters.
+     * 
+     * @return True if layouts were recomputed
+      */    
+    fun computeLayoutsIfNeeded(): Boolean {
+        if (isRunInfoInvalid()) {
+            computeLayouts()
+            return true
+        }
+        return false
+    }
+
     fun computeLayouts() {
         var maxPosX = 0f
         var posX = 0f
@@ -365,9 +379,8 @@ data class TextBlock(val runs: List<TextRun>) {
         align: TextAlign = TextAlign.LEFT, scaleX: Float = 1f, scaleY: Float = 1f,
         alignAffectsRender: Boolean = false, compressText: Boolean = true,
     ) {
-        if (isRunInfoInvalid()) {
-            computeLayouts()
-        }
+        computeLayoutsIfNeeded()
+
         val runInfo = this.runInfo
         if (runInfo.isEmpty())
             return

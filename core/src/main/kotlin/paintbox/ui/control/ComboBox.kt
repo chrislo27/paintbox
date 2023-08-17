@@ -169,10 +169,7 @@ open class ComboBoxSkin(element: ComboBox<Any?>) : Skin<ComboBox<Any?>>(element)
                 rectColor.a *= 0.35f
             }
 
-            if (text.isRunInfoInvalid()) {
-                // Prevents flickering when drawing on first frame due to bounds not being computed yet
-                text.computeLayouts()
-            }
+            text.computeLayoutsIfNeeded()
 
             val compressX = element.doXCompression.get()
             val align = element.renderAlign.get()
