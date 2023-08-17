@@ -14,7 +14,10 @@ import paintbox.util.ColorStack
 import kotlin.math.min
 
 
-open class TextNode(textBlock: TextBlock = TextBlock(emptyList())) : UIElement() {
+@Deprecated("Use TextBlockNode instead", replaceWith = ReplaceWith("TextBlockNode"))
+typealias TextNode = TextBlockNode
+
+open class TextBlockNode(textBlock: TextBlock = TextBlock(emptyList())) : UIElement() {
 
     val textColor: Var<Color> = Var(Color(1f, 1f, 1f, 1f))
     val textBlock: Var<TextBlock> = Var(textBlock)

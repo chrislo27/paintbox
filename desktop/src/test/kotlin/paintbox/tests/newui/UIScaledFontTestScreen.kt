@@ -11,7 +11,7 @@ import paintbox.font.PaintboxFont
 import paintbox.font.TextAlign
 import paintbox.ui.Anchor
 import paintbox.ui.SceneRoot
-import paintbox.ui.TextNode
+import paintbox.ui.TextBlockNode
 import paintbox.ui.UIElement
 
 internal class UIScaledFontTestScreen(override val main: ScaledFontTestGame) : PaintboxScreen() {
@@ -102,7 +102,7 @@ internal class UIScaledFontTestScreen(override val main: ScaledFontTestGame) : P
             }
         }
 
-        root += TextNode(this.paintboxFont, "Test scaling font", Color.WHITE).apply {
+        root += TextBlockNode(this.paintboxFont, "Test scaling font", Color.WHITE).apply {
             Anchor.Centre.configure(this)
             this.doXCompression.set(false)
             this.renderAlign.set(Align.center)

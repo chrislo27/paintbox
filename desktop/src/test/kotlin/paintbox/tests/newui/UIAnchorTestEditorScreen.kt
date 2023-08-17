@@ -156,7 +156,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             rect.borderStyle.set(SolidBorder(Color.CYAN))
             rect.margin.set(Insets(5f))
 
-            rect += TextNode(
+            rect += TextBlockNode(
                 TextBlock(
                     listOf(
                         TextRun(main.debugFontBoldBordered, "Hello\nline2\nline3g adwadwadwadaddadwd"),
