@@ -195,7 +195,7 @@ open class ContextMenu : Control<ContextMenu>() {
                         pane.addChild(Button("").apply {
                             this.padding.set(Insets.ZERO)
                             this.setScaleXY(item.scaleXY)
-                            this.internalTextBlock.set(item.textBlock.copy())
+                            this.internalTextBlock.set(item.textBlock)
                             this.skinID.set(CONTEXT_MENU_BUTTON_SKIN_ID)
                             this.textAlign.set(TextAlign.LEFT)
                             this.renderAlign.set(Align.left)

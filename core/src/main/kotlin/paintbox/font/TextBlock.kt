@@ -14,9 +14,11 @@ import paintbox.util.gdxutils.scaleMul
 
 
 /**
- * A cached list of [TextRun]s, with various metrics pre-computed.
+ * A list of [TextRun]s strung together as a block of text, with various metrics computed.
+ * 
+ * Also supports line wrapping during computation.
  */
-data class TextBlock(val runs: TextRunList) {
+class TextBlock(val runs: TextRunList) {
 
     /*
     TextBlock internal workings:
@@ -50,6 +52,12 @@ data class TextBlock(val runs: TextRunList) {
 
     data class GlyphRunInfo(val textRunInfo: TextRunInfo, val glyphRun: GlyphLayout.GlyphRun) {
 
+        private companion object {
+            
+            fun Int.argbToAbgr(): Int =
+                (this and 0xFF00FF00u.toInt() /* A and G stay */) or ((this and 0xFF) shl 16 /* B */) or ((this and 0x00FF0000) ushr 16 /* R */)
+        }
+
         val glyphRunAsLayout: GlyphLayout = GlyphLayout().also { l ->
             // NOTE: height is intentionally not computed since it isn't used for rendering.
             l.runs.clear()
@@ -61,9 +69,7 @@ data class TextBlock(val runs: TextRunList) {
 
             l.colors.add(0) // Start glyph
             val argb = textRunInfo.run.color
-            // Convert ARGB to ABGR
-            val runColorAbgr =
-                (argb and 0xFF00FF00u.toInt() /* A and G stay */) or ((argb and 0xFF) shl 16 /* B */) or ((argb and 0x00FF0000) ushr 16 /* R */)
+            val runColorAbgr = argb.argbToAbgr()
             l.colors.add(runColorAbgr)
         }
         var lineIndex: Int = 0
@@ -73,31 +79,48 @@ data class TextBlock(val runs: TextRunList) {
 
     data class LineInfo(val index: Int, val width: Float, val posY: Float)
 
+    
     private val layoutInfoIsInvalid: BooleanVar = BooleanVar(true)
     private val tmpColorStack: MutableList<Color> = mutableListOf()
 
+    //region Properties
+    
     /**
-     * If positive, [computeLayouts] will apply line wrapping.
+     * The width where text lines longer than it are automatically wrapped.
+     * If greater than zero, [computeLayouts] will apply line wrapping.
      */
     val lineWrapping: FloatVar = FloatVar(0f)
 
+    //endregion
+    
+    //region Internally computed information
+    
     /**
-     * Internally computed text run information
+     * Internally computed text run information.
      */
     var runInfo: List<TextRunInfo> = listOf()
         private set
+    
+    /**
+     * Internally computed text run information.
+     */
     var lineInfo: List<LineInfo> = listOf()
         private set
+    
+    //endregion
 
+    //region Metrics
+    
     var width: Float = 0f
         private set
     var height: Float = 0f
         private set
-
     var firstCapHeight: Float = 0f
         private set
     var lastDescent: Float = 0f
         private set
+    
+    //endregion
 
     init {
         lineWrapping.addListener {
@@ -517,11 +540,6 @@ data class TextBlock(val runs: TextRunList) {
         ColorStack.pop()
 
         batch.packedColor = batchColor
-    }
-
-    fun recolorAll(newColor: Color): TextBlock {
-        val copiedRuns = runs.map { r -> r.copy(color = Color.argb8888(newColor)) }
-        return this.copy(runs = copiedRuns)
     }
 
 }
