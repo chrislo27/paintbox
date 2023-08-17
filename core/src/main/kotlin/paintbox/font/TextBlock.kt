@@ -127,10 +127,9 @@ data class TextBlock(val runs: List<TextRun>) {
     }
 
     fun computeLayouts() {
-        var maxPosX: Float = 0f
-        var posX: Float = 0f
-        var posY: Float = 0f
-        var lastCapHeight = 0f
+        var maxPosX = 0f
+        var posX = 0f
+        var posY = 0f
         this.firstCapHeight = 0f
 
         val lineInfo: MutableList<LineInfo> = mutableListOf()
@@ -141,7 +140,7 @@ data class TextBlock(val runs: List<TextRun>) {
         val lineWrapWidth: Float = this.lineWrapping.get()
         val doLineWrapping: Boolean = lineWrapWidth > 0f
 
-        val runInfo: List<TextRunInfo> = runs.mapIndexed { textRunIndex, textRun ->
+        val runInfo: List<TextRunInfo> = runs.map { textRun ->
             // Set font scales and metrics
             val paintboxFont = textRun.font
             val font = paintboxFont.begin()
@@ -224,7 +223,6 @@ data class TextBlock(val runs: List<TextRun>) {
             }
 
             var lastGlyphRunRightEdge = 0f
-            var lastGlyphRunY = 0f
             var updateCurrentLineStartY = false
             textRunInfo.glyphRunInfo.forEachIndexed { glyphRunInfoIndex, glyphRunInfo ->
                 val glyphRun = glyphRunInfo.glyphRun
@@ -275,7 +273,6 @@ data class TextBlock(val runs: List<TextRun>) {
                 }
 
                 lastGlyphRunRightEdge = glyphRun.x + glyphRun.width
-                lastGlyphRunY = glyphRun.y
             }
 
             // Reverse any x offsets if they are not to be carried over
@@ -286,7 +283,6 @@ data class TextBlock(val runs: List<TextRun>) {
             // Move y down in case there are whitespace lines
             posX += xAdvanceEm
             posY = yBeforeGlyphRuns + -(textRunInfo.glyphLayout.height - capHeight)
-            lastCapHeight = font.data.capHeight
             lastDescent = font.data.descent
 
             // New line check
@@ -341,7 +337,8 @@ data class TextBlock(val runs: List<TextRun>) {
     }
 
     /**
-     * Draws this text block. The y value is the baseline value. Same as calling [drawCompressed] with compressText = false.
+     * Draws this text block. The y value is the baseline value.
+     * Same as calling [drawCompressed] with compressText = false.
      */
     fun draw(
         batch: SpriteBatch, x: Float, y: Float, align: TextAlign = TextAlign.LEFT,

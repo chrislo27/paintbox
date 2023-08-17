@@ -59,7 +59,8 @@ import java.lang.NumberFormatException
  * @param lenientMode If false, missing fonts are logged
  */
 class Markup(
-    fontMapping: Map<String, PaintboxFont>, val defaultTextRun: TextRun,
+    fontMapping: Map<String, PaintboxFont>,
+    val defaultTextRun: TextRun,
     val styles: FontStyles = FontStyles.ALL_USING_DEFAULT_FONT,
     val lenientMode: Boolean = false,
 ) {
@@ -119,6 +120,7 @@ class Markup(
     }
 
     data class FontStyles(val bold: String, val italic: String, val boldItalic: String) {
+
         companion object {
 
             val ALL_USING_DEFAULT_FONT: FontStyles = FontStyles(DEFAULT_FONT_NAME, DEFAULT_FONT_NAME, DEFAULT_FONT_NAME)
@@ -128,7 +130,7 @@ class Markup(
     }
 
     val fontMapping: Map<String, PaintboxFont> = mapOf((DEFAULT_FONT_NAME to defaultTextRun.font)) + fontMapping
-    private val missingFontLog: MutableSet<String> = mutableSetOf()
+    private val missingFontLog: MutableSet<String> = LinkedHashSet(1)
 
     private fun logMissingFont(key: String) {
         if (key !in missingFontLog) {
