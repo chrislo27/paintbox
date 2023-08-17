@@ -71,13 +71,9 @@ data class TextBlock(val runs: List<TextRun>) {
         var posY: Float = 0f
     }
 
-    data class LineInfo(
-        val index: Int, val width: Float, val posY: Float,
-        /*// Pair in order of (TextRun index, GlyphRunInfo index) 
-                    val glyphIndexStart: Pair<Int, Int>, val glyphIndexEndEx: Pair<Int, Int>*/
-    )
+    data class LineInfo(val index: Int, val width: Float, val posY: Float)
 
-    private val layoutInfoNeedsRefresh: BooleanVar = BooleanVar(true)
+    private val layoutInfoIsInvalid: BooleanVar = BooleanVar(true)
     private val tmpColorStack: MutableList<Color> = mutableListOf()
 
     /**
@@ -105,7 +101,7 @@ data class TextBlock(val runs: List<TextRun>) {
 
     init {
         lineWrapping.addListener {
-            layoutInfoNeedsRefresh.set(true)
+            invalidate()
         }
     }
 
@@ -124,6 +120,10 @@ data class TextBlock(val runs: List<TextRun>) {
         font.data.lineHeight /= textRun.lineHeightScale
         font.data.down = font.data.lineHeight * if (font.data.flipped) 1 else -1
         font.scaleMul(1f / textRun.scaleX, 1f / textRun.scaleY)
+    }
+
+    private fun invalidate() {
+        layoutInfoIsInvalid.set(true)
     }
 
     fun computeLayouts() {
@@ -331,11 +331,11 @@ data class TextBlock(val runs: List<TextRun>) {
         this.lineInfo = lineInfo
         this.width = maxPosX
         this.height = -posY + firstCapHeight
-        layoutInfoNeedsRefresh.set(false)
+        layoutInfoIsInvalid.set(false)
     }
 
     fun isRunInfoInvalid(): Boolean {
-        return (runInfo.isEmpty() && runs.isNotEmpty()) || layoutInfoNeedsRefresh.get() || runInfo.any { l ->
+        return (runInfo.isEmpty() && runs.isNotEmpty()) || layoutInfoIsInvalid.get() || runInfo.any { l ->
             l.run.font.currentFontNumber != l.currentFontNumber
         }
     }
@@ -393,17 +393,21 @@ data class TextBlock(val runs: List<TextRun>) {
 
         val shouldScaleX = globalScaleX != 1f
         val shouldScaleY = globalScaleY != 1f
-        val scaleAnything = shouldScaleX || shouldScaleY
+        val shouldScaleAny = shouldScaleX || shouldScaleY
         val alignXWidth: Float = if (alignAffectsRender) {
             maxWidth
-        } else if (shouldScaleX) (this.width * globalScaleX) else (this.width)
+        } else if (shouldScaleX) {
+            this.width * globalScaleX
+        } else {
+            this.width
+        }
 
         runInfo.forEach { textRunInfo ->
             val paintboxFont = textRunInfo.font
             val font = paintboxFont.begin()
             adjustFontForTextRun(font, textRunInfo.run)
 
-            if (scaleAnything) {
+            if (shouldScaleAny) {
                 font.scaleMul(globalScaleX, globalScaleY)
             }
 
@@ -492,7 +496,7 @@ data class TextBlock(val runs: List<TextRun>) {
                 }
             }
 
-            if (scaleAnything) {
+            if (shouldScaleAny) {
                 font.scaleMul(1f / globalScaleX, 1f / globalScaleY)
             }
 
@@ -506,7 +510,8 @@ data class TextBlock(val runs: List<TextRun>) {
     }
 
     fun recolorAll(newColor: Color): TextBlock {
-        return this.copy(runs = runs.map { it.copy(color = Color.argb8888(newColor)) })
+        val copiedRuns = runs.map { r -> r.copy(color = Color.argb8888(newColor)) }
+        return this.copy(runs = copiedRuns)
     }
 
 }
