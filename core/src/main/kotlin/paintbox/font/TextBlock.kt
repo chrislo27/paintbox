@@ -39,6 +39,10 @@ class TextBlock(val runs: TextRunList) {
     into the gdx BitmapFont draw function.
      */
 
+    /**
+     * A [TextRunInfo] has a [GlyphLayout], which internally has multiple glyph runs.
+     * Each glyph run is mapped to a [GlyphRunInfo].
+     */
     data class TextRunInfo(val run: TextRun, val currentFontNumber: Long, val glyphLayout: GlyphLayout) {
 
         val font: PaintboxFont = run.font
@@ -50,6 +54,10 @@ class TextBlock(val runs: TextRunList) {
         }
     }
 
+    /**
+     * Information about a [GlyphLayout.GlyphRun], such as its line number and position.
+     * The parent [TextRunInfo] is accessible via [textRunInfo].
+     */
     data class GlyphRunInfo(val textRunInfo: TextRunInfo, val glyphRun: GlyphLayout.GlyphRun) {
 
         private companion object {
