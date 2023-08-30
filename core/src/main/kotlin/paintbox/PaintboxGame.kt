@@ -574,6 +574,6 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
                 size = defaultFontSize
                 borderWidth = defaultBorderWidth
             }).setAfterLoad(afterLoad)
-        cache["UNIFONT"] = PaintboxFontUnifont()
+        cache["UNIFONT"] = UnifontFactory().createUnifont(fontSize = 16)
     }
 }
