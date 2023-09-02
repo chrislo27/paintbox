@@ -151,6 +151,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         (frameUpdateTrigger as BooleanVar).invert()
         updateMouseVector()
         updateTooltipPosition()
+        checkCurrentElementWithTooltipIsStillVisible()
 
         animations.frameUpdate(Gdx.graphics.deltaTime)
 
@@ -268,6 +269,14 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         val rightAlign = (mouseY <= height)
         bounds.y.set((mouseY - height).coerceAtMost(rootHeight - height).coerceAtLeast(0f))
         bounds.x.set((if (rightAlign) (mouseX - width) else mouseX).coerceAtMost(rootWidth - width).coerceAtLeast(0f))
+    }
+    
+    private fun checkCurrentElementWithTooltipIsStillVisible() {
+        val currentElementWithTooltip = (currentElementWithTooltip.getOrCompute() as? UIElement) ?: return
+        
+        if (currentTooltip != null && !currentElementWithTooltip.apparentVisibility.get()) {
+            cancelTooltip()
+        }
     }
 
     /**
