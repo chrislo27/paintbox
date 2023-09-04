@@ -3,7 +3,7 @@ package paintbox.i18n
 import java.util.*
 
 
-class LanguageObject {
+internal class LanguageObject {
 
     lateinit var name: String
     lateinit var locale: LocaleObject
@@ -21,7 +21,7 @@ class LanguageObject {
  * Variants may be created for just a country (with no language) or just a language (with no country), but
  * not when language and country are not present.
  */
-class LocaleObject {
+internal class LocaleObject {
 
     var language: String? = null
     var country: String? = null
