@@ -93,6 +93,13 @@ class Markup(
         val TAG_SUPERSCRIPT: String = "sup"
         val TAG_EXPONENT: String = "exp"
         val TAG_SCALE: String = "scale"
+        
+        const val PARSE_CHAR_START_TAG: Char = '['
+        const val PARSE_CHAR_END_TAG: Char = ']'
+        const val PARSE_CHAR_ESCAPE: Char = '\\'
+        const val PARSE_CHAR_NEGATION: Char = '!'
+        const val PARSE_KEYWORD_TRUE: String = "true"
+        const val PARSE_KEYWORD_FALSE: String = "false"
 
         fun createWithSingleFont(font: PaintboxFont, lenientMode: Boolean = false): Markup {
             return Markup(emptyMap(), TextRun(font, ""), FontStyles.ALL_USING_DEFAULT_FONT, lenientMode)
@@ -116,6 +123,22 @@ class Markup(
             )
 
             return Markup(mapping, TextRun(normalFont, ""), styles, lenientMode)
+        }
+        
+        fun escape(text: String): String {
+            // The only start tag character is [ so that must be escaped
+            // (Pre-existing) Backslashes must be escaped because they always count as an escape character
+            val numEscapesNeeded = text.count { it == PARSE_CHAR_START_TAG } + text.count { it == PARSE_CHAR_ESCAPE }
+            val stringBuilder = StringBuilder(text.length + numEscapesNeeded)
+            
+            for (c in text) {
+                if (c == PARSE_CHAR_START_TAG || c == PARSE_CHAR_ESCAPE) {
+                    stringBuilder.append(PARSE_CHAR_ESCAPE)
+                }
+                stringBuilder.append(c)
+            }
+            
+            return stringBuilder.toString()
         }
     }
 
@@ -337,16 +360,15 @@ class Markup(
 
             if (isEscaping) {
                 // Accept next character as-is, don't attempt parsing on it
-                currentText += if (currentChar == null) { // End of string, add a backslash by itself
-                    "\\"
-                } else "$currentChar"
+                currentText += currentChar ?: // If null, it's the end of the string, add a backslash by itself
+                        PARSE_CHAR_ESCAPE
                 isEscaping = false
             } else {
-                if (currentChar == '\\') {
+                if (currentChar == PARSE_CHAR_ESCAPE) {
                     isEscaping = true
                 } else {
                     if (!inTag) {
-                        if (currentChar == '[') {
+                        if (currentChar == PARSE_CHAR_START_TAG) {
                             // End the previous symbol as a Text
                             symbols += Symbol.Text(currentText)
                             // Start parsing the new tag's attributes
@@ -366,7 +388,7 @@ class Markup(
                         // End the tag definition
                         if (currentChar == null) {
                             symbols += Symbol.Text(startOfTagContent)
-                        } else if (currentChar == ']') {
+                        } else if (currentChar == PARSE_CHAR_END_TAG) {
                             // Complete the last attribute if not done
                             if (parsingAttributeValue && currentAttrKey.isNotEmpty()) {
                                 currentTagAttr.add(Attribute(currentAttrKey, currentText))
@@ -375,10 +397,10 @@ class Markup(
                             } else if (currentText.isNotEmpty()) {
                                 // Boolean true
                                 currentAttrKey = currentText
-                                if (currentAttrKey.startsWith('!')) {
-                                    currentTagAttr.add(Attribute(currentAttrKey.substring(1), "false"))
+                                if (currentAttrKey.startsWith(PARSE_CHAR_NEGATION)) {
+                                    currentTagAttr.add(Attribute(currentAttrKey.substring(1), PARSE_KEYWORD_FALSE))
                                 } else {
-                                    currentTagAttr.add(Attribute(currentAttrKey, "true"))
+                                    currentTagAttr.add(Attribute(currentAttrKey, PARSE_KEYWORD_TRUE))
                                 }
                                 currentAttrKey = ""
                                 currentText = ""
@@ -418,10 +440,10 @@ class Markup(
                                     // Finished this attribute, the value is boolean true
                                     currentAttrKey = currentText
                                     currentText = ""
-                                    if (currentAttrKey.startsWith('!')) {
-                                        currentTagAttr.add(Attribute(currentAttrKey.substring(1), "false"))
+                                    if (currentAttrKey.startsWith(PARSE_CHAR_NEGATION)) {
+                                        currentTagAttr.add(Attribute(currentAttrKey.substring(1), PARSE_KEYWORD_FALSE))
                                     } else {
-                                        currentTagAttr.add(Attribute(currentAttrKey, "true"))
+                                        currentTagAttr.add(Attribute(currentAttrKey, PARSE_KEYWORD_TRUE))
                                     }
                                     currentAttrKey = ""
                                     parsingAttributeValue = false
