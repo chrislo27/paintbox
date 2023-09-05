@@ -31,13 +31,13 @@ data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundl
     /**
      * Keys with missing information.
      */
-    val missingKeys: MutableSet<String> = mutableSetOf()
+    val missingKeys: Set<String> = mutableSetOf()
 
     /**
      * Keys with [IllegalArgumentException]s due to bad formatting.
      * Future IAEs are suppressed.
      */
-    val caughtIAEs: MutableSet<String> = mutableSetOf()
+    val caughtIAEs: Set<String> = mutableSetOf()
 
     init {
         val actualLocale = bundle.locale
@@ -61,7 +61,7 @@ data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundl
             bundle.format(key, *args)
         } catch (iae: IllegalArgumentException) {
             if (key !in caughtIAEs) {
-                caughtIAEs += key
+                (caughtIAEs as MutableSet) += key
                 Paintbox.LOGGER.error("IllegalArgumentException thrown when calling getValue on key $key (args [${args.toList()}]). Future IAEs will be suppressed.")
                 iae.printStackTrace()
             }
@@ -74,13 +74,11 @@ data class NamedLocaleBundle(val namedLocale: NamedLocale, val bundle: I18NBundl
         try {
             bundle[key]
         } catch (e: MissingResourceException) {
-            missingKeys += key
+            (missingKeys as MutableSet) += key
             Paintbox.LOGGER.warn("Missing content for I18N key $key in bundle $bundleName $namedLocale")
             return true
         }
         return false
     }
-
-    operator fun contains(key: String): Boolean = !isKeyMissing(key)
 
 }
