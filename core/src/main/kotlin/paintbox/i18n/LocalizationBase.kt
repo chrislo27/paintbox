@@ -16,7 +16,7 @@ import paintbox.binding.Var
 abstract class LocalizationBase(
     val baseHandle: FileHandle,
     override val localePicker: LocalePickerBase,
-) : ILocalizationWithBundle {
+) : ILocalization {
 
     companion object {
 
@@ -25,11 +25,11 @@ abstract class LocalizationBase(
         }
     }
 
-    override val bundles: ReadOnlyVar<List<NamedLocaleBundle>> = Var(listOf())
-    override val bundlesMap: ReadOnlyVar<Map<NamedLocale, NamedLocaleBundle>> = Var.bind {
+    val bundles: ReadOnlyVar<List<NamedLocaleBundle>> = Var(listOf())
+    val bundlesMap: ReadOnlyVar<Map<NamedLocale, NamedLocaleBundle>> = Var.bind {
         bundles.use().associateBy { it.namedLocale }
     }
-    override val currentBundle: ReadOnlyVar<NamedLocaleBundle?> = Var.eagerBind {
+    val currentBundle: ReadOnlyVar<NamedLocaleBundle?> = Var.eagerBind {
         bundlesMap.use()[localePicker.currentLocale.use()]
     }
 
@@ -113,6 +113,14 @@ abstract class LocalizationBase(
                 }"
             )
         }
+    }
+    
+    override fun getAllUniqueKeysForAllLocales(): Set<String> {
+        val uniqueKeys = mutableSetOf<String>()
+        bundles.getOrCompute().forEach {
+            uniqueKeys.addAll(it.allKeys)
+        }
+        return uniqueKeys
     }
 
 }
