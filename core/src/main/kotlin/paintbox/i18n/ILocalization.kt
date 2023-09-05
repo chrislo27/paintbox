@@ -8,7 +8,7 @@ interface ILocalization {
 
     val localePicker: LocalePickerBase
 
-    //region Getters
+    //region String getters
 
     /**
      * Returns the current value for the given key.
@@ -38,6 +38,15 @@ interface ILocalization {
 
     //endregion
 
+    
+    //region Info
+
+    /**
+     * Gets all unique keys across all locales.
+     */
+    fun getAllUniqueKeysForAllLocales(): Set<String>
+    
+    //endregion
 
     //region Loading
 

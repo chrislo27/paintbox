@@ -13,7 +13,7 @@ import paintbox.Paintbox.UIDebugOutlineMode.ONLY_VISIBLE
 import paintbox.debug.DebugInfo
 import paintbox.debug.DebugOverlay
 import paintbox.font.*
-import paintbox.i18n.LocalizationBase
+import paintbox.i18n.ILocalization
 import paintbox.logging.SysOutPiper
 import paintbox.registry.AssetRegistry
 import paintbox.registry.ScreenRegistry
@@ -102,7 +102,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
     /**
      * Set this for default debug localization behaviours.
      */
-    protected var reloadableLocalizationInstances: List<LocalizationBase> = emptyList()
+    protected var reloadableLocalizationInstances: List<ILocalization> = emptyList()
 
 
     val unifontFont: PaintboxFont
@@ -380,17 +380,14 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
                             tag = "I18N"
                         )
 
-                        val uniqueKeys = mutableSetOf<String>()
-                        locs.flatMap { it.bundles.getOrCompute() }.forEach {
-                            uniqueKeys.addAll(it.allKeys)
-                        }
+                        val uniqueKeys: Set<String> = locs.flatMap { it.getAllUniqueKeysForAllLocales() }.toSet()
                         Paintbox.LOGGER.debug(
-                            "Total of ${uniqueKeys.size} unique keys across all instances for first bundle respectively",
+                            "Total of ${uniqueKeys.size} unique keys across all localization instances",
                             tag = "I18N"
                         )
                     } else {
                         Paintbox.LOGGER.debug(
-                            "No I18N to reload, PaintboxGame#reloadableLocalizationInstances was empty",
+                            "No I18N to reload, PaintboxGame#${::reloadableLocalizationInstances.name} was empty",
                             tag = "I18N"
                         )
                     }

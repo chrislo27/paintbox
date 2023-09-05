@@ -10,7 +10,7 @@ import java.util.*
 /**
  * Holds a [NamedLocale] and can attempt to find the closest one given a setting.
  *
- * Can be used across multiple [LocalizationBase]s to synchronize their bundle state.
+ * Can be used across multiple [ILocalization]s/[LocalizationBase]s to synchronize their bundle state.
  */
 open class LocalePickerBase(val langDefFile: FileHandle) {
 
