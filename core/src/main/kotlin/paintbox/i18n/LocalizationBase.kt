@@ -74,9 +74,9 @@ abstract class LocalizationBase(
         }
     }
 
-    override fun isKeyMissingInCurrentBundle(key: String): Boolean = currentBundle.getOrCompute()?.isKeyMissing(key) ?: true
+    override fun isKeyMissing(key: String): Boolean = currentBundle.getOrCompute()?.isKeyMissing(key) ?: true
 
-    override fun getKeyMissingInCurrentBundleVar(key: String): ReadOnlyBooleanVar = BooleanVar {
+    override fun getIsKeyMissingVar(key: String): ReadOnlyBooleanVar = BooleanVar {
         currentBundle.use()?.isKeyMissing(key) ?: true
     }
 

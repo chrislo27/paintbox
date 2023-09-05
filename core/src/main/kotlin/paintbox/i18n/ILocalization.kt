@@ -59,12 +59,12 @@ interface ILocalization {
      * Returns true if the given [key] is missing from the current I18N bundle.
      * If the current bundle is null, returns true for any input (no bundle = no keys).
      */
-    fun isKeyMissingInCurrentBundle(key: String): Boolean
+    fun isKeyMissing(key: String): Boolean
 
     /**
-     * @see isKeyMissingInCurrentBundle
+     * @see isKeyMissing
      */
-    fun getKeyMissingInCurrentBundleVar(key: String): ReadOnlyBooleanVar
+    fun getIsKeyMissingVar(key: String): ReadOnlyBooleanVar
 
     /**
      * Logs missing localization keys.
