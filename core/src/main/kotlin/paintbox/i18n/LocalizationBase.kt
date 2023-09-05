@@ -123,4 +123,7 @@ abstract class LocalizationBase(
         return uniqueKeys
     }
 
+    override fun toString(): String {
+        return "LocalizationBase[${bundles.getOrCompute().firstOrNull()?.bundleName}]"
+    }
 }
