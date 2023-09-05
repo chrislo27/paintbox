@@ -13,7 +13,10 @@ import paintbox.binding.Var
 /**
  * Base class for a localization helper. Recommended to create an `object` extension of this class.
  */
-abstract class LocalizationBase(val baseHandle: FileHandle, val localePicker: LocalePickerBase) {
+abstract class LocalizationBase(
+    val baseHandle: FileHandle,
+    override val localePicker: LocalePickerBase,
+) : ILocalizationWithBundle {
 
     companion object {
 
@@ -22,11 +25,11 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val localePicker: Lo
         }
     }
 
-    val bundles: ReadOnlyVar<List<NamedLocaleBundle>> = Var(listOf())
-    val bundlesMap: ReadOnlyVar<Map<NamedLocale, NamedLocaleBundle>> = Var.bind {
+    override val bundles: ReadOnlyVar<List<NamedLocaleBundle>> = Var(listOf())
+    override val bundlesMap: ReadOnlyVar<Map<NamedLocale, NamedLocaleBundle>> = Var.bind {
         bundles.use().associateBy { it.namedLocale }
     }
-    val currentBundle: ReadOnlyVar<NamedLocaleBundle?> = Var.eagerBind {
+    override val currentBundle: ReadOnlyVar<NamedLocaleBundle?> = Var.eagerBind {
         bundlesMap.use()[localePicker.currentLocale.use()]
     }
 
@@ -39,64 +42,41 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val localePicker: Lo
         (bundles as Var).set(list)
     }
 
-    open fun reloadAll() {
+    override fun reloadAll() {
         loadBundles()
     }
 
-    /**
-     * Returns the current value for the given key.
-     */
-    fun getValue(key: String): String {
+    override fun getValue(key: String): String {
         val bundle = currentBundle.getOrCompute() ?: return key
         return bundle.getValue(key)
     }
 
-    /**
-     * Returns the current value for the given key, with substitution arguments provided.
-     */
-    fun getValue(key: String, vararg args: Any?): String {
+    override fun getValue(key: String, vararg args: Any?): String {
         val bundle = currentBundle.getOrCompute() ?: return key
         return bundle.getValue(key, *args)
     }
 
-    /**
-     * Returns a [ReadOnlyVar] representing the value for the given key.
-     */
-    fun getVar(key: String): ReadOnlyVar<String> {
+    override fun getVar(key: String): ReadOnlyVar<String> {
         return Var {
             currentBundle.use()?.getValue(key) ?: key
         }
     }
 
-    /**
-     * Returns a [ReadOnlyVar] representing the value for the given key, with [argsProvider] being a [ReadOnlyVar]
-     * returning the list of arguments.
-     */
-    fun getVar(key: String, argsProvider: ReadOnlyVar<List<Any?>>): ReadOnlyVar<String> {
+    override fun getVar(key: String, argsProvider: ReadOnlyVar<List<Any?>>): ReadOnlyVar<String> {
         return Var {
             currentBundle.use()?.getValue(key, *argsProvider.use().toTypedArray()) ?: key
         }
     }
 
-    /**
-     * Returns a [ReadOnlyVar] representing the value for the given key with [staticArgs] being static arguments.
-     */
-    fun getVar(key: String, staticArgs: List<Any?>): ReadOnlyVar<String> {
+    override fun getVar(key: String, staticArgs: List<Any?>): ReadOnlyVar<String> {
         return Var {
             currentBundle.use()?.getValue(key, *staticArgs.toTypedArray()) ?: key
         }
     }
 
-    /**
-     * Returns true if the given [key] is missing from [currentBundle].
-     * If [currentBundle] is null, returns true (no bundle = no keys).
-     */
-    fun isKeyMissingInCurrentBundle(key: String): Boolean = currentBundle.getOrCompute()?.isKeyMissing(key) ?: true
+    override fun isKeyMissingInCurrentBundle(key: String): Boolean = currentBundle.getOrCompute()?.isKeyMissing(key) ?: true
 
-    /**
-     * @see isKeyMissingInCurrentBundle
-     */
-    fun getKeyMissingInCurrentBundleVar(key: String): ReadOnlyBooleanVar = BooleanVar {
+    override fun getKeyMissingInCurrentBundleVar(key: String): ReadOnlyBooleanVar = BooleanVar {
         currentBundle.use()?.isKeyMissing(key) ?: true
     }
 
@@ -114,7 +94,7 @@ abstract class LocalizationBase(val baseHandle: FileHandle, val localePicker: Lo
         }
     }
 
-    fun logMissingLocalizations(showAllKeys: Boolean = true) {
+    override fun logMissingLocalizations(showAllKeys: Boolean) {
         val bundles = bundles.getOrCompute()
         val keys: List<String> = bundles.firstOrNull()?.allKeys?.toList() ?: return
         val missing: List<Pair<NamedLocaleBundle, List<String>>> = bundles.drop(1).map { bundle ->
