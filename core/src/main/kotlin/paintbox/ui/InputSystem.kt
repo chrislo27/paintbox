@@ -111,7 +111,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
             lastPath.addAll(newPath)
             var wasTooltipTriggered = false
             if (triggerTooltips) {
-                wasTooltipTriggered = tooltipMouseEntered(newPath, x, y)
+                wasTooltipTriggered = tooltipMouseEntered(newPath)
             }
             val mouseEnteredEvt = MouseEntered(x, y)
             newPath.forEach {
@@ -139,7 +139,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
                     )
         ) {
             val removed = lastPath.removeLast()
-            onMouseExited(removed, x, y)
+            onMouseExited(removed)
             removed.fireSingularEvent(MouseExited(x, y))
             cursor = lastPath.lastOrNull()
             if (cursor != null) {
@@ -164,7 +164,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
                 var lastRemoved: UIElement
                 do {
                     val removed = lastPath.removeLast()
-                    onMouseExited(removed, x, y)
+                    onMouseExited(removed)
                     removed.fireSingularEvent(MouseExited(x, y))
                     lastRemoved = removed
                     cursor = lastPath.lastOrNull()
@@ -189,7 +189,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
             val subPath = cursor.pathToForInput(x - offX, y - offY)
             lastPath += subPath
             if (triggerTooltips) {
-                wasTooltipTriggered = tooltipMouseEntered(subPath, x, y)
+                wasTooltipTriggered = tooltipMouseEntered(subPath)
             }
             val mouseEnteredEvt = MouseEntered(x, y)
             subPath.forEach {
@@ -211,7 +211,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         }
     }
 
-    private fun tooltipMouseEntered(path: List<UIElement>, x: Float, y: Float): Boolean {
+    private fun tooltipMouseEntered(path: List<UIElement>): Boolean {
         for (element in path.asReversed()) {
             if (element is HasTooltip) {
                 val tooltipElement = element.tooltipElement.getOrCompute()
@@ -224,7 +224,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         return false
     }
 
-    private fun onMouseExited(element: UIElement, x: Float, y: Float) {
+    private fun onMouseExited(element: UIElement) {
         val currentTooltipElement = sceneRoot.currentElementWithTooltip.getOrCompute()
         if (currentTooltipElement != null && element === currentTooltipElement) {
             // The element the mouse was over should no longer show its tooltip
