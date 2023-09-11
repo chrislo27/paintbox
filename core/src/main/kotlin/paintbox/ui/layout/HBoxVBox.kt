@@ -12,7 +12,7 @@ import kotlin.contracts.contract
 /**
  * An abstract pane that lays out its children. Use [HBox] and [VBox] for implementations.
  */
-abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : Pane() {
+abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : AbstractLayoutPane() {
 
     /*
     The element data cache stores a particular dimension of an element and the accumulated value. This allows

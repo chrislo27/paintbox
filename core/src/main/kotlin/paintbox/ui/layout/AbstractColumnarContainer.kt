@@ -17,7 +17,7 @@ import paintbox.util.ListOfOnes
  */
 abstract class AbstractColumnarContainer<Container : UIElement>(
     val columnAllotment: List<Int>, val useRows: Boolean, val putSpacersInBetweenLogicalCols: Boolean = false,
-) : Pane() {
+) : AbstractLayoutPane() {
 
     val numLogicalColumns: Int
     val numRealColumns: Int get() = columnAllotment.size
