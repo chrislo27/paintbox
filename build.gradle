@@ -83,7 +83,6 @@ project(":utils") {
         api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
         api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-        api "com.beust:jcommander:1.82"
         implementation "org.slf4j:slf4j-simple:2.0.7"
     }
 
@@ -107,7 +106,6 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
-//        api "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
         api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version"
     }
 
@@ -139,9 +137,10 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion"
-//        implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+
+        api "com.beust:jcommander:1.82"
     }
-    
+
     publishing {
         publications {
             maven(MavenPublication) {
