@@ -34,6 +34,7 @@ open class PaintboxFontFreeType(
 
     private var lastWindowSize: WindowSize = WindowSize(1280, 720)
     private var currentRenderedScale: Float = -1f
+    var additionalRenderScale: Float = 2f
 
     private var generator: FreeTypeFontGenerator? = null
         set(value) {
@@ -72,7 +73,7 @@ open class PaintboxFontFreeType(
             val referenceSize = params.referenceSize
             val scaleX = (referenceSize.width / areaWidth)
             val scaleY = (referenceSize.height / areaHeight)
-            val scale = max(scaleX, scaleY)
+            val scale = max(scaleX, scaleY) / additionalRenderScale
             if (scaleX >= 0f && scaleY >= 0f && scaleX.isFinite() && scaleY.isFinite()) {
                 font.data.setScale(scale, scale)
             }
@@ -105,10 +106,10 @@ open class PaintboxFontFreeType(
         val windowSize = this.lastWindowSize
         val params = this.params.getOrCompute()
         val referenceSize = params.referenceSize
-        val scale: Float = if (!params.scaleToReferenceSize) 1f else min(
+        val scale: Float = (if (!params.scaleToReferenceSize) 1f else min(
             windowSize.width.toFloat() / referenceSize.width,
             windowSize.height.toFloat() / referenceSize.height
-        )
+        )) * additionalRenderScale
 
         if (this.currentRenderedScale != scale) {
             this.dispose()
