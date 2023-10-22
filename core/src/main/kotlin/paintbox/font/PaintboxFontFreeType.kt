@@ -8,7 +8,6 @@ import paintbox.util.WindowSize
 import paintbox.util.gdxutils.copy
 import kotlin.math.max
 import kotlin.math.min
-import kotlin.math.roundToInt
 
 /**
  * A wrapper around a [FreeTypeFontGenerator].
@@ -32,8 +31,10 @@ open class PaintboxFontFreeType(
     private var currentFontNum: Long = Long.MIN_VALUE + 1
     override val currentFontNumber: Long get() = currentFontNum
     override val currentFontNumberVar: ReadOnlyLongVar = LongVar(currentFontNum)
+
     private var lastWindowSize: WindowSize = WindowSize(1280, 720)
-    private var upscaledFactor: Float = -1f // 
+    private var currentRenderedScale: Float = -1f
+
     private var generator: FreeTypeFontGenerator? = null
         set(value) {
             field?.dispose()
@@ -44,12 +45,6 @@ open class PaintboxFontFreeType(
             if (value !== field) {
                 currentFontNum++
                 (currentFontNumberVar as LongVar).set(currentFontNum)
-
-//                val current = field
-//                if (current != null) {
-//                    current.dispose()
-//                    (current.data as? Disposable)?.dispose()
-//                }
             }
             field = value
         }
@@ -58,7 +53,7 @@ open class PaintboxFontFreeType(
 
     override fun begin(areaWidth: Float, areaHeight: Float): BitmapFont {
         if (isInBegin) {
-            if (PaintboxFont.LENIENT_BEGIN_END) {
+            if (LENIENT_BEGIN_END) {
                 end()
             } else {
                 error("Cannot call begin before end")
@@ -87,7 +82,7 @@ open class PaintboxFontFreeType(
     }
 
     override fun end() {
-        if (!isInBegin && !PaintboxFont.LENIENT_BEGIN_END) error("Cannot call end before begin")
+        if (!isInBegin && !LENIENT_BEGIN_END) error("Cannot call end before begin")
         isInBegin = false
 
         // Sets font back to scaleXY = 1.0
@@ -115,16 +110,14 @@ open class PaintboxFontFreeType(
             windowSize.height.toFloat() / referenceSize.height
         )
 
-        if (this.upscaledFactor != scale) {
+        if (this.currentRenderedScale != scale) {
             this.dispose()
-//            val oldFactor = this.upscaledFactor
-            this.upscaledFactor = scale
+            this.currentRenderedScale = scale
 
             val newParam = ftfParameter.copy()
             val oldParams = params
             newParam.size = (oldParams.fontSize * scale).toInt()
             newParam.borderWidth = oldParams.borderSize * scale
-//            println("New upscaled factor: from ${oldFactor} to $scale -- size=${oldParams.fontSize} -> ${newParam.size}, borderWidth=${oldParams.borderSize} -> ${newParam.borderWidth} $windowSize, ref $referenceSize")
 
             val generator = FreeTypeFontGeneratorFix(oldParams.file)
             val generatedFont = generator.generateFont(newParam)
