@@ -34,7 +34,7 @@ open class PaintboxFontFreeType(
 
     private var lastWindowSize: WindowSize = WindowSize(1280, 720)
     private var currentRenderedScale: Float = -1f
-    var additionalRenderScale: Float = 2f
+    var additionalRenderScale: Float = 1f
 
     private var generator: FreeTypeFontGenerator? = null
         set(value) {
