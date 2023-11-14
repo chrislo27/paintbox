@@ -21,7 +21,7 @@ allprojects {
         appName = "Paintbox"
         gdxVersion = '1.12.1'
         gdxControllersVersion = '2.2.3'
-        paintboxVersion = "0.16.0"
+        paintboxVersion = "0.16.1"
     }
     version = ext.paintboxVersion
     archivesBaseName = "Paintbox-${project.name}"
