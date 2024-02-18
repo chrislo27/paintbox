@@ -138,7 +138,7 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion"
 
-        api "com.beust:jcommander:1.83"
+        api "org.jcommander:jcommander:1.83"
     }
 
     publishing {
