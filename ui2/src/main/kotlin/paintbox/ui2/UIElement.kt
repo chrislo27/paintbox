@@ -41,7 +41,10 @@ open class UIElement : UIBounds {
     open fun minHeight(width: Float): Float = prefHeight(width)
     open fun maxHeight(width: Float): Float = prefHeight(width)
     //endregion
-    
+
+    /**
+     * Returns zero if this float is negative or NaN, otherwise returns its value.
+     */
     protected fun Float.valueOrZero() = if (this.isNaN() || this < 0f) 0f else this
 
     override fun toString(): String {

@@ -11,6 +11,16 @@ import kotlin.math.min
  * A [UIElement] that supports [LayoutHints]'s min/pref/max width/height properties via the [layoutHints] property.
  */
 open class LayoutElement : UIElement(), LayoutHints {
+    
+    companion object {
+
+        fun boundedSize(value: Float, min: Float, max: Float): Float {
+            // if max < value, return max
+            // if min > value, return min
+            // if min > max, return min
+            return min(max(value, min), max(min, max))
+        }
+    }
 
     val layoutHints: LayoutHints = LayoutHintsImpl()
     
@@ -108,13 +118,6 @@ open class LayoutElement : UIElement(), LayoutHints {
             USE_PREF_SIZE -> prefHeight(width)
             else -> override.valueOrZero()
         }
-    }
-    
-    protected fun boundedSize(value: Float, min: Float, max: Float): Float {
-        // if max < value, return max
-        // if min > value, return min
-        // if min > max, return min
-        return min(max(value, min), max(min, max))
     }
     
 }
