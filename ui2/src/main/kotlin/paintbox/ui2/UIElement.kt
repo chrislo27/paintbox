@@ -125,6 +125,14 @@ open class UIElement : UIBounds {
         return childrenSize
     }
 
+    operator fun plusAssign(child: UIElement) {
+        addChild(child)
+    }
+
+    operator fun minusAssign(child: UIElement) {
+        removeChild(child)
+    }
+
     /**
      * Called when a child is added to this [UIElement]. This will be called BEFORE the call to [onAddedToParent].
      */
