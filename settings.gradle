@@ -2,4 +2,5 @@ include 'binding' // Reactive vars
 include 'utils' // Non-libGDX dependent utilities
 include 'core' // libGDX-dependent utilities
 include 'ui' // UI scenegraph v1, dependent on core
+include 'ui2' // UI scenegraph v2, dependent on core
 include 'desktop' // Desktop launching specific component
