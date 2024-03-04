@@ -4,7 +4,7 @@ import paintbox.binding.FloatVar
 import paintbox.binding.ReadOnlyFloatVar
 
 
-interface ReadOnlyLayoutHints {
+interface ReadOnlyLayoutDimensions {
 
     val minWidth: ReadOnlyFloatVar
     val prefWidth: ReadOnlyFloatVar
@@ -16,7 +16,7 @@ interface ReadOnlyLayoutHints {
 
 }
 
-interface LayoutHints : ReadOnlyLayoutHints {
+interface LayoutDimensions : ReadOnlyLayoutDimensions {
 
     companion object {
 
@@ -41,13 +41,13 @@ interface LayoutHints : ReadOnlyLayoutHints {
 
 }
 
-class LayoutHintsImpl : LayoutHints {
+class LayoutDimensionsImpl : LayoutDimensions {
     
-    override val minWidth: FloatVar = FloatVar(LayoutHints.USE_COMPUTED_SIZE)
-    override val prefWidth: FloatVar = FloatVar(LayoutHints.USE_COMPUTED_SIZE)
-    override val maxWidth: FloatVar = FloatVar(LayoutHints.USE_COMPUTED_SIZE)
+    override val minWidth: FloatVar = FloatVar(LayoutDimensions.USE_COMPUTED_SIZE)
+    override val prefWidth: FloatVar = FloatVar(LayoutDimensions.USE_COMPUTED_SIZE)
+    override val maxWidth: FloatVar = FloatVar(LayoutDimensions.USE_COMPUTED_SIZE)
 
-    override val minHeight: FloatVar = FloatVar(LayoutHints.USE_COMPUTED_SIZE)
-    override val prefHeight: FloatVar = FloatVar(LayoutHints.USE_COMPUTED_SIZE)
-    override val maxHeight: FloatVar = FloatVar(LayoutHints.USE_COMPUTED_SIZE)
+    override val minHeight: FloatVar = FloatVar(LayoutDimensions.USE_COMPUTED_SIZE)
+    override val prefHeight: FloatVar = FloatVar(LayoutDimensions.USE_COMPUTED_SIZE)
+    override val maxHeight: FloatVar = FloatVar(LayoutDimensions.USE_COMPUTED_SIZE)
 }
