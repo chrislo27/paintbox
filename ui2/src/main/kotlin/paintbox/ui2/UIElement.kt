@@ -167,7 +167,7 @@ open class UIElement : UIBounds {
     open fun prefWidth(height: Float): Float = this.bounds.width.get().valueOrZero()
     open fun minWidth(height: Float): Float = prefWidth(height)
     open fun maxWidth(height: Float): Float = prefWidth(height)
-    
+
     open fun prefHeight(width: Float): Float = this.bounds.height.get().valueOrZero()
     open fun minHeight(width: Float): Float = prefHeight(width)
     open fun maxHeight(width: Float): Float = prefHeight(width)
