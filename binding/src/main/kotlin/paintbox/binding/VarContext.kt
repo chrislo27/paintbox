@@ -1,9 +1,24 @@
 package paintbox.binding
 
 
-class VarContext {
+/**
+ * Tracks dependencies on [ReadOnlyVar]s as they are used. Using a [ReadOnlyVar] means to get
+ * its value ([ReadOnlyVar.getOrCompute]) and to track it as a dependency.
+ *
+ * There are specialized functions for [SpecializedReadOnlyVar] to avoid boxing primitive values.
+ */
+interface VarContext {
 
-    val dependencies: MutableSet<ReadOnlyVar<Any?>> = LinkedHashSet(2)
+    companion object {
+
+        /**
+         * Creates a [VarContext] using [DefaultVarContextImpl] as the implementation.
+         */
+        operator fun invoke(): VarContext = DefaultVarContextImpl()
+
+    }
+
+    val dependencies: Set<ReadOnlyVar<Any?>>
 
 
     /**
@@ -15,10 +30,7 @@ class VarContext {
      * Note that if the receiver is a primitive-specialized var,
      * the appropriate specialized `use` function should be used instead.
      */
-    fun <R> bindAndGet(varr: ReadOnlyVar<R>): R { // NB: DON'T add specialized deprecations for this non-receiver-type function
-        dependencies += varr
-        return varr.getOrCompute()
-    }
+    fun <R> bindAndGet(varr: ReadOnlyVar<R>): R // NB: DON'T add specialized deprecations for this non-receiver-type function
 
     /**
      * Adds the receiver [var][R] as a dependency and returns the var's value.
@@ -35,9 +47,19 @@ class VarContext {
     //region Specialization methods
 
     @Deprecated(
-        "If this is a ReadOnlyFloatVar, use ReadOnlyFloatVar.use() instead to avoid explicit boxing",
+        "Use the specialized `use` method for this SpecializedReadOnlyVar, or use the `bindAndGet` method",
+        replaceWith = ReplaceWith("bindAndGet(this)"),
+        level = DeprecationLevel.ERROR
+    )
+    fun <T> SpecializedReadOnlyVar<T>.use(): T {
+        return bindAndGet(this)
+    }
+
+
+    @Deprecated(
+        "If this is a ReadOnlyFloatVar, use ReadOnlyFloatVar.use() instead to avoid explicit boxing, or use the `bindAndGet` method",
         replaceWith = ReplaceWith("(this as ReadOnlyFloatVar).use()"),
-        level = DeprecationLevel.WARNING
+        level = DeprecationLevel.ERROR
     )
     fun ReadOnlyVar<Float>.use(): Float {
         return bindAndGet(this)
@@ -46,14 +68,11 @@ class VarContext {
     /**
      * The float specialization method. Adds the receiver as a dependency and returns a primitive float.
      */
-    fun ReadOnlyFloatVar.use(): Float {
-        dependencies += this
-        return this.get()
-    }
+    fun ReadOnlyFloatVar.use(): Float
 
 
     @Deprecated(
-        "If this is a ReadOnlyBooleanVar, use ReadOnlyBooleanVar.use() instead to avoid explicit boxing",
+        "If this is a ReadOnlyBooleanVar, use ReadOnlyBooleanVar.use() instead to avoid explicit boxing, or use the `bindAndGet` method",
         replaceWith = ReplaceWith("(this as ReadOnlyBooleanVar).use()"),
         level = DeprecationLevel.WARNING
     )
@@ -64,16 +83,13 @@ class VarContext {
     /**
      * The boolean specialization method. Adds the receiver as a dependency and returns a primitive boolean.
      */
-    fun ReadOnlyBooleanVar.use(): Boolean {
-        dependencies += this
-        return this.get()
-    }
+    fun ReadOnlyBooleanVar.use(): Boolean
 
 
     @Deprecated(
-        "If this is aReadOnlyIntVar, use ReadOnlyIntVar.use() instead to avoid explicit boxing",
+        "If this is aReadOnlyIntVar, use ReadOnlyIntVar.use() instead to avoid explicit boxing, or use the `bindAndGet` method",
         replaceWith = ReplaceWith("(this as ReadOnlyIntVar).use()"),
-        level = DeprecationLevel.WARNING
+        level = DeprecationLevel.ERROR
     )
     fun ReadOnlyVar<Int>.use(): Int {
         return bindAndGet(this)
@@ -82,16 +98,13 @@ class VarContext {
     /**
      * The int specialization method. Adds the receiver as a dependency and returns a primitive int.
      */
-    fun ReadOnlyIntVar.use(): Int {
-        dependencies += this
-        return this.get()
-    }
+    fun ReadOnlyIntVar.use(): Int
 
 
     @Deprecated(
-        "If this is a ReadOnlyLongVar, use ReadOnlyLongVar.use() instead to avoid explicit boxing",
+        "If this is a ReadOnlyLongVar, use ReadOnlyLongVar.use() instead to avoid explicit boxing, or use the `bindAndGet` method",
         replaceWith = ReplaceWith("(this as ReadOnlyLongVar).use()"),
-        level = DeprecationLevel.WARNING
+        level = DeprecationLevel.ERROR
     )
     fun ReadOnlyVar<Long>.use(): Long {
         return bindAndGet(this)
@@ -100,16 +113,13 @@ class VarContext {
     /**
      * The long specialization method. Adds the receiver as a dependency and returns a primitive long.
      */
-    fun ReadOnlyLongVar.use(): Long {
-        dependencies += this
-        return this.get()
-    }
+    fun ReadOnlyLongVar.use(): Long
 
 
     @Deprecated(
-        "If this is a ReadOnlyDoubleVar, use ReadOnlyDoubleVar.use() instead to avoid explicit boxing",
+        "If this is a ReadOnlyDoubleVar, use ReadOnlyDoubleVar.use() instead to avoid explicit boxing, or use the `bindAndGet` method",
         replaceWith = ReplaceWith("(this as ReadOnlyDoubleVar).use()"),
-        level = DeprecationLevel.WARNING
+        level = DeprecationLevel.ERROR
     )
     fun ReadOnlyVar<Double>.use(): Double {
         return bindAndGet(this)
@@ -118,16 +128,13 @@ class VarContext {
     /**
      * The double specialization method. Adds the receiver as a dependency and returns a primitive double.
      */
-    fun ReadOnlyDoubleVar.use(): Double {
-        dependencies += this
-        return this.get()
-    }
+    fun ReadOnlyDoubleVar.use(): Double
 
 
     @Deprecated(
-        "If this is a ReadOnlyCharVar, use ReadOnlyCharVar.use() instead to avoid explicit boxing",
+        "If this is a ReadOnlyCharVar, use ReadOnlyCharVar.use() instead to avoid explicit boxing, or use the `bindAndGet` method",
         replaceWith = ReplaceWith("(this as ReadOnlyCharVar).use()"),
-        level = DeprecationLevel.WARNING
+        level = DeprecationLevel.ERROR
     )
     fun ReadOnlyVar<Char>.use(): Char {
         return bindAndGet(this)
@@ -136,10 +143,7 @@ class VarContext {
     /**
      * The char specialization method. Adds the receiver as a dependency and returns a primitive char.
      */
-    fun ReadOnlyCharVar.use(): Char {
-        dependencies += this
-        return this.get()
-    }
+    fun ReadOnlyCharVar.use(): Char
 
     //endregion
 }
