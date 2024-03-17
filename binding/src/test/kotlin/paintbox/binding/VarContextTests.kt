@@ -10,7 +10,7 @@ class VarContextTests {
     @Test
     fun `use adds a dependency`() {
         // Arrange
-        val context = Var.Context()
+        val context = VarContext()
         val varr: ReadOnlyVar<*> = UnitReadOnlyVar()
         
         // Act
@@ -24,7 +24,7 @@ class VarContextTests {
     @Test
     fun `use calls getOrCompute`() {
         // Arrange
-        val context = Var.Context()
+        val context = VarContext()
         val varr = UnitReadOnlyVar()
         
         // Act

@@ -1,10 +1,7 @@
 package paintbox.i18n
 
 import paintbox.Paintbox
-import paintbox.binding.BooleanVar
-import paintbox.binding.ReadOnlyBooleanVar
-import paintbox.binding.ReadOnlyVar
-import paintbox.binding.Var
+import paintbox.binding.*
 
 
 /**
@@ -143,6 +140,6 @@ open class LocalizationGroup(
     private fun getLocalizationInstanceForKey(key: String): ILocalization? =
         this.keysToBundles.getOrCompute()[key]
     
-    private fun Var.Context.useLocalizationInstanceForKey(key: String): ILocalization? =
+    private fun VarContext.useLocalizationInstanceForKey(key: String): ILocalization? =
         this.use(keysToBundles)[key]
 }

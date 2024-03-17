@@ -20,8 +20,8 @@ interface ReadOnlyLongVar : SpecializedReadOnlyVar<Long>, ReadOnlyVar<Long> {
      * Gets (and computes if necessary) the value represented by this [ReadOnlyLongVar].
      * Unlike the [ReadOnlyVar.getOrCompute] function, this will always return a primitive `long` value.
      *
-     * If using this [ReadOnlyLongVar] in a binding, use [Var.Context] to do dependency tracking,
-     * and use the `long` specialization specific functions ([Var.Context.use]).
+     * If using this [ReadOnlyLongVar] in a binding, use [VarContext] to do dependency tracking,
+     * and use the `long` specialization specific functions ([VarContext.use]).
      */
     fun get(): Long
 
@@ -129,7 +129,7 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
                 if (!invalidated) {
                     currentValue
                 } else {
-                    val ctx = Var.Context()
+                    val ctx = VarContext()
                     val result = binding.computation(ctx)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }
@@ -143,7 +143,7 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
 
             is LongBinding.SideEffecting -> {
                 if (invalidated) {
-                    val ctx = Var.Context()
+                    val ctx = VarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }

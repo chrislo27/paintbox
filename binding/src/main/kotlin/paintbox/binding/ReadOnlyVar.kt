@@ -69,7 +69,7 @@ interface ReadOnlyVar<out T> {
     /**
      * Gets (and computes if necessary) the value represented by this [ReadOnlyVar].
      *
-     * If using this [ReadOnlyVar] in a binding, use [Var.Context] to do dependency tracking.
+     * If using this [ReadOnlyVar] in a binding, use [VarContext] to do dependency tracking.
      */
     fun getOrCompute(): T
 

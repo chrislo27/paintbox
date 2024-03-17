@@ -320,7 +320,7 @@ sealed class Anchor {
     /**
      * Configures the [element] based on this [Anchor] with bindable offsets to the bounds x [Var] context.
      *
-     * The context in the [offsetX] function parameters is the [Var.Context] of the bounds x [Var].
+     * The context in the [offsetX] function parameters is the [VarContext] of the bounds x [Var].
      */
     abstract fun xConfigure(element: UIElement, offsetX: ContextBinding<Float>)
 
@@ -332,7 +332,7 @@ sealed class Anchor {
     /**
      * Configures the [element] based on this [Anchor] with bindable offsets to the bounds y [Var] context.
      *
-     * The context in the [offsetY] function parameters is the [Var.Context] of the bounds y [Var].
+     * The context in the [offsetY] function parameters is the [VarContext] of the bounds y [Var].
      */
     abstract fun yConfigure(element: UIElement, offsetY: ContextBinding<Float>)
 
@@ -349,7 +349,7 @@ sealed class Anchor {
     /**
      * Configures the [element] based on this [Anchor] with bindable offsets to the bounds x/y [Var] context.
      *
-     * The context in the [offsetX]/[offsetY] function parameters is the [Var.Context] of the bounds x/y [Var].
+     * The context in the [offsetX]/[offsetY] function parameters is the [VarContext] of the bounds x/y [Var].
      */
     @Suppress("NOTHING_TO_INLINE", "RedundantModalityModifier")
     final inline fun configure(

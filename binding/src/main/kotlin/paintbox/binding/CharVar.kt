@@ -22,8 +22,8 @@ interface ReadOnlyCharVar : SpecializedReadOnlyVar<Char>, ReadOnlyVar<Char> {
      * Gets (and computes if necessary) the value represented by this [ReadOnlyCharVar].
      * Unlike the [ReadOnlyVar.getOrCompute] function, this will always return a primitive char value.
      *
-     * If using this [ReadOnlyCharVar] in a binding, use [Var.Context] to do dependency tracking,
-     * and use the `char` specialization specific functions ([Var.Context.use]).
+     * If using this [ReadOnlyCharVar] in a binding, use [VarContext] to do dependency tracking,
+     * and use the `char` specialization specific functions ([VarContext.use]).
      */
     fun get(): Char
 
@@ -131,7 +131,7 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
                 if (!invalidated) {
                     currentValue
                 } else {
-                    val ctx = Var.Context()
+                    val ctx = VarContext()
                     val result = binding.computation(ctx)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }
@@ -145,7 +145,7 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
 
             is CharBinding.SideEffecting -> {
                 if (invalidated) {
-                    val ctx = Var.Context()
+                    val ctx = VarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }

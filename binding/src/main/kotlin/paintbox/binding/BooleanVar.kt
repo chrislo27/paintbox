@@ -21,8 +21,8 @@ interface ReadOnlyBooleanVar : SpecializedReadOnlyVar<Boolean>, ReadOnlyVar<Bool
      * Gets (and computes if necessary) the value represented by this [ReadOnlyBooleanVar].
      * Unlike the [ReadOnlyVar.getOrCompute] function, this will always return a primitive boolean value.
      *
-     * If using this [ReadOnlyBooleanVar] in a binding, use [Var.Context] to do dependency tracking,
-     * and use the `boolean` specialization specific functions ([Var.Context.use]).
+     * If using this [ReadOnlyBooleanVar] in a binding, use [VarContext] to do dependency tracking,
+     * and use the `boolean` specialization specific functions ([VarContext.use]).
      */
     fun get(): Boolean
 
@@ -130,7 +130,7 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
                 if (!invalidated) {
                     currentValue
                 } else {
-                    val ctx = Var.Context()
+                    val ctx = VarContext()
                     val result = binding.computation(ctx)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }
@@ -144,7 +144,7 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
 
             is BooleanBinding.SideEffecting -> {
                 if (invalidated) {
-                    val ctx = Var.Context()
+                    val ctx = VarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }

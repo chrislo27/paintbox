@@ -20,8 +20,8 @@ interface ReadOnlyDoubleVar : SpecializedReadOnlyVar<Double>, ReadOnlyVar<Double
      * Gets (and computes if necessary) the value represented by this [ReadOnlyDoubleVar].
      * Unlike the [ReadOnlyVar.getOrCompute] function, this will always return a primitive double value.
      *
-     * If using this [ReadOnlyDoubleVar] in a binding, use [Var.Context] to do dependency tracking,
-     * and use the `double` specialization specific functions ([Var.Context.use]).
+     * If using this [ReadOnlyDoubleVar] in a binding, use [VarContext] to do dependency tracking,
+     * and use the `double` specialization specific functions ([VarContext.use]).
      */
     fun get(): Double
 
@@ -129,7 +129,7 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
                 if (!invalidated) {
                     currentValue
                 } else {
-                    val ctx = Var.Context()
+                    val ctx = VarContext()
                     val result = binding.computation(ctx)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }
@@ -143,7 +143,7 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
 
             is DoubleBinding.SideEffecting -> {
                 if (invalidated) {
-                    val ctx = Var.Context()
+                    val ctx = VarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }

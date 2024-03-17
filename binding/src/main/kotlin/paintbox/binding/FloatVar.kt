@@ -20,8 +20,8 @@ interface ReadOnlyFloatVar : SpecializedReadOnlyVar<Float>, ReadOnlyVar<Float> {
      * Gets (and computes if necessary) the value represented by this [ReadOnlyFloatVar].
      * Unlike the [ReadOnlyVar.getOrCompute] function, this will always return a primitive float value.
      *
-     * If using this [ReadOnlyFloatVar] in a binding, use [Var.Context] to do dependency tracking,
-     * and use the `float` specialization specific functions ([Var.Context.use]).
+     * If using this [ReadOnlyFloatVar] in a binding, use [VarContext] to do dependency tracking,
+     * and use the `float` specialization specific functions ([VarContext.use]).
      */
     fun get(): Float
 
@@ -129,7 +129,7 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
                 if (!invalidated) {
                     currentValue
                 } else {
-                    val ctx = Var.Context()
+                    val ctx = VarContext()
                     val result = binding.computation(ctx)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }
@@ -143,7 +143,7 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
 
             is FloatBinding.SideEffecting -> {
                 if (invalidated) {
-                    val ctx = Var.Context()
+                    val ctx = VarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }
