@@ -177,7 +177,7 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
 
     private sealed class CharBinding {
         /**
-         * Represents a constant value. The value is actually stored in [BooleanVar.currentValue].
+         * Represents a constant value. The value is actually stored in [CharVar.currentValue].
          */
         data object Const : CharBinding()
 
