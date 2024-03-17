@@ -1,5 +1,12 @@
 package paintbox.binding
 
+
+/**
+ * Returns a constant value [ReadOnlyLongVar]. This directly calls [ReadOnlyLongVar.Companion.const].
+ * @see ReadOnlyLongVar.Companion.const
+ */
+fun Long.toConstVar(): ReadOnlyLongVar = ReadOnlyLongVar.const(this)
+
 /**
  * The [Long] specialization of [ReadOnlyVar].
  *

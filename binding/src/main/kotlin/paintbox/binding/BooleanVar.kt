@@ -2,6 +2,12 @@ package paintbox.binding
 
 
 /**
+ * Returns a constant value [ReadOnlyBooleanVar]. This directly calls [ReadOnlyBooleanVar.Companion.const].
+ * @see ReadOnlyBooleanVar.Companion.const
+ */
+fun Boolean.toConstVar(): ReadOnlyBooleanVar = ReadOnlyBooleanVar.const(this)
+
+/**
  * The [Boolean] specialization of [ReadOnlyVar].
  *
  * Provides the [get] method which is a primitive-type boolean.

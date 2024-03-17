@@ -1,5 +1,12 @@
 package paintbox.binding
 
+
+/**
+ * Returns a constant value [ReadOnlyFloatVar]. This directly calls [ReadOnlyFloatVar.Companion.const].
+ * @see ReadOnlyFloatVar.Companion.const
+ */
+fun Float.toConstVar(): ReadOnlyFloatVar = ReadOnlyFloatVar.const(this)
+
 /**
  * The [Float] specialization of [ReadOnlyVar].
  *

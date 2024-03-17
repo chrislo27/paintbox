@@ -1,5 +1,12 @@
 package paintbox.binding
 
+
+/**
+ * Returns a constant value [ReadOnlyDoubleVar]. This directly calls [ReadOnlyDoubleVar.Companion.const].
+ * @see ReadOnlyDoubleVar.Companion.const
+ */
+fun Double.toConstVar(): ReadOnlyDoubleVar = ReadOnlyDoubleVar.const(this)
+
 /**
  * The [Double] specialization of [ReadOnlyVar].
  *
