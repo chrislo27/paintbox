@@ -129,7 +129,7 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
                 if (!invalidated) {
                     currentValue
                 } else {
-                    val ctx = VarContext()
+                    val ctx = DependencyTrackingVarContext()
                     val result = binding.computation(ctx)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }
@@ -143,7 +143,7 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
 
             is IntBinding.SideEffecting -> {
                 if (invalidated) {
-                    val ctx = VarContext()
+                    val ctx = DependencyTrackingVarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }

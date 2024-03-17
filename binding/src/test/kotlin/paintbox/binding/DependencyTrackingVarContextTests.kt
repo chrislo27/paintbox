@@ -5,12 +5,12 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 
-class VarContextTests {
+class DependencyTrackingVarContextTests {
     
     @Test
     fun `use adds a dependency`() {
         // Arrange
-        val context = VarContext()
+        val context = DependencyTrackingVarContext()
         val varr: ReadOnlyVar<*> = UnitReadOnlyVar()
         
         // Act
@@ -24,7 +24,7 @@ class VarContextTests {
     @Test
     fun `use calls getOrCompute`() {
         // Arrange
-        val context = VarContext()
+        val context = DependencyTrackingVarContext()
         val varr = UnitReadOnlyVar()
         
         // Act

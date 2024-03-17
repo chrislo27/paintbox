@@ -2,24 +2,12 @@ package paintbox.binding
 
 
 /**
- * Tracks dependencies on [ReadOnlyVar]s as they are used. Using a [ReadOnlyVar] means to get
- * its value ([ReadOnlyVar.getOrCompute]) and to track it as a dependency.
+ * Contextualizes [ReadOnlyVar] usage. This can be used for dependency tracking during binding (its main purpose),
+ * reporting of used vars, or other logic that would want to intercept the reading/binding of a var.
  *
  * There are specialized functions for [SpecializedReadOnlyVar] to avoid boxing primitive values.
  */
 interface VarContext {
-
-    companion object {
-
-        /**
-         * Creates a [VarContext] using [DefaultVarContextImpl] as the implementation.
-         */
-        operator fun invoke(): VarContext = DefaultVarContextImpl()
-
-    }
-
-    val dependencies: Set<ReadOnlyVar<Any?>>
-
 
     /**
      * Adds the [varr] as a dependency and returns the var's value.

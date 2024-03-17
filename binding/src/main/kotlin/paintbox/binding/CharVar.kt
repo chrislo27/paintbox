@@ -131,7 +131,7 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
                 if (!invalidated) {
                     currentValue
                 } else {
-                    val ctx = VarContext()
+                    val ctx = DependencyTrackingVarContext()
                     val result = binding.computation(ctx)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }
@@ -145,7 +145,7 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
 
             is CharBinding.SideEffecting -> {
                 if (invalidated) {
-                    val ctx = VarContext()
+                    val ctx = DependencyTrackingVarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }

@@ -3,6 +3,8 @@ package paintbox.binding
 
 /**
  * The default implementation of [Var].
+ * 
+ * Specialized versions of [Var] exist for primitives, such as [IntVar], [FloatVar], etc.
  */
 class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
 
@@ -82,7 +84,7 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
                 if (!invalidated) {
                     @Suppress("UNCHECKED_CAST") (currentValue as T)
                 } else {
-                    val ctx = VarContext()
+                    val ctx = DependencyTrackingVarContext()
                     val result = binding.computation(ctx)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }
@@ -96,7 +98,7 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
 
             is GenericBinding.SideEffecting -> {
                 if (invalidated) {
-                    val ctx = VarContext()
+                    val ctx = DependencyTrackingVarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }

@@ -129,7 +129,7 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
                 if (!invalidated) {
                     currentValue
                 } else {
-                    val ctx = VarContext()
+                    val ctx = DependencyTrackingVarContext()
                     val result = binding.computation(ctx)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }
@@ -143,7 +143,7 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
 
             is DoubleBinding.SideEffecting -> {
                 if (invalidated) {
-                    val ctx = VarContext()
+                    val ctx = DependencyTrackingVarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
                     val oldDependencies = dependencies
                     oldDependencies.forEach { it.removeListener(invalidationListener) }
