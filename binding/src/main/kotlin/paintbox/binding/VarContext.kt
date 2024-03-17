@@ -15,8 +15,7 @@ class VarContext {
      * Note that if the receiver is a primitive-specialized var,
      * the appropriate specialized `use` function should be used instead.
      */
-    @JvmName("use")
-    fun <R> use(varr: ReadOnlyVar<R>): R { // DON'T add specialized deprecations for this particular `use` function for generic compatibility
+    fun <R> bindAndGet(varr: ReadOnlyVar<R>): R { // NB: DON'T add specialized deprecations for this non-receiver-type function
         dependencies += varr
         return varr.getOrCompute()
     }
@@ -28,21 +27,20 @@ class VarContext {
      * Note that if the receiver is a primitive-specialized var,
      * the appropriate specialized `use` function should be used instead.
      */
-    @JvmName("useAndGet")
-    fun <R> ReadOnlyVar<R>.use(): R { // Specialized deprecations may be added for this use function
-        return use(this)
+    fun <R> ReadOnlyVar<R>.use(): R { // Specializations should be added for this receiver-type function
+        return bindAndGet(this)
     }
 
 
     //region Specialization methods
 
     @Deprecated(
-        "Don't use ReadOnlyVar<Float>, use ReadOnlyFloatVar.use() instead to avoid explicit boxing",
+        "If this is a ReadOnlyFloatVar, use ReadOnlyFloatVar.use() instead to avoid explicit boxing",
         replaceWith = ReplaceWith("(this as ReadOnlyFloatVar).use()"),
-        level = DeprecationLevel.ERROR
+        level = DeprecationLevel.WARNING
     )
     fun ReadOnlyVar<Float>.use(): Float {
-        return use(this)
+        return bindAndGet(this)
     }
 
     /**
@@ -55,12 +53,12 @@ class VarContext {
 
 
     @Deprecated(
-        "Don't use ReadOnlyVar<Boolean>, use ReadOnlyBooleanVar.use() instead to avoid explicit boxing",
+        "If this is a ReadOnlyBooleanVar, use ReadOnlyBooleanVar.use() instead to avoid explicit boxing",
         replaceWith = ReplaceWith("(this as ReadOnlyBooleanVar).use()"),
-        level = DeprecationLevel.ERROR
+        level = DeprecationLevel.WARNING
     )
     fun ReadOnlyVar<Boolean>.use(): Boolean {
-        return use(this)
+        return bindAndGet(this)
     }
 
     /**
@@ -73,12 +71,12 @@ class VarContext {
 
 
     @Deprecated(
-        "Don't use ReadOnlyVar<Int>, use ReadOnlyIntVar.use() instead to avoid explicit boxing",
+        "If this is aReadOnlyIntVar, use ReadOnlyIntVar.use() instead to avoid explicit boxing",
         replaceWith = ReplaceWith("(this as ReadOnlyIntVar).use()"),
-        level = DeprecationLevel.ERROR
+        level = DeprecationLevel.WARNING
     )
     fun ReadOnlyVar<Int>.use(): Int {
-        return use(this)
+        return bindAndGet(this)
     }
 
     /**
@@ -91,12 +89,12 @@ class VarContext {
 
 
     @Deprecated(
-        "Don't use ReadOnlyVar<Long>, use ReadOnlyLongVar.use() instead to avoid explicit boxing",
+        "If this is a ReadOnlyLongVar, use ReadOnlyLongVar.use() instead to avoid explicit boxing",
         replaceWith = ReplaceWith("(this as ReadOnlyLongVar).use()"),
-        level = DeprecationLevel.ERROR
+        level = DeprecationLevel.WARNING
     )
     fun ReadOnlyVar<Long>.use(): Long {
-        return use(this)
+        return bindAndGet(this)
     }
 
     /**
@@ -109,12 +107,12 @@ class VarContext {
 
 
     @Deprecated(
-        "Don't use ReadOnlyVar<Double>, use ReadOnlyDoubleVar.use() instead to avoid explicit boxing",
+        "If this is a ReadOnlyDoubleVar, use ReadOnlyDoubleVar.use() instead to avoid explicit boxing",
         replaceWith = ReplaceWith("(this as ReadOnlyDoubleVar).use()"),
-        level = DeprecationLevel.ERROR
+        level = DeprecationLevel.WARNING
     )
     fun ReadOnlyVar<Double>.use(): Double {
-        return use(this)
+        return bindAndGet(this)
     }
 
     /**
@@ -127,12 +125,12 @@ class VarContext {
 
 
     @Deprecated(
-        "Don't use ReadOnlyVar<Char>, use ReadOnlyCharVar.use() instead to avoid explicit boxing",
+        "If this is a ReadOnlyCharVar, use ReadOnlyCharVar.use() instead to avoid explicit boxing",
         replaceWith = ReplaceWith("(this as ReadOnlyCharVar).use()"),
-        level = DeprecationLevel.ERROR
+        level = DeprecationLevel.WARNING
     )
     fun ReadOnlyVar<Char>.use(): Char {
-        return use(this)
+        return bindAndGet(this)
     }
 
     /**

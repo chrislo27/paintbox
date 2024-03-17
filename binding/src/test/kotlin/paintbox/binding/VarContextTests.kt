@@ -14,7 +14,7 @@ class VarContextTests {
         val varr: ReadOnlyVar<*> = UnitReadOnlyVar()
         
         // Act
-        context.use(varr)
+        context.bindAndGet(varr)
         
         // Assert
         assertEquals(1, context.dependencies.size)
@@ -28,7 +28,7 @@ class VarContextTests {
         val varr = UnitReadOnlyVar()
         
         // Act
-        context.use(varr)
+        context.bindAndGet(varr)
         
         // Assert
         assertTrue(varr.getOrComputeCalled)

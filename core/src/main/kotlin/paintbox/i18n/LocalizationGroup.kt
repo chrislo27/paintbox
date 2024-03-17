@@ -141,5 +141,5 @@ open class LocalizationGroup(
         this.keysToBundles.getOrCompute()[key]
     
     private fun VarContext.useLocalizationInstanceForKey(key: String): ILocalization? =
-        this.use(keysToBundles)[key]
+        this.bindAndGet(keysToBundles)[key]
 }
