@@ -12,7 +12,7 @@ final class SceneRoot : UIElement() {
         setParent(null)
     }
 
-    override fun setParent(parent: UIElement?) {
+    override fun setParent(newParent: Parent?) {
         super.setParent(null)
     }
 }

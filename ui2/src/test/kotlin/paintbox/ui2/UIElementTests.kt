@@ -4,6 +4,7 @@ import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.MatcherAssert.*
 import org.hamcrest.Matchers.*
 import paintbox.binding.Var
+import paintbox.ui2.defaultimpl.DefaultParent
 import kotlin.test.Test
 
 
@@ -21,7 +22,7 @@ class UIElementTests {
     @Test
     fun `adding an element as a child sets its parent property`() {
         // Arrange
-        val parent = UIElement()
+        val parent = DefaultParent()
         val child = UIElement()
         
         // Act
@@ -35,7 +36,7 @@ class UIElementTests {
     @Test
     fun `removing an element as a child nulls its parent property`() {
         // Arrange
-        val parent = UIElement()
+        val parent = DefaultParent()
         val child = UIElement()
         
         parent.addChild(child)
