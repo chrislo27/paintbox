@@ -10,7 +10,7 @@ import kotlin.math.min
 /**
  * A [UIElement] that supports using [LayoutDimensions]'s minimum/preferred/maximum width/height properties via the [layoutDimensions] property.
  */
-open class LayoutElement : UIElement(), LayoutDimensions {
+interface LayoutElement : UIElement, LayoutDimensions {
     
     companion object {
 
@@ -22,8 +22,8 @@ open class LayoutElement : UIElement(), LayoutDimensions {
         }
     }
 
-    val layoutDimensions: LayoutDimensions = LayoutDimensionsImpl()
-    
+    val layoutDimensions: LayoutDimensions
+
     //region LayoutDimensions interface delegates to layoutDimensions property
     override val minWidth: FloatVar get() = layoutDimensions.minWidth
     override val prefWidth: FloatVar get() = layoutDimensions.prefWidth
@@ -33,10 +33,11 @@ open class LayoutElement : UIElement(), LayoutDimensions {
     override val prefHeight: FloatVar get() = layoutDimensions.prefHeight
     override val maxHeight: FloatVar get() = layoutDimensions.maxHeight
     //endregion
+    
 
     //region Functions to compute min/pref/max width/height
     
-    protected open fun computePrefWidth(height: Float): Float {
+    open fun computePrefWidth(height: Float): Float {
         // Default impl: pref width of the children
         var minX = 0f
         var maxX = 0f
@@ -48,15 +49,15 @@ open class LayoutElement : UIElement(), LayoutDimensions {
         return maxX - minX
     }
     
-    protected open fun computeMinWidth(height: Float): Float {
+    open fun computeMinWidth(height: Float): Float {
         return prefWidth(height)
     }
     
-    protected open fun computeMaxWidth(height: Float): Float {
+    open fun computeMaxWidth(height: Float): Float {
         return Float.MAX_VALUE
     }
     
-    protected open fun computePrefHeight(width: Float): Float {
+    open fun computePrefHeight(width: Float): Float {
         // Default impl: pref height of the children
         var minY = 0f
         var maxY = 0f
@@ -68,11 +69,11 @@ open class LayoutElement : UIElement(), LayoutDimensions {
         return maxY - minY
     }
     
-    protected open fun computeMinHeight(width: Float): Float {
+    open fun computeMinHeight(width: Float): Float {
         return prefHeight(width)
     }
     
-    protected open fun computeMaxHeight(width: Float): Float {
+    open fun computeMaxHeight(width: Float): Float {
         return Float.MAX_VALUE
     }
     
@@ -80,14 +81,14 @@ open class LayoutElement : UIElement(), LayoutDimensions {
     
     //region Overrides for getting min/pref/max width/height, including handling computed/pref size sentinels
     
-    final override fun prefWidth(height: Float): Float {
+    override fun prefWidth(height: Float): Float {
         return when (val override = layoutDimensions.prefWidth.get()) {
             USE_COMPUTED_SIZE -> computePrefWidth(height)
             else -> override.valueOrZero()
         }
     }
 
-    final override fun minWidth(height: Float): Float {
+    override fun minWidth(height: Float): Float {
         return when (val override = layoutDimensions.minWidth.get()) {
             USE_COMPUTED_SIZE -> computeMinWidth(height)
             USE_PREF_SIZE -> prefWidth(height)
@@ -95,7 +96,7 @@ open class LayoutElement : UIElement(), LayoutDimensions {
         }
     }
 
-    final override fun maxWidth(height: Float): Float {
+    override fun maxWidth(height: Float): Float {
         return when (val override = layoutDimensions.maxWidth.get()) {
             USE_COMPUTED_SIZE -> computeMaxWidth(height)
             USE_PREF_SIZE -> prefWidth(height)
@@ -103,14 +104,14 @@ open class LayoutElement : UIElement(), LayoutDimensions {
         }
     }
 
-    final override fun prefHeight(width: Float): Float {
+    override fun prefHeight(width: Float): Float {
         return when (val override = layoutDimensions.prefHeight.get()) {
             USE_COMPUTED_SIZE -> computePrefHeight(width)
             else -> override.valueOrZero()
         }
     }
 
-    final override fun minHeight(width: Float): Float {
+    override fun minHeight(width: Float): Float {
         return when (val override = layoutDimensions.minHeight.get()) {
             USE_COMPUTED_SIZE -> computeMinHeight(width)
             USE_PREF_SIZE -> prefHeight(width)
@@ -118,7 +119,7 @@ open class LayoutElement : UIElement(), LayoutDimensions {
         }
     }
 
-    final override fun maxHeight(width: Float): Float {
+    override fun maxHeight(width: Float): Float {
         return when (val override = layoutDimensions.maxHeight.get()) {
             USE_COMPUTED_SIZE -> computeMaxHeight(width)
             USE_PREF_SIZE -> prefHeight(width)

@@ -13,7 +13,7 @@ val UIElement.children: ReadOnlyVar<List<UIElement>>
 // For the future if Parent wants to restrict its children's types with generics 
 private typealias Child = UIElement
 
-interface Parent {
+interface Parent : UIElement {
 
     val children: Var<List<Child>>
     

@@ -3,6 +3,7 @@ package paintbox.ui2
 import paintbox.binding.FloatVar
 import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
+import paintbox.ui2.defaultimpl.BoundsImpl
 
 
 interface UIBounds {
