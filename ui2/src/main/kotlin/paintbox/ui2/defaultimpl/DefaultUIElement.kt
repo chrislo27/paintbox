@@ -19,7 +19,7 @@ open class DefaultUIElement(
         (parent.use() as? UIElement)?.sceneRoot?.use()
     }
     
-    override fun setParent(newParent: Parent?) {
+    override fun Parent.setParent(newParent: Parent?) {
         val oldParent = _parent.getOrCompute()
         if (oldParent != null) {
             onRemovedFromParent(oldParent)

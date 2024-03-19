@@ -18,11 +18,11 @@ interface UIElement : UIBounds {
     //region Children operations
 
     /**
-     * To only be used by the new parent of this [UIElement] to set/unset the [parent] property.
+     * To only be used by the (new) parent of this [UIElement] to set/unset the [parent] property.
      * 
      * Implementations will call [onRemovedFromParent] and [onAddedToParent].
      */
-    fun setParent(newParent: Parent?) 
+    fun Parent.setParent(newParent: Parent?) 
     
 
     /**

@@ -32,7 +32,7 @@ interface Parent : UIElement {
             childrenCopy.add(atIndex, child)
             children.set(childrenCopy)
 
-            child.setParent(this)
+            with(child) { setParent(this@Parent) }
             this.onChildAdded(child, atIndex)
 
             return true
@@ -80,7 +80,7 @@ interface Parent : UIElement {
         children.set(currentChildren.toMutableList().apply {
             removeAt(index)
         })
-        child.setParent(null)
+        with(child) { setParent(null) }
         this.onChildRemoved(child, index)
 
         return true
