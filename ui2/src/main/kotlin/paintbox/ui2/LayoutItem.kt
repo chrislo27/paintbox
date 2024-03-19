@@ -10,7 +10,7 @@ import kotlin.math.min
 /**
  * A [UIElement] that supports using [LayoutDimensions]'s minimum/preferred/maximum width/height properties via the [layoutDimensions] property.
  */
-interface LayoutElement : UIElement, LayoutDimensions {
+interface LayoutItem : UIElement, LayoutDimensions {
     
     companion object {
 
