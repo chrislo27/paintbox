@@ -21,6 +21,8 @@ interface UIElement : UIBounds {
      * To only be used by the (new) parent of this [UIElement] to set/unset the [parent] property.
      * 
      * Implementations will call [onRemovedFromParent] and [onAddedToParent].
+     * 
+     * This is a receiver function to make it more obvious that it should only be called by a [Parent].
      */
     fun Parent.setParent(newParent: Parent?) 
     
