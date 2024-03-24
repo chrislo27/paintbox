@@ -1,22 +1,21 @@
 package paintbox.event
 
+import paintbox.event.defaultimpl.DefaultEventBus
 
-class EventBus<Evt> {
+
+interface EventBus<Evt> {
     
-    private var listeners: List<EventListener<Evt>> = emptyList()
-    
-    fun addListener(listener: EventListener<Evt>) {
-        listeners += listener
+    companion object {
+        
+        operator fun <Evt> invoke(): EventBus<Evt> = DefaultEventBus()
     }
+
+    fun addListener(listener: EventListener<Evt>)
     
-    fun removeListener(listener: EventListener<Evt>) {
-        listeners -= listener
-    }
-    
-    fun fire(evt: Evt) {
-        for (listener in listeners.asReversed()) {
-            val consumed = listener.handle(evt, this)
-            if (consumed) break
-        }
-    }
+    fun removeListener(listener: EventListener<Evt>)
+
+    /**
+     * Fires the [event], with listeners being notified in the REVERSE order they were added.
+     */
+    fun fire(event: Evt)
 }

@@ -13,6 +13,16 @@ fun interface EventListener<Evt> {
                 }
             }
         }
+
+        inline fun <Evt> oneTime(crossinline handler: (event: Evt, eventBus: EventBus<Evt>) -> Boolean): EventListener<Evt> {
+            return object : EventListener<Evt> {
+                override fun handle(event: Evt, eventBus: EventBus<Evt>): Boolean {
+                    val result = handler(event, eventBus)
+                    eventBus.removeListener(this)
+                    return result
+                }
+            }
+        }
     }
 
     /**
