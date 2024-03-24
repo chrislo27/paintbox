@@ -1,5 +1,8 @@
 package paintbox.binding
 
+import paintbox.event.EventBus
+import paintbox.event.EventListener
+
 
 /**
  * Contextualizes [ReadOnlyVar] usage. This can be used for dependency tracking during binding (its main purpose),
@@ -29,6 +32,26 @@ interface VarContext {
      */
     fun <R> ReadOnlyVar<R>.use(): R { // Specializations should be added for this receiver-type function
         return bindAndGet(this)
+    }
+
+    /**
+     * Adds a dependency on the given event bus, using the event as the value.
+     */
+    fun <R> EventBus<R>.use(initialValue: R): R {
+        return this.use(initialValue) { it }
+    }
+
+    /**
+     * Adds a dependency on the given event bus, mapping a received event using [mapping].
+     */
+    fun <Evt, R> EventBus<Evt>.use(initialValue: R, mapping: (Evt) -> R): R {
+        val eventBus = this
+        val auxVar = Var(initialValue)
+        eventBus.addListener(EventListener.oneTime { e, _ ->
+            auxVar.set(mapping(e))
+            false
+        })
+        return this@VarContext.bindAndGet(auxVar)
     }
 
 
