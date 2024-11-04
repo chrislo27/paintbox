@@ -155,7 +155,7 @@ open class AssetRegistryInstance : Disposable {
      * Unloads all assets and resets the state of this [AssetRegistryInstance] so it can be loaded again.
      */
     fun unloadAllAssets() {
-        unmanagedAssets.values.filterIsInstance(Disposable::class.java).forEach(Disposable::dispose)
+        unmanagedAssets.values.filterIsInstance<Disposable>().forEach(Disposable::dispose)
         unmanagedAssets.clear()
         manager.clear()
         (assetMap as MutableMap).clear()

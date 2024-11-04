@@ -19,7 +19,7 @@ allprojects {
 
     ext {
         appName = "Paintbox"
-        gdxVersion = '1.12.1'
+        gdxVersion = '1.13.0'
         gdxControllersVersion = '2.2.3'
         paintboxVersion = "0.18.0"
     }
@@ -155,7 +155,6 @@ project(":desktop") {
 
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-        api "com.badlogicgames.gdx:gdx-lwjgl3-glfw-awt-macos:$gdxVersion"
 
         api "org.jcommander:jcommander:1.83"
     }
