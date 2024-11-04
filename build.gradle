@@ -139,23 +139,6 @@ project(":ui") {
     }
 }
 
-project(":ui2") {
-    dependencies {
-        api project(":core")
-    }
-
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                groupId = 'com.github.chrislo27'
-                artifactId = 'paintbox-ui2'
-
-                from components.java
-            }
-        }
-    }
-}
-
 project(":desktop") {
     dependencies {
         api project(":core")
