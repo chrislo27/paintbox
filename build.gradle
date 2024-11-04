@@ -27,7 +27,7 @@ allprojects {
     archivesBaseName = "Paintbox-${project.name}"
     
     java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+        toolchain.languageVersion.set(JavaLanguageVersion.of(17))
         withSourcesJar()
         withJavadocJar()
     }
@@ -48,7 +48,7 @@ allprojects {
 
     tasks.withType(KotlinCompilationTask).configureEach {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
             freeCompilerArgs.add("-opt-in=kotlin.ExperimentalUnsignedTypes")
             freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
         }
