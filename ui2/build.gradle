@@ -1,5 +1,0 @@
-apply plugin: "java"
-apply plugin: 'kotlin'
-
-sourceSets.main.java.srcDirs = [ "src/main/kotlin", "src/main/java" ]
-sourceSets.main.resources.srcDir("assets/")
