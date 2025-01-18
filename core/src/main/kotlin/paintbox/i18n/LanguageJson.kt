@@ -9,7 +9,7 @@ internal class LanguageObject {
     lateinit var locale: LocaleObject
 
     fun toNamedLocale(): NamedLocale =
-        NamedLocale(name, Locale(locale.language ?: "", locale.country ?: "", locale.variant ?: ""))
+        NamedLocale(name, Locale.of(locale.language ?: "", locale.country ?: "", locale.variant ?: ""))
 
 }
 
