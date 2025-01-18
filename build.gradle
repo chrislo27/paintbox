@@ -19,9 +19,9 @@ allprojects {
 
     ext {
         appName = "Paintbox"
-        gdxVersion = '1.13.0'
+        gdxVersion = '1.13.1'
         gdxControllersVersion = '2.2.3'
-        paintboxVersion = "0.18.0"
+        paintboxVersion = "0.19.0"
     }
     version = ext.paintboxVersion
     archivesBaseName = "Paintbox-${project.name}"
@@ -108,7 +108,7 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version"
     }
 
     publishing {
@@ -145,14 +145,14 @@ project(":desktop") {
         api project(":core")
         testApi project(":ui")
 
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-windows"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-windows-x86"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-windows-arm64"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-linux"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-linux-arm64"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-linux-arm32"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-macos"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_tinyfd_version:natives-macos-arm64"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-windows"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-windows-x86"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-windows-arm64"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-linux"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-linux-arm64"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-linux-arm32"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-macos"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-macos-arm64"
 
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
