@@ -21,13 +21,13 @@ allprojects {
         appName = "Paintbox"
         gdxVersion = '1.13.1'
         gdxControllersVersion = '2.2.3'
-        paintboxVersion = "0.19.0"
+        paintboxVersion = "1.0.0"
     }
     version = ext.paintboxVersion
     archivesBaseName = "Paintbox-${project.name}"
     
     java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
         withSourcesJar()
         withJavadocJar()
         javadoc.options.addStringOption('Xdoclint:none', '-quiet')
@@ -49,7 +49,7 @@ allprojects {
 
     tasks.withType(KotlinCompilationTask).configureEach {
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_17)
+            jvmTarget.set(JvmTarget.JVM_21)
             freeCompilerArgs.add("-opt-in=kotlin.ExperimentalUnsignedTypes")
             freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
         }
@@ -85,7 +85,7 @@ project(":utils") {
         api "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
         api "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-        implementation "org.slf4j:slf4j-simple:2.0.7"
+        implementation "org.slf4j:slf4j-simple:2.0.16"
     }
 
     publishing {
@@ -157,7 +157,7 @@ project(":desktop") {
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
 
-        api "org.jcommander:jcommander:1.83"
+        api "org.jcommander:jcommander:2.0"
     }
 
     publishing {
