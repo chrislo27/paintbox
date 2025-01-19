@@ -54,7 +54,7 @@ open class Logger {
         
         printStream.println(text)
 
-        throwable?.printStackTrace(System.err)
+        throwable?.printStackTrace(printStream)
     }
 
     fun log(logLevel: LogLevel, msg: String, tag: String = "", throwable: Throwable? = null) {
