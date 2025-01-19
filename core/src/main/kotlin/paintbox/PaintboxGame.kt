@@ -2,7 +2,6 @@ package paintbox
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
-import com.badlogic.gdx.InputProcessor
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
@@ -32,13 +31,11 @@ import kotlin.system.measureNanoTime
  * [ResizeAction] and its other size parameters in [paintboxSettings]
  * are behaviours for how resizing works, which is is important for fonts that scale up with render size.
  */
-abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(), InputProcessor {
+abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() {
 
     companion object {
 
         lateinit var fillTexture: Texture
-            private set
-        lateinit var spritesheetTexture: Texture
             private set
         lateinit var paintboxSpritesheet: PaintboxSpritesheet
             private set
@@ -128,10 +125,10 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
         }
         fillTexture = Texture(pixmap)
         pixmap.dispose()
-        spritesheetTexture = Texture(Gdx.files.internal("paintbox/paintbox_spritesheet_noborder.png"), true).apply {
+        val spritesheetTexture = Texture(Gdx.files.internal("paintbox/paintbox_spritesheet_noborder.png"), true).apply {
             this.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
         }
-        paintboxSpritesheet = PaintboxSpritesheet(spritesheetTexture)
+        paintboxSpritesheet = PaintboxSpritesheet(spritesheetTexture, ownsTexture = true)
 
         batch = SpriteBatch()
         shapeRenderer = ShapeRenderer()
@@ -261,7 +258,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
         shapeRenderer.disposeQuietly(printStackTrace = true)
         fontCache.disposeQuietly(printStackTrace = true)
         fillTexture.disposeQuietly(printStackTrace = true)
-        spritesheetTexture.disposeQuietly(printStackTrace = true)
+        paintboxSpritesheet.disposeQuietly(printStackTrace = true)
 
         ScreenRegistry.disposeQuietly(printStackTrace = true)
         AssetRegistry.disposeQuietly(printStackTrace = true)

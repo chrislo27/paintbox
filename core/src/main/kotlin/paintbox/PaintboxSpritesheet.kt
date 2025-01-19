@@ -2,10 +2,11 @@ package paintbox
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.badlogic.gdx.utils.Disposable
 import kotlin.math.absoluteValue
 
 
-class PaintboxSpritesheet(val texture: Texture) {
+class PaintboxSpritesheet(val texture: Texture, val ownsTexture: Boolean) : Disposable {
 
     val roundedCorner: TextureRegion = TextureRegion(texture, 0, 0, 32, 32)
     val roundedCorner7: TextureRegion = TextureRegion(texture, 34, 7, 7, 7)
@@ -40,6 +41,12 @@ class PaintboxSpritesheet(val texture: Texture) {
             radius <= 6 -> roundedCorner6
             radius <= 7 -> roundedCorner7
             else -> roundedCorner
+        }
+    }
+
+    override fun dispose() {
+        if (ownsTexture) {
+            texture.dispose()
         }
     }
 }
