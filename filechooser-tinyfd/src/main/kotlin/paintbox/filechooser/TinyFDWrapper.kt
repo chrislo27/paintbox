@@ -1,6 +1,5 @@
 package paintbox.filechooser
 
-import com.badlogic.gdx.graphics.Color
 import org.lwjgl.PointerBuffer
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.system.MemoryUtil.memAddress
@@ -157,28 +156,17 @@ object TinyFDWrapper : IFileDialog {
         selectFolder(title, defaultDir.toProperPath()).let(callback)
     }
 
-    /**
-     * Opens a colour selection dialog. Returns null if the chooser was cancelled.
-     */
-    fun selectColor(title: String, defaultHexColor: String): Color? {
-        val stack: MemoryStack = MemoryStack.stackPush()
-        stack.use {
-            val color: ByteBuffer = stack.malloc(3)
-            val hex: String = tinyfd_colorChooser(title, defaultHexColor, null, color) ?: return null
-            return Color.valueOf(hex).apply { a = 1f }
-        }
-    }
 
     /**
-     * Opens a colour selection dialog. Returns null if the chooser was cancelled.
+     * Opens a colour selection dialog. Returns a hex colour in the format RRGGBB, or null if the chooser was cancelled.
      */
-    fun selectColor(title: String, defaultColor: Color?): Color? {
+    fun selectColor(title: String, defaultHexColor: String?): String? {
         val stack: MemoryStack = MemoryStack.stackPush()
         stack.use {
             val color: ByteBuffer = stack.malloc(3)
-            val def = if (defaultColor == null) "#FFFFFF" else "#${defaultColor.toString().take(6)}"
+            val def = if (defaultHexColor == null) "#FFFFFF" else "#${defaultHexColor.substringAfterLast('#').take(6)}"
             val hex: String = tinyfd_colorChooser(title, def, null, color) ?: return null
-            return Color.valueOf(hex).apply { a = 1f }
+            return hex
         }
     }
 

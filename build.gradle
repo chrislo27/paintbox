@@ -100,6 +100,50 @@ project(":utils") {
     }
 }
 
+project(":filechooser") {
+    dependencies {
+        api project(":utils")
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = 'com.github.chrislo27'
+                artifactId = 'paintbox-filechooser'
+
+                from components.java
+            }
+        }
+    }
+}
+
+project(":filechooser-tinyfd") {
+    dependencies {
+        api project(":filechooser")
+        
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-windows"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-windows-x86"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-windows-arm64"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-linux"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-linux-arm64"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-linux-arm32"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-macos"
+        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-macos-arm64"
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = 'com.github.chrislo27'
+                artifactId = 'paintbox-filechooser-tinyfd'
+
+                from components.java
+            }
+        }
+    }
+}
+
 project(":core") {
     dependencies {
         api project(":utils")
@@ -108,7 +152,6 @@ project(":core") {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version"
     }
 
     publishing {
@@ -144,15 +187,6 @@ project(":desktop") {
     dependencies {
         api project(":core")
         testApi project(":ui")
-
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-windows"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-windows-x86"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-windows-arm64"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-linux"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-linux-arm64"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-linux-arm32"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-macos"
-        api "org.lwjgl:lwjgl-tinyfd:$lwjgl_version:natives-macos-arm64"
 
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
