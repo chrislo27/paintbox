@@ -22,6 +22,7 @@ import paintbox.registry.ScreenRegistry
 import paintbox.util.Version
 import paintbox.util.WindowSize
 import paintbox.util.gdxutils.GdxGame
+import paintbox.util.gdxutils.disposeQuietly
 import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.system.measureNanoTime
 
@@ -53,7 +54,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
     class LauncherSettings {
 
         /**
-         * If not null, the max FPS was manually set and is a value value (0 or larger).
+         * If not null, the max FPS was manually set and is a valid value (0 or larger).
          */
         var fps: Int? = null
 
@@ -256,14 +257,14 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
             }
         }
 
-        batch.dispose()
-        shapeRenderer.dispose()
-        fontCache.dispose()
-        fillTexture.dispose()
-        spritesheetTexture.dispose()
+        batch.disposeQuietly(printStackTrace = true)
+        shapeRenderer.disposeQuietly(printStackTrace = true)
+        fontCache.disposeQuietly(printStackTrace = true)
+        fillTexture.disposeQuietly(printStackTrace = true)
+        spritesheetTexture.disposeQuietly(printStackTrace = true)
 
-        ScreenRegistry.dispose()
-        AssetRegistry.dispose()
+        ScreenRegistry.disposeQuietly(printStackTrace = true)
+        AssetRegistry.disposeQuietly(printStackTrace = true)
 
         Paintbox.LOGGER.info("Dispose call finished, goodbye!")
     }
@@ -275,8 +276,6 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
     fun removeDisposeCall(runnable: Runnable) {
         disposeCalls -= runnable
     }
-
-    fun getFPS(): Int = debugInfo.fps
 
     fun resetCameras() {
         val resizeAction = paintboxSettings.resizeAction

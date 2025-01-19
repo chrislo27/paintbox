@@ -19,7 +19,7 @@ open class DebugOverlay(val paintboxGame: PaintboxGame) {
         val batch = paintboxGame.batch
         val paintboxFont = paintboxGame.defaultFonts.debugFontBoldBordered
         val font = paintboxFont.begin()
-        val fps = paintboxGame.getFPS()
+        val fps = paintboxGame.debugInfo.fps
         val memNumberFormat = debugInfo.memoryNumberFormat
         val msNumberFormat = debugInfo.msNumberFormat
         val screen = paintboxGame.screen

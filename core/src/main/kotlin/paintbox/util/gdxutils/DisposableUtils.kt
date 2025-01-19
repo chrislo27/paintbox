@@ -3,9 +3,12 @@ package paintbox.util.gdxutils
 import com.badlogic.gdx.utils.Disposable
 
 
-fun Disposable.disposeQuietly() {
+fun Disposable.disposeQuietly(printStackTrace: Boolean = false) {
     try {
         this.dispose()
-    } catch (ignored: Exception) {
+    } catch (e: Exception) {
+        if (printStackTrace) {
+            e.printStackTrace()
+        }
     }
 }
