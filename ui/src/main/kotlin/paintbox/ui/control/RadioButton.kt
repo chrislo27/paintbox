@@ -93,7 +93,7 @@ open class RadioButton(text: String, font: PaintboxFont = UIElement.defaultFont)
             : this({ bindable.use() }, font)
 
     open fun getTextureRegionForType(state: Boolean): TextureRegion {
-        val spritesheet = PaintboxGame.paintboxSpritesheet
+        val spritesheet = PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet
         return if (!state) spritesheet.radioButtonEmpty else spritesheet.radioButtonFilled
     }
 

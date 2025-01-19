@@ -111,7 +111,7 @@ open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont) : 
             : this({ bindable.use() }, font)
 
     open fun getTextureRegionForType(type: CheckType, state: Boolean): TextureRegion {
-        val spritesheet = PaintboxGame.paintboxSpritesheet
+        val spritesheet = PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet
         return if (!state) spritesheet.checkboxEmpty else when (type) {
             CheckType.CHECKMARK -> spritesheet.checkboxCheck
             CheckType.X -> spritesheet.checkboxX

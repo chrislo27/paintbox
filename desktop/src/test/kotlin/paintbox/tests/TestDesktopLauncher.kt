@@ -11,11 +11,11 @@ import paintbox.desktop.PaintboxDesktopLauncher
 import paintbox.logging.Logger
 import paintbox.tests.newui.NewUITestGame
 import paintbox.tests.newui.ScaledFontTestGame
+import paintbox.tests.newui.UIAnchorTestEditorScreen
+import paintbox.tests.newui.UITextLabelAlignTestScreen
 import paintbox.tests.textblocks.TextBlockTestGame
 import paintbox.util.Version
 import paintbox.util.WindowSize
-import paintbox.tests.newui.UIAnchorTestEditorScreen
-import paintbox.tests.newui.UITextLabelAlignTestScreen
 
 
 internal object TestDesktopLauncher {
@@ -74,9 +74,7 @@ internal object TestDesktopLauncher {
 
         val selectedTest: Pair<PaintboxGame, (PaintboxDesktopLauncher) -> Unit> = test3
         getDefaultLauncher(selectedTest.first).apply {
-            game.programLaunchArguments = args.toList()
             selectedTest.second.invoke(this)
-        }
-            .launch()
+        }.launch()
     }
 }

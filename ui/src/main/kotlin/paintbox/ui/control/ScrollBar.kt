@@ -141,7 +141,7 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
     }
 
     protected open fun getArrowButtonTexReg(): TextureRegion {
-        return PaintboxGame.paintboxSpritesheet.upArrow
+        return PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet.upArrow
     }
 
     fun convertValueToPercentage(v: Float): Float {

@@ -135,7 +135,7 @@ open class ComboBoxSkin(element: ComboBox<Any?>) : Skin<ComboBox<Any?>>(element)
         rectColor.set(element.backgroundColor.getOrCompute())
         rectColor.a *= opacity
         batch.color = rectColor
-        val paintboxSpritesheet = PaintboxGame.paintboxSpritesheet
+        val paintboxSpritesheet = PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet
         batch.fillRect(rectX, rectY - rectH, rectW, rectH)
 
         rectColor.set(element.arrowColor.getOrCompute())

@@ -10,7 +10,10 @@ import paintbox.binding.FloatVar
 import paintbox.binding.ReadOnlyFloatVar
 import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
-import paintbox.ui.*
+import paintbox.ui.ClickPressed
+import paintbox.ui.MouseInputEvent
+import paintbox.ui.Scrolled
+import paintbox.ui.TouchDragged
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
@@ -90,7 +93,7 @@ open class Slider : Control<Slider>() {
     }
 
     protected open fun getArrowButtonTexReg(): TextureRegion {
-        return PaintboxGame.paintboxSpritesheet.upArrow
+        return PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet.upArrow
     }
 
     protected fun convertValueToPercentage(v: Float): Float {
@@ -164,7 +167,7 @@ open class Slider : Control<Slider>() {
             tmpColor.mul(filledCircleMul, filledCircleMul, filledCircleMul, 1f)
             batch.color = tmpColor
             batch.draw(
-                PaintboxGame.paintboxSpritesheet.circleFilled,
+                PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet.circleFilled,
                 rectX + (valueAsPercent * (rectW - circleH)),
                 rectY - rectH,
                 circleH,

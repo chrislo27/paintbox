@@ -5,8 +5,6 @@ import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.Pixmap
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.glutils.HdpiUtils
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
@@ -34,11 +32,7 @@ import kotlin.system.measureNanoTime
 abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() {
 
     companion object {
-
-        lateinit var fillTexture: Texture
-            private set
-        lateinit var paintboxSpritesheet: PaintboxSpritesheet
-            private set
+        
         lateinit var gameInstance: PaintboxGame
             private set
         val launchArguments: List<String>
@@ -87,6 +81,8 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() 
         private set
     lateinit var defaultFonts: DefaultFonts
         private set
+    lateinit var staticAssets: PaintboxStaticAssets
+        private set
     lateinit var batch: SpriteBatch
         private set
     lateinit var shapeRenderer: ShapeRenderer
@@ -106,12 +102,10 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() 
      */
     abstract fun getTitle(): String
 
-    var programLaunchArguments: List<String> = emptyList()
-
     override fun create() {
         val logToFile = paintboxSettings.logToFile
         if (logToFile != null) {
-            SysOutPiper.pipe(programLaunchArguments, this, logToFile)
+            SysOutPiper.pipe(paintboxSettings.launchArguments, this, logToFile)
         }
         Paintbox.LOGGER = paintboxSettings.logger
         gameInstance = this
@@ -119,16 +113,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() 
         startingResolution = WindowSize(Gdx.graphics.width, Gdx.graphics.height)
         resetCameras()
 
-        val pixmap: Pixmap = Pixmap(1, 1, Pixmap.Format.RGBA8888).apply {
-            setColor(1f, 1f, 1f, 1f)
-            fill()
-        }
-        fillTexture = Texture(pixmap)
-        pixmap.dispose()
-        val spritesheetTexture = Texture(Gdx.files.internal("paintbox/paintbox_spritesheet_noborder.png"), true).apply {
-            this.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
-        }
-        paintboxSpritesheet = PaintboxSpritesheet(spritesheetTexture, ownsTexture = true)
+        staticAssets = PaintboxStaticAssets()
 
         batch = SpriteBatch()
         shapeRenderer = ShapeRenderer()
@@ -257,8 +242,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() 
         batch.disposeQuietly(printStackTrace = true)
         shapeRenderer.disposeQuietly(printStackTrace = true)
         fontCache.disposeQuietly(printStackTrace = true)
-        fillTexture.disposeQuietly(printStackTrace = true)
-        paintboxSpritesheet.disposeQuietly(printStackTrace = true)
+        staticAssets.disposeQuietly(printStackTrace = true)
 
         ScreenRegistry.disposeQuietly(printStackTrace = true)
         AssetRegistry.disposeQuietly(printStackTrace = true)

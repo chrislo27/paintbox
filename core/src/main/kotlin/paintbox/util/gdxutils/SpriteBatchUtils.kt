@@ -11,8 +11,10 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 
+private val fillTexture: Texture get() = PaintboxGame.gameInstance.staticAssets.fillTexture
+
 fun SpriteBatch.fillRect(x: Float, y: Float, width: Float, height: Float) {
-    this.draw(PaintboxGame.fillTexture, x, y, width, height)
+    this.draw(fillTexture, x, y, width, height)
 }
 
 fun SpriteBatch.fillRect(rect: Rectangle) {
@@ -20,17 +22,17 @@ fun SpriteBatch.fillRect(rect: Rectangle) {
 }
 
 fun SpriteBatch.drawRect(x: Float, y: Float, width: Float, height: Float, lineX: Float, lineY: Float) {
-    this.draw(PaintboxGame.fillTexture, x, y, width, lineY.coerceAtMost(height))
-    this.draw(PaintboxGame.fillTexture, x, y + height, width, -(lineY.coerceAtMost(height)))
+    this.draw(fillTexture, x, y, width, lineY.coerceAtMost(height))
+    this.draw(fillTexture, x, y + height, width, -(lineY.coerceAtMost(height)))
     this.draw(
-        PaintboxGame.fillTexture,
+        fillTexture,
         x,
         y + lineY,
         lineX.coerceAtMost(width),
         height - (lineY * 2).coerceAtMost(height)
     )
     this.draw(
-        PaintboxGame.fillTexture,
+        fillTexture,
         x + width,
         y + lineY,
         -(lineX.coerceAtMost(width)),
@@ -61,7 +63,7 @@ fun SpriteBatch.fillRoundedRect(x: Float, y: Float, w: Float, h: Float, cornerRa
     if (roundedRad <= 0) {
         this.fillRect(x, y, w, h)
     } else {
-        val spritesheet = PaintboxGame.paintboxSpritesheet
+        val spritesheet = PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet
         val fill = spritesheet.fill
         val roundedRect = spritesheet.roundedCorner
         this.draw(fill, x + roundedRad, y + roundedRad, w - roundedRad * 2, h - roundedRad * 2) // Middle
@@ -86,7 +88,7 @@ fun SpriteBatch.drawQuad(
     x2: Float, y2: Float, color2: Color,
     x3: Float, y3: Float, color3: Color,
     x4: Float, y4: Float, color4: Color,
-    texture: Texture = PaintboxGame.fillTexture,
+    texture: Texture = fillTexture,
 ) {
     this.drawQuad(
         x1, y1, color1.toFloatBits(),
@@ -105,7 +107,7 @@ fun SpriteBatch.drawQuad(
     x2: Float, y2: Float, color2: Float,
     x3: Float, y3: Float, color3: Float,
     x4: Float, y4: Float, color4: Float,
-    texture: Texture = PaintboxGame.fillTexture,
+    texture: Texture = fillTexture,
     blU: Float = 0f, blV: Float = 0f, brU: Float = 1f, brV: Float = 0f,
     trU: Float = 1f, trV: Float = 1f, tlU: Float = 0f, tlV: Float = 1f,
 ) {

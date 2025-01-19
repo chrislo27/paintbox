@@ -116,7 +116,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
                         if (i == num / 2) {
                             addChild(
                                 ImageNode(
-                                    PaintboxGame.paintboxSpritesheet.logo128,
+                                    main.staticAssets.paintboxSpritesheet.logo128,
                                     ImageRenderingMode.FULL
                                 ).apply {
 

@@ -44,7 +44,7 @@ class FrameBufferManager(
     private var isDisposed: Boolean = false
 
     private val framebuffers: Array<NestedFrameBuffer?> = Array(numBuffers) { null }
-    private val fbTexRegs: Array<TextureRegion> = Array(numBuffers) { TextureRegion(PaintboxGame.fillTexture) }
+    private val fbTexRegs: Array<TextureRegion> = Array(numBuffers) { TextureRegion(PaintboxGame.gameInstance.staticAssets.fillTexture) }
 
     private var lastKnownWindowSize: WindowSize = WindowSize(-1, -1)
     private var framebufferSize: WindowSize = WindowSize(0, 0)

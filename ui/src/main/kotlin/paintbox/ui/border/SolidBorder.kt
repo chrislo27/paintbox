@@ -7,9 +7,9 @@ import paintbox.PaintboxGame
 import paintbox.binding.BooleanVar
 import paintbox.binding.ContextBinding
 import paintbox.binding.Var
-import paintbox.util.ColorStack
 import paintbox.ui.UIElement
 import paintbox.ui.area.Insets
+import paintbox.util.ColorStack
 import paintbox.util.gdxutils.fillRect
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -45,7 +45,7 @@ class SolidBorder(initColor: Color) : Border {
         batch.color = tmpColor
 
         if (roundedCorners.get()) {
-            val paintboxSpritesheet = PaintboxGame.paintboxSpritesheet
+            val paintboxSpritesheet = PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet
 //            batch.fillRect(rectX + roundedRad, rectY - rectH + roundedRad, rectW - roundedRad * 2, rectH - roundedRad * 2)
 //            batch.fillRect(rectX, rectY - rectH + roundedRad, (roundedRad).toFloat(), rectH - roundedRad * 2)
 //            batch.fillRect(rectX + rectW - roundedRad, rectY - rectH + roundedRad, (roundedRad).toFloat(), rectH - roundedRad * 2)

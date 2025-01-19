@@ -6,12 +6,13 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Align
 import paintbox.PaintboxGame
 import paintbox.binding.*
-import paintbox.ui.*
+import paintbox.font.*
+import paintbox.ui.Corner
+import paintbox.ui.UIElement
 import paintbox.ui.area.Insets
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
-import paintbox.font.*
 import paintbox.util.ColorStack
 import paintbox.util.gdxutils.fillRect
 import java.util.*
@@ -144,7 +145,7 @@ open class ButtonSkin(element: Button) : Skin<Button>(element) {
         rectColor.a *= opacity
         batch.color = rectColor
         var roundedRad = roundedRadius.get()
-        val paintboxSpritesheet = PaintboxGame.paintboxSpritesheet
+        val paintboxSpritesheet = PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet
         val spritesheetFill: TextureRegion = paintboxSpritesheet.fill
         if (roundedRad > rectW / 2f) {
             roundedRad = (rectW / 2f).toInt()

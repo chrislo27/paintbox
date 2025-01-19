@@ -6,9 +6,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import paintbox.PaintboxGame
 import paintbox.binding.ContextBinding
 import paintbox.binding.FloatVar
-import paintbox.util.ColorStack
-import paintbox.ui.UIElement
 import paintbox.binding.Var
+import paintbox.ui.UIElement
+import paintbox.util.ColorStack
 import paintbox.util.gdxutils.drawQuad
 
 
@@ -112,7 +112,7 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
             x + w * bottomRightOffsetU.get(), (y - h) + h * bottomRightOffsetV.get(), tmpColorBR.toFloatBits(),
             x + w * topRightOffsetU.get(), (y - h) + h * topRightOffsetV.get(), tmpColorTR.toFloatBits(),
             x + w * topLeftOffsetU.get(), (y - h) + h * topLeftOffsetV.get(), tmpColorTL.toFloatBits(),
-            texture.getOrCompute() ?: PaintboxGame.fillTexture,
+            texture.getOrCompute() ?: PaintboxGame.gameInstance.staticAssets.fillTexture,
             blU = bottomLeftTextureU.get(), blV = bottomLeftTextureV.get(),
             brU = bottomRightTextureU.get(), brV = bottomRightTextureV.get(),
             trU = topRightTextureU.get(), trV = topRightTextureV.get(),
