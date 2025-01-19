@@ -43,8 +43,8 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
             private set
         lateinit var gameInstance: PaintboxGame
             private set
-        lateinit var launchArguments: List<String>
-            private set
+        val launchArguments: List<String>
+            get() = gameInstance.paintboxSettings.launchArguments
     }
 
     /**
@@ -63,11 +63,6 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
         var vsync: Boolean? = null
     }
 
-    init {
-        @Suppress("RedundantCompanionReference")
-        Companion.launchArguments = paintboxSettings.launchArguments
-    }
-
     val version: Version = paintboxSettings.version
     val versionString: String = version.toString()
     val launcherSettings: LauncherSettings = LauncherSettings()
@@ -75,7 +70,9 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
     val debugInfo: DebugInfo = DebugInfo()
     var debugOverlay: DebugOverlay = DebugOverlay(this)
         protected set
-    lateinit var originalResolution: WindowSize
+    val debugKeysInputProcessor: DebugKeysInputProcessor = DebugKeysInputProcessor()
+
+    lateinit var startingResolution: WindowSize
         private set
 
     /**
@@ -97,7 +94,6 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
     lateinit var shapeRenderer: ShapeRenderer
         private set
 
-    val debugKeysInputProcessor: DebugKeysInputProcessor = DebugKeysInputProcessor()
     val inputMultiplexer: InputMultiplexer by lazy {
         ExceptionHandlingInputMultiplexer(
             { exceptionHandler(it) },
@@ -122,7 +118,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
         Paintbox.LOGGER = paintboxSettings.logger
         gameInstance = this
 
-        originalResolution = WindowSize(Gdx.graphics.width, Gdx.graphics.height)
+        startingResolution = WindowSize(Gdx.graphics.width, Gdx.graphics.height)
         resetCameras()
 
         val pixmap: Pixmap = Pixmap(1, 1, Pixmap.Format.RGBA8888).apply {
@@ -330,7 +326,10 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
 //region Deprecations
 
     @Deprecated("Use actualWindowSizeCamera instead", ReplaceWith("actualWindowSizeCamera"))
-    val nativeCamera: OrthographicCamera get() = actualWindowSizeCamera
+    val nativeCamera: OrthographicCamera get() = this.actualWindowSizeCamera
 
+    @Deprecated("Use startingResolution instead", ReplaceWith("startingResolution"))
+    val originalResolution: WindowSize get() = this.startingResolution
+    
 //endregion
 }
