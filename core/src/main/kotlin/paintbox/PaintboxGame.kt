@@ -65,7 +65,6 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
         Companion.launchArguments = paintboxSettings.launchArguments
     }
 
-    val startTimeMillis: Long = System.currentTimeMillis()
     val version: Version = paintboxSettings.version
     val versionString: String = version.toString()
     val launcherSettings: LauncherSettings = LauncherSettings()
