@@ -23,7 +23,7 @@ open class DebugOverlay(val paintboxGame: PaintboxGame) {
         val memNumberFormat = debugInfo.memoryNumberFormat
         val msNumberFormat = debugInfo.msNumberFormat
         val screen = paintboxGame.screen
-        val nativeCamera = paintboxGame.nativeCamera
+        val nativeCamera = paintboxGame.actualWindowSizeCamera
         val string =
             """FPS: $fps (mspf min ${msNumberFormat.format(this.debugInfo.mspfMin)}, max ${msNumberFormat.format(this.debugInfo.mspfMax)}, avg ${
                 msNumberFormat.format(

@@ -97,7 +97,7 @@ internal class UIAnchorTestNestedScreen(override val main: NewUITestGame) : Pain
         }
 
         val batch = main.batch
-        batch.projectionMatrix = main.nativeCamera.combined
+        batch.projectionMatrix = main.actualWindowSizeCamera.combined
         batch.begin()
 
         root.renderAsRoot(batch)

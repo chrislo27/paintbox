@@ -26,7 +26,7 @@ abstract class SolidColorFade(
     override fun render(transitionScreen: TransitionScreen, screenRender: () -> Unit) {
         screenRender()
 
-        val camera = transitionScreen.main.nativeCamera
+        val camera = transitionScreen.main.actualWindowSizeCamera
         val batch = transitionScreen.main.batch
         transitionScreen.main.resetViewportToScreen()
         batch.projectionMatrix = camera.combined

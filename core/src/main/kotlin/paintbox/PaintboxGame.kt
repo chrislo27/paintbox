@@ -82,9 +82,9 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
     val emulatedCamera: OrthographicCamera = OrthographicCamera()
 
     /**
-     * A camera that always represents the actual window size.
+     * A camera that always represents the actual window size, clamped to the minimum window size.
      */
-    val nativeCamera: OrthographicCamera = OrthographicCamera()
+    val actualWindowSizeCamera: OrthographicCamera = OrthographicCamera()
 
     lateinit var fontCache: FontCache
         private set
@@ -234,7 +234,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
                 val tmpMatrix = debugOverlay.tmpMatrix
 
                 tmpMatrix.set(batch.projectionMatrix)
-                batch.projectionMatrix = nativeCamera.combined
+                batch.projectionMatrix = actualWindowSizeCamera.combined
                 batch.begin()
 
                 debugOverlay.render()
@@ -267,8 +267,8 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
     override fun resize(width: Int, height: Int) {
         resetCameras()
 //        val nano = measureNanoTime {
-        val nativeCamWidth = nativeCamera.viewportWidth.toInt()
-        val nativeCamHeight = nativeCamera.viewportHeight.toInt()
+        val nativeCamWidth = actualWindowSizeCamera.viewportWidth.toInt()
+        val nativeCamHeight = actualWindowSizeCamera.viewportHeight.toInt()
         fontCache.resizeAll(nativeCamWidth, nativeCamHeight)
 //        }
 //        Paintbox.LOGGER.info("Reloaded all ${fontCache.fonts.size} fonts in ${nano / 1_000_000.0} ms")
@@ -321,11 +321,11 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
         val emulatedSize = paintboxSettings.emulatedSize
         val minimumSize = paintboxSettings.minimumSize
 
-        nativeCamera.setToOrtho(false, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-        if (nativeCamera.viewportWidth < minimumSize.width || nativeCamera.viewportHeight < minimumSize.height) {
-            nativeCamera.setToOrtho(false, minimumSize.width.toFloat(), minimumSize.height.toFloat())
+        actualWindowSizeCamera.setToOrtho(false, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+        if (actualWindowSizeCamera.viewportWidth < minimumSize.width || actualWindowSizeCamera.viewportHeight < minimumSize.height) {
+            actualWindowSizeCamera.setToOrtho(false, minimumSize.width.toFloat(), minimumSize.height.toFloat())
         }
-        nativeCamera.update()
+        actualWindowSizeCamera.update()
 
         when (resizeAction) {
             ResizeAction.ANY_SIZE -> emulatedCamera.setToOrtho(
@@ -572,4 +572,11 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
             }).setAfterLoad(afterLoad)
         cache["UNIFONT"] = UnifontFactory().createUnifont(fontSize = 16)
     }
+
+//region Deprecations
+
+    @Deprecated("Use actualWindowSizeCamera instead", ReplaceWith("actualWindowSizeCamera"))
+    val nativeCamera: OrthographicCamera get() = actualWindowSizeCamera
+
+//endregion
 }
