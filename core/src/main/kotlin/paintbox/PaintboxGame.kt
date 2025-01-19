@@ -174,7 +174,6 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
      * This is called after the main [render] function is called. Default implementation is to do nothing.
      */
     open fun postRender() {
-
     }
 
     protected open fun onDebugChange(old: Boolean, new: Boolean) {
@@ -215,6 +214,9 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
         }
     }
 
+    /**
+     * Default exception handler is to exit the game.
+     */
     protected open fun exceptionHandler(t: Throwable) {
         Gdx.app.exit()
     }
@@ -233,12 +235,12 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
      */
     override fun resize(width: Int, height: Int) {
         resetCameras()
-//        val nano = measureNanoTime {
+
+        val actualWindowSizeCamera = actualWindowSizeCamera
         val nativeCamWidth = actualWindowSizeCamera.viewportWidth.toInt()
         val nativeCamHeight = actualWindowSizeCamera.viewportHeight.toInt()
         fontCache.resizeAll(nativeCamWidth, nativeCamHeight)
-//        }
-//        Paintbox.LOGGER.info("Reloaded all ${fontCache.fonts.size} fonts in ${nano / 1_000_000.0} ms")
+        
         super.resize(width, height)
     }
 
@@ -253,7 +255,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
 
         super.dispose()
 
-        disposeCalls.forEach { r ->
+        disposeCalls.reversed().forEach { r ->
             try {
                 r.run()
             } catch (t: Throwable) {
