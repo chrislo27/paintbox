@@ -98,10 +98,12 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() 
     private val disposeCalls: MutableList<Runnable> = CopyOnWriteArrayList()
     
     /**
-     * Should include the version.
+     * Should generally be in the format "TITLE VERSION".
      */
-    abstract fun getTitle(): String
+    abstract fun getWindowTitle(): String
 
+    protected open fun createStaticAssets(): PaintboxStaticAssets = PaintboxStaticAssets()
+    
     override fun create() {
         val logToFile = paintboxSettings.logToFile
         if (logToFile != null) {
@@ -113,7 +115,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() 
         startingResolution = WindowSize(Gdx.graphics.width, Gdx.graphics.height)
         resetCameras()
 
-        staticAssets = PaintboxStaticAssets()
+        staticAssets = createStaticAssets()
 
         batch = SpriteBatch()
         shapeRenderer = ShapeRenderer()

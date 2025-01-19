@@ -14,7 +14,7 @@ import paintbox.util.gdxutils.fillRect
 
 internal class TextBlockTestGame(paintboxSettings: PaintboxSettings) : PaintboxGame(paintboxSettings) {
 
-    override fun getTitle(): String {
+    override fun getWindowTitle(): String {
         return "Text block test"
     }
 

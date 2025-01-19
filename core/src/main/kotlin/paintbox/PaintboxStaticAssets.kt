@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.Disposable
 /**
  * Must be instantiated on the gdx main thread.
  */
-class PaintboxStaticAssets : Disposable {
+open class PaintboxStaticAssets : Disposable {
     
     val fillTexture: Texture
     val paintboxSpritesheet: PaintboxSpritesheet

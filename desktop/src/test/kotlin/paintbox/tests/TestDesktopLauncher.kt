@@ -40,7 +40,7 @@ internal object TestDesktopLauncher {
                 this.setAutoIconify(true)
                 val emulatedSize = app.paintboxSettings.emulatedSize
                 this.setWindowedMode(emulatedSize.width, emulatedSize.height)
-                this.setTitle(app.getTitle())
+                this.setTitle(app.getWindowTitle())
                 this.setResizable(true)
                 this.useVsync(true)
                 this.setForegroundFPS(60)

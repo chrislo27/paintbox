@@ -20,7 +20,7 @@ import paintbox.util.wave.WaveUtils
 internal class NewUITestGame(paintboxSettings: PaintboxSettings, val screenFactory: (NewUITestGame) -> Screen) :
     PaintboxGame(paintboxSettings) {
 
-    override fun getTitle(): String {
+    override fun getWindowTitle(): String {
         return "New UI test"
     }
 
@@ -32,7 +32,7 @@ internal class NewUITestGame(paintboxSettings: PaintboxSettings, val screenFacto
 
 internal class ScaledFontTestGame(paintboxSettings: PaintboxSettings) : PaintboxGame(paintboxSettings) {
 
-    override fun getTitle(): String {
+    override fun getWindowTitle(): String {
         return "ScaledFont test"
     }
 

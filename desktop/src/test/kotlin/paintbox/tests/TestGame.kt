@@ -11,7 +11,7 @@ internal abstract class TestPbScreen(override val main: TestGame) : PaintboxScre
 
 internal class TestGame(paintboxSettings: PaintboxSettings) : PaintboxGame(paintboxSettings) {
 
-    override fun getTitle(): String {
+    override fun getWindowTitle(): String {
         return "TestGame"
     }
 
