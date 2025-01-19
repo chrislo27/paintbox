@@ -7,20 +7,19 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.glutils.HdpiUtils
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
-import paintbox.Paintbox.UIDebugOutlineMode.ALL
-import paintbox.Paintbox.UIDebugOutlineMode.NONE
-import paintbox.Paintbox.UIDebugOutlineMode.ONLY_VISIBLE
+import paintbox.Paintbox.UIDebugOutlineMode.*
 import paintbox.debug.DebugInfo
 import paintbox.debug.DebugOverlay
 import paintbox.font.*
 import paintbox.i18n.ILocalization
+import paintbox.input.ExceptionHandlingInputMultiplexer
 import paintbox.logging.SysOutPiper
 import paintbox.registry.AssetRegistry
 import paintbox.registry.ScreenRegistry
-import paintbox.util.gdxutils.GdxGame
-import paintbox.util.gdxutils.isShiftDown
 import paintbox.util.Version
 import paintbox.util.WindowSize
+import paintbox.util.gdxutils.GdxGame
+import paintbox.util.gdxutils.isShiftDown
 import kotlin.system.measureNanoTime
 
 /**
@@ -94,7 +93,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
     lateinit var shapeRenderer: ShapeRenderer
         private set
 
-    open val inputMultiplexer: InputMultiplexer = ExceptionalInputMultiplexer({ exceptionHandler(it) })
+    open val inputMultiplexer: InputMultiplexer = ExceptionHandlingInputMultiplexer({ exceptionHandler(it) })
 
     private var shouldToggleDebugAfterPress = true
     private val disposeCalls: MutableList<Runnable> = mutableListOf()

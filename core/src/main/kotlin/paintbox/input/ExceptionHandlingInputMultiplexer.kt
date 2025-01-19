@@ -1,11 +1,12 @@
-package paintbox
+package paintbox.input
 
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.InputProcessor
 
-
-open class ExceptionalInputMultiplexer(val exceptionHandler: (Throwable) -> Unit, vararg processors: InputProcessor?) :
-    InputMultiplexer(*processors) {
+open class ExceptionHandlingInputMultiplexer(
+    val exceptionHandler: (Throwable) -> Unit,
+    vararg processors: InputProcessor?,
+) : InputMultiplexer(*processors) {
 
     override fun touchUp(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         try {
