@@ -20,15 +20,15 @@ import paintbox.ui.control.*
 import paintbox.ui.element.RectElement
 import paintbox.ui.layout.ColumnarHBox
 import paintbox.ui.layout.ColumnarVBox
-import paintbox.util.gdxutils.isControlDown
 import paintbox.util.DecimalFormats
+import paintbox.util.gdxutils.isControlDown
 import paintbox.util.wave.WaveUtils
 
 internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : PaintboxScreen() {
 
     private val camera: OrthographicCamera = OrthographicCamera()
     private var root: SceneRoot = SceneRoot(camera)
-        private set(value) {
+        set(value) {
             main.inputMultiplexer.removeProcessor(field.inputSystem)
             field = value
             main.inputMultiplexer.addProcessor(value.inputSystem)
@@ -159,10 +159,10 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             rect += TextBlockNode(
                 TextBlock(
                     listOf(
-                        TextRun(main.debugFontBoldBordered, "Hello\nline2\nline3g adwadwadwadaddadwd"),
-                        TextRun(main.debugFontBoldBordered, "a separate TextRun", color = Color.RED),
+                        TextRun(main.defaultFonts.debugFontBoldBordered, "Hello\nline2\nline3g adwadwadwadaddadwd"),
+                        TextRun(main.defaultFonts.debugFontBoldBordered, "a separate TextRun", color = Color.RED),
                         TextRun(
-                            main.debugFontBoldBordered,
+                            main.defaultFonts.debugFontBoldBordered,
                             "\n\n\nnananananananananananananananananananananananannananananana"
                         ),
                     )
@@ -189,7 +189,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
 
         bg += TextLabel(
             "Test text label.\nNewline.\n㈀ ㈁ ㈂ ㈃ ㈄ ㈅ ㈆\n㈇ ㈈ ㈉ ㈊ ㈋ ㈌ ㈍",
-            font = PaintboxGame.gameInstance.unifontFont
+            font = PaintboxGame.gameInstance.defaultFonts.unifontFont
         ).also { label ->
             Anchor.TopLeft.configure(label, offsetX = 32f, offsetY = 48f)
             label.bounds.width.set(325f)
@@ -212,10 +212,10 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             label.internalTextBlock.set(
                 TextBlock(
                     listOf(
-                        TextRun(main.debugFont, "Regular font.\n"),
-                        TextRun(main.debugFontItalic, "Italic font.\n"),
-                        TextRun(main.debugFontBold, "Bold font.\n"),
-                        TextRun(main.debugFontBoldItalic, "Bold-italic font."),
+                        TextRun(main.defaultFonts.debugFont, "Regular font.\n"),
+                        TextRun(main.defaultFonts.debugFontItalic, "Italic font.\n"),
+                        TextRun(main.defaultFonts.debugFontBold, "Bold font.\n"),
+                        TextRun(main.defaultFonts.debugFontBoldItalic, "Bold-italic font."),
                     )
                 )
             )
@@ -238,7 +238,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             }
         }
 
-        bg += Button("Test button", font = main.debugFont).also { button ->
+        bg += Button("Test button", font = main.defaultFonts.debugFont).also { button ->
             Anchor.CentreLeft.configure(button, offsetX = 32f)
             button.bounds.width.set(150f)
             button.bounds.height.set(50f)
@@ -264,11 +264,11 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             pane.margin.set(Insets(2f))
             pane.border.set(Insets(4f))
             pane.borderStyle.set(SolidBorder().apply { this.color.set(Color.MAGENTA) })
-            pane.addChild(Button("Test button bounds", font = main.debugFont).also { button ->
+            pane.addChild(Button("Test button bounds", font = main.defaultFonts.debugFont).also { button ->
                 (button.skin.getOrCompute() as ButtonSkin).roundedRadius.set(0)
             })
         }
-        bg += Button("Context menu button", font = main.debugFont).also { button ->
+        bg += Button("Context menu button", font = main.defaultFonts.debugFont).also { button ->
             Anchor.CentreLeft.configure(button, offsetX = 32f + 175f, offsetY = 75f)
             button.bounds.width.set(150f)
             button.bounds.height.set(50f)
@@ -276,32 +276,32 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
             button.setOnRightClick { _ ->
                 val root = button.sceneRoot.getOrCompute()
                 root?.showRootContextMenu(ContextMenu().apply {
-                    this.addMenuItem(SimpleMenuItem.create("First SimpleMenuItem", main.debugFont))
-                    this.addMenuItem(SimpleMenuItem.create("Second SimpleMenuItem", main.debugFont))
+                    this.addMenuItem(SimpleMenuItem.create("First SimpleMenuItem", main.defaultFonts.debugFont))
+                    this.addMenuItem(SimpleMenuItem.create("Second SimpleMenuItem", main.defaultFonts.debugFont))
                     this.addMenuItem(SeparatorMenuItem())
-                    this.addMenuItem(SimpleMenuItem.create("Third SimpleMenuItem", main.debugFont))
+                    this.addMenuItem(SimpleMenuItem.create("Third SimpleMenuItem", main.defaultFonts.debugFont))
                 })
             }
         }
-        bg += CheckBox("Check box test", font = main.debugFont).also { button ->
+        bg += CheckBox("Check box test", font = main.defaultFonts.debugFont).also { button ->
             Anchor.CentreLeft.configure(button, offsetX = 32f, offsetY = 75f * 2)
             button.bounds.width.set(150f)
             button.bounds.height.set(50f)
         }
         val toggleGroup = ToggleGroup()
-        bg += RadioButton("Radio button 1", font = main.debugFont).also { button ->
+        bg += RadioButton("Radio button 1", font = main.defaultFonts.debugFont).also { button ->
             Anchor.CentreLeft.configure(button, offsetX = 32f + 175f, offsetY = 75f * 2 - 12.5f)
             button.bounds.width.set(150f)
             button.bounds.height.set(25f)
             toggleGroup.addToggle(button)
         }
-        bg += RadioButton("Radio button 2", font = main.debugFont).also { button ->
+        bg += RadioButton("Radio button 2", font = main.defaultFonts.debugFont).also { button ->
             Anchor.CentreLeft.configure(button, offsetX = 32f + 175f, offsetY = 75f * 2 - 12.5f + 25f)
             button.bounds.width.set(150f)
             button.bounds.height.set(25f)
             toggleGroup.addToggle(button)
         }
-        bg += Button("Disabled button", font = main.debugFont).also { button ->
+        bg += Button("Disabled button", font = main.defaultFonts.debugFont).also { button ->
             Anchor.CentreLeft.configure(button, offsetX = 32f + 175f)
             button.bounds.width.set(150f)
             button.bounds.height.set(50f)
@@ -311,7 +311,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
                 println("hi button disabled")
             }
         }
-        bg += Button("Test button right", font = main.debugFont).also { button ->
+        bg += Button("Test button right", font = main.defaultFonts.debugFont).also { button ->
             Anchor.CentreRight.configure(button, offsetX = -16f)
             button.bounds.width.set(150f)
             button.bounds.height.set(50f)
@@ -322,7 +322,7 @@ internal class UIAnchorTestEditorScreen(override val main: NewUITestGame) : Pain
                 println("hi button right")
             }
         }
-        bg += Button("Test button top", font = main.debugFont).also { button ->
+        bg += Button("Test button top", font = main.defaultFonts.debugFont).also { button ->
             Anchor.TopCentre.configure(button, offsetX = 200f)
             button.bounds.width.set(150f)
             button.bounds.height.set(50f)

@@ -1,16 +1,17 @@
 package paintbox
 
 import com.badlogic.gdx.*
-import com.badlogic.gdx.graphics.*
-import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.GL20
+import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.Pixmap
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.graphics.glutils.HdpiUtils
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import paintbox.Paintbox.UIDebugOutlineMode.*
 import paintbox.debug.DebugInfo
 import paintbox.debug.DebugOverlay
-import paintbox.font.*
+import paintbox.font.FontCache
 import paintbox.i18n.ILocalization
 import paintbox.input.ExceptionHandlingInputMultiplexer
 import paintbox.logging.SysOutPiper
@@ -50,7 +51,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
     class LauncherSettings {
 
         /**
-         * If not null, the FPS was manually set and is a value value (0 or larger).
+         * If not null, the max FPS was manually set and is a value value (0 or larger).
          */
         var fps: Int? = null
 
@@ -87,6 +88,8 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
 
     lateinit var fontCache: FontCache
         private set
+    lateinit var defaultFonts: DefaultFonts
+        private set
     lateinit var batch: SpriteBatch
         private set
     lateinit var shapeRenderer: ShapeRenderer
@@ -101,44 +104,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
      * Set this for default debug localization behaviours.
      */
     protected var reloadableLocalizationInstances: List<ILocalization> = emptyList()
-
-
-    val unifontFont: PaintboxFont
-        get() = fontCache["UNIFONT"]
-    val debugFont: PaintboxFont
-        get() = fontCache["DEBUG_FONT"]
-    val debugFontBordered: PaintboxFont
-        get() = fontCache["DEBUG_FONT_BORDERED"]
-    val debugFontBold: PaintboxFont
-        get() = fontCache["DEBUG_FONT_BOLD"]
-    val debugFontBoldBordered: PaintboxFont
-        get() = fontCache["DEBUG_FONT_BOLD_BORDERED"]
-    val debugFontItalic: PaintboxFont
-        get() = fontCache["DEBUG_FONT_ITALIC"]
-    val debugFontItalicBordered: PaintboxFont
-        get() = fontCache["DEBUG_FONT_ITALIC_BORDERED"]
-    val debugFontBoldItalic: PaintboxFont
-        get() = fontCache["DEBUG_FONT_BOLD_ITALIC"]
-    val debugFontBoldItalicBordered: PaintboxFont
-        get() = fontCache["DEBUG_FONT_BOLD_ITALIC_BORDERED"]
-
-    val debugMarkup: Markup by lazy {
-        Markup.createWithBoldItalic(
-            debugFont,
-            debugFontBold,
-            debugFontItalic,
-            debugFontBoldItalic
-        )
-    }
-    val debugMarkupBordered: Markup by lazy {
-        Markup.createWithBoldItalic(
-            debugFontBordered,
-            debugFontBoldBordered,
-            debugFontItalicBordered,
-            debugFontBoldItalicBordered
-        )
-    }
-
+    
 
     /**
      * Should include the version.
@@ -172,7 +138,9 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
         batch = SpriteBatch()
         shapeRenderer = ShapeRenderer()
         fontCache = FontCache(this)
-        addDebugFonts(fontCache)
+        defaultFonts = DefaultFonts(this).apply { 
+            registerDefaultFonts()
+        }
         val fontLoadNano = measureNanoTime {
             fontCache.resizeAll(emulatedCamera.viewportWidth.toInt(), emulatedCamera.viewportHeight.toInt())
         }
@@ -320,12 +288,14 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
         val emulatedSize = paintboxSettings.emulatedSize
         val minimumSize = paintboxSettings.minimumSize
 
+        val actualWindowSizeCamera = actualWindowSizeCamera
         actualWindowSizeCamera.setToOrtho(false, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
         if (actualWindowSizeCamera.viewportWidth < minimumSize.width || actualWindowSizeCamera.viewportHeight < minimumSize.height) {
             actualWindowSizeCamera.setToOrtho(false, minimumSize.width.toFloat(), minimumSize.height.toFloat())
         }
         actualWindowSizeCamera.update()
 
+        val emulatedCamera = emulatedCamera
         when (resizeAction) {
             ResizeAction.ANY_SIZE -> emulatedCamera.setToOrtho(
                 false, Gdx.graphics.width.toFloat(),
@@ -353,11 +323,9 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
             }
         }
         if (emulatedCamera.viewportWidth < minimumSize.width || emulatedCamera.viewportHeight < minimumSize.height) {
-//            Paintbox.LOGGER.debug("Camera too small, forcing it at minimum")
             emulatedCamera.setToOrtho(false, minimumSize.width.toFloat(), minimumSize.height.toFloat())
         }
         emulatedCamera.update()
-//        Paintbox.LOGGER.debug("Resizing camera as $resizeAction, window is ${Gdx.graphics.width} x ${Gdx.graphics.height}, camera is ${defaultCamera.viewportWidth} x ${defaultCamera.viewportHeight}")
     }
 
     override fun keyDown(keycode: Int): Boolean {
@@ -460,118 +428,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame(),
     override fun touchCancelled(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         return false
     }
-
-    private fun addDebugFonts(cache: FontCache) {
-        fun makeParam() = FreeTypeFontGenerator.FreeTypeFontParameter().apply {
-            magFilter = Texture.TextureFilter.Linear
-            minFilter = Texture.TextureFilter.Linear
-            genMipMaps = false
-            incremental = true
-            mono = false
-            color = Color(1f, 1f, 1f, 1f)
-            borderColor = Color(0f, 0f, 0f, 1f)
-            characters = ""
-            hinting = FreeTypeFontGenerator.Hinting.Full
-        }
-
-        val afterLoad: PaintboxFontFreeType.(font: BitmapFont) -> Unit = { font ->
-//            font.data.blankLineScale = 0.75f
-            font.setFixedWidthGlyphs("1234567890")
-            font.setUseIntegerPositions(false)
-        }
-        val defaultFontSize = 16
-        val defaultBorderWidth = 1.5f
-        val normalFilename = "OpenSans-Regular.ttf"
-        val normalItalicFilename = "OpenSans-Italic.ttf"
-        val boldFilename = "OpenSans-Bold.ttf"
-        val boldItalicFilename = "OpenSans-BoldItalic.ttf"
-        cache["DEBUG_FONT"] = PaintboxFontFreeType(
-            PaintboxFontParams(
-                Gdx.files.internal("paintbox/fonts/$normalFilename"),
-                1,
-                1f,
-                false,
-                WindowSize(1280, 720)
-            ),
-            makeParam().apply {
-                size = defaultFontSize
-                borderWidth = 0f
-            }).setAfterLoad(afterLoad)
-        cache["DEBUG_FONT_BORDERED"] = PaintboxFontFreeType(
-            PaintboxFontParams(
-                Gdx.files.internal("paintbox/fonts/$normalFilename"),
-                1,
-                1f,
-                false,
-                WindowSize(1280, 720)
-            ),
-            makeParam().apply {
-                size = defaultFontSize
-                borderWidth = defaultBorderWidth
-            }).setAfterLoad(afterLoad)
-        cache["DEBUG_FONT_ITALIC"] = PaintboxFontFreeType(
-            PaintboxFontParams(
-                Gdx.files.internal("paintbox/fonts/$normalItalicFilename"),
-                1,
-                1f,
-                false,
-                WindowSize(1280, 720)
-            ),
-            makeParam().apply {
-                size = defaultFontSize
-                borderWidth = 0f
-            }).setAfterLoad(afterLoad)
-        cache["DEBUG_FONT_ITALIC_BORDERED"] = PaintboxFontFreeType(
-            PaintboxFontParams(
-                Gdx.files.internal("paintbox/fonts/$normalItalicFilename"),
-                1,
-                1f,
-                false,
-                WindowSize(1280, 720)
-            ),
-            makeParam().apply {
-                size = defaultFontSize
-                borderWidth = defaultBorderWidth
-            }).setAfterLoad(afterLoad)
-        cache["DEBUG_FONT_BOLD"] = PaintboxFontFreeType(
-            PaintboxFontParams(Gdx.files.internal("paintbox/fonts/$boldFilename"), 1, 1f, false, WindowSize(1280, 720)),
-            makeParam().apply {
-                size = defaultFontSize
-                borderWidth = 0f
-            }).setAfterLoad(afterLoad)
-        cache["DEBUG_FONT_BOLD_BORDERED"] = PaintboxFontFreeType(
-            PaintboxFontParams(Gdx.files.internal("paintbox/fonts/$boldFilename"), 1, 1f, false, WindowSize(1280, 720)),
-            makeParam().apply {
-                size = defaultFontSize
-                borderWidth = defaultBorderWidth
-            }).setAfterLoad(afterLoad)
-        cache["DEBUG_FONT_BOLD_ITALIC"] = PaintboxFontFreeType(
-            PaintboxFontParams(
-                Gdx.files.internal("paintbox/fonts/$boldItalicFilename"),
-                1,
-                1f,
-                false,
-                WindowSize(1280, 720)
-            ),
-            makeParam().apply {
-                size = defaultFontSize
-                borderWidth = 0f
-            }).setAfterLoad(afterLoad)
-        cache["DEBUG_FONT_BOLD_ITALIC_BORDERED"] = PaintboxFontFreeType(
-            PaintboxFontParams(
-                Gdx.files.internal("paintbox/fonts/$boldItalicFilename"),
-                1,
-                1f,
-                false,
-                WindowSize(1280, 720)
-            ),
-            makeParam().apply {
-                size = defaultFontSize
-                borderWidth = defaultBorderWidth
-            }).setAfterLoad(afterLoad)
-        cache["UNIFONT"] = UnifontFactory().createUnifont(fontSize = 16)
-    }
-
+    
 //region Deprecations
 
     @Deprecated("Use actualWindowSizeCamera instead", ReplaceWith("actualWindowSizeCamera"))

@@ -29,37 +29,38 @@ internal class TextBlockTestScreen(override val main: TextBlockTestGame) : Paint
     var textBlock: TextBlock = generateTextBlock()
 
     fun generateTextBlock(): TextBlock {
+        val defaultFonts = main.defaultFonts
         return TextBlock(
             listOf(
-                TextRun(main.debugFont, "Test "),
-                TextRun(main.debugFontItalic, "italicized "),
-                TextRun(main.debugFont, "blocky! one newline\n"),
+                TextRun(defaultFonts.debugFont, "Test "),
+                TextRun(defaultFonts.debugFontItalic, "italicized "),
+                TextRun(defaultFonts.debugFont, "blocky! one newline\n"),
 
-                TextRun(main.debugFont, "Firebrick line 2, 2 newlines\n\n", Color.FIREBRICK),
+                TextRun(defaultFonts.debugFont, "Firebrick line 2, 2 newlines\n\n", Color.FIREBRICK),
 
-                TextRun(main.debugFont, "Big run ", scaleX = 2f, scaleY = 2f),
-                TextRun(main.debugFontItalic, "italicized ", scaleX = 2f, scaleY = 2f),
-                TextRun(main.debugFont, "blocky? one newline\n", scaleX = 2f, scaleY = 2f),
+                TextRun(defaultFonts.debugFont, "Big run ", scaleX = 2f, scaleY = 2f),
+                TextRun(defaultFonts.debugFontItalic, "italicized ", scaleX = 2f, scaleY = 2f),
+                TextRun(defaultFonts.debugFont, "blocky? one newline\n", scaleX = 2f, scaleY = 2f),
 
-                TextRun(main.debugFont, "Back to normal "),
-                TextRun(main.debugFontItalic, "subscript ", scaleX = 0.58f, scaleY = 0.58f, offsetYEm = -0.333f),
-                TextRun(main.debugFont, "not anymore... 3 newlines\n\n\nStart is on same TextRun"),
+                TextRun(defaultFonts.debugFont, "Back to normal "),
+                TextRun(defaultFonts.debugFontItalic, "subscript ", scaleX = 0.58f, scaleY = 0.58f, offsetYEm = -0.333f),
+                TextRun(defaultFonts.debugFont, "not anymore... 3 newlines\n\n\nStart is on same TextRun"),
 
-                TextRun(main.debugFontItalic, "superscript ", offsetYEm = 1.333f),
-                TextRun(main.debugFont, "and not. 1 newline\n"),
+                TextRun(defaultFonts.debugFontItalic, "superscript ", offsetYEm = 1.333f),
+                TextRun(defaultFonts.debugFont, "and not. 1 newline\n"),
 
-                TextRun(main.debugFont, "Let's carry over the y offset "),
-                TextRun(main.debugFontItalic, "superscript ", offsetYEm = 1.333f, carryOverOffsetY = true),
-                TextRun(main.debugFont, "what happens now? 1 nl\n"),
+                TextRun(defaultFonts.debugFont, "Let's carry over the y offset "),
+                TextRun(defaultFonts.debugFontItalic, "superscript ", offsetYEm = 1.333f, carryOverOffsetY = true),
+                TextRun(defaultFonts.debugFont, "what happens now? 1 nl\n"),
 
-                TextRun(main.debugFontItalic, "And normal italicized font again. 1 nl\n"),
+                TextRun(defaultFonts.debugFontItalic, "And normal italicized font again. 1 nl\n"),
 
-                TextRun(main.debugFont, "The quick brown fox jumps over the lazy dog. 1 nl\n"),
-                TextRun(main.debugFont, "The quick brown fox jumps over the lazy dog. 2 nl\n\n"),
-                TextRun(main.debugFont, "     The quick brown fox jumps over the lazy dog. 1 nl\n"),
-                TextRun(main.debugFont, "The quick brown fox jumps over the lazy dog. 3 nl\n\n\n"),
-                TextRun(main.debugFont, "The quick brown fox jumps over the lazy dog. 1 nl\n"),
-                TextRun(main.debugFont, "The quick brown fox jumps over the lazy dog."),
+                TextRun(defaultFonts.debugFont, "The quick brown fox jumps over the lazy dog. 1 nl\n"),
+                TextRun(defaultFonts.debugFont, "The quick brown fox jumps over the lazy dog. 2 nl\n\n"),
+                TextRun(defaultFonts.debugFont, "     The quick brown fox jumps over the lazy dog. 1 nl\n"),
+                TextRun(defaultFonts.debugFont, "The quick brown fox jumps over the lazy dog. 3 nl\n\n\n"),
+                TextRun(defaultFonts.debugFont, "The quick brown fox jumps over the lazy dog. 1 nl\n"),
+                TextRun(defaultFonts.debugFont, "The quick brown fox jumps over the lazy dog."),
             ),
             /*.map { if (it.color == Color.argb8888(Color.WHITE)) it.copy(color = Color.argb8888(Color.BLACK)) else it }*/
         )

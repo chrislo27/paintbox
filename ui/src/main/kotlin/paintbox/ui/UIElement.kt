@@ -7,6 +7,8 @@ import com.badlogic.gdx.math.Vector2
 import paintbox.PaintboxGame
 import paintbox.binding.*
 import paintbox.font.PaintboxFont
+import paintbox.ui.UIElement.Companion.clearDefaultFontOverride
+import paintbox.ui.UIElement.Companion.defaultFont
 import paintbox.ui.area.ReadOnlyBounds
 import paintbox.ui.border.Border
 import paintbox.ui.border.NoBorder
@@ -27,11 +29,11 @@ open class UIElement : UIBounds() {
 
         /**
          * The default font to use in various controls.
-         * Defaults to [PaintboxGame.gameInstance.debugFont][PaintboxGame.debugFont], but can be overridden.
+         * Defaults to [PaintboxGame.gameInstance.defaultFonts.debugFont][PaintboxGame.defaultFonts.debugFont], but can be overridden.
          * @see clearDefaultFontOverride
          */
         var defaultFont: PaintboxFont
-            get() = defaultFontOverride ?: PaintboxGame.gameInstance.debugFont
+            get() = defaultFontOverride ?: PaintboxGame.gameInstance.defaultFonts.debugFont
             set(value) {
                 defaultFontOverride = value
             }
