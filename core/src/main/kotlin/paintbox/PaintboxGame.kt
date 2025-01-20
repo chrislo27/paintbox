@@ -11,6 +11,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import paintbox.debug.DebugInfo
 import paintbox.debug.DebugKeysInputProcessor
 import paintbox.debug.DebugOverlay
+import paintbox.debug.IDebugKeysInputProcessor
 import paintbox.font.FontCache
 import paintbox.input.ExceptionHandlingInputMultiplexer
 import paintbox.logging.SysOutPiper
@@ -62,7 +63,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() 
     val debugInfo: DebugInfo = DebugInfo()
     var debugOverlay: DebugOverlay = DebugOverlay(this)
         protected set
-    val debugKeysInputProcessor: DebugKeysInputProcessor = DebugKeysInputProcessor()
+    val debugKeysInputProcessor: IDebugKeysInputProcessor = createDebugKeysInputProcessor()
 
     lateinit var startingResolution: WindowSize
         private set
@@ -103,6 +104,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() 
     abstract fun getWindowTitle(): String
 
     protected open fun createStaticAssets(): PaintboxStaticAssets = PaintboxStaticAssets()
+    protected open fun createDebugKeysInputProcessor(): IDebugKeysInputProcessor = DebugKeysInputProcessor()
     
     override fun create() {
         val logToFile = paintboxSettings.logToFile

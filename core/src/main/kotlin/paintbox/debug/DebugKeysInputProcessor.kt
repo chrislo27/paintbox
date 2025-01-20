@@ -3,19 +3,35 @@ package paintbox.debug
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputAdapter
+import com.badlogic.gdx.InputProcessor
 import paintbox.Paintbox
 import paintbox.Paintbox.UIDebugOutlineMode.*
 import paintbox.i18n.ILocalization
+import paintbox.input.ToggleableInputProcessor
 import paintbox.util.gdxutils.isShiftDown
 import kotlin.system.measureNanoTime
 
 
-class DebugKeysInputProcessor() : InputAdapter() {
+interface IDebugKeysInputProcessor : InputProcessor {
 
     /**
-     * Set this for default debug localization behaviours.
+     * Set this for default debug localization reloading behaviour.
      */
-    var reloadableLocalizationInstances: List<ILocalization> = emptyList()
+    var reloadableLocalizationInstances: List<ILocalization>
+
+}
+
+class ToggleableDebugKeysInputProcessor(
+    private val impl: IDebugKeysInputProcessor = DebugKeysInputProcessor(),
+) : ToggleableInputProcessor(impl), IDebugKeysInputProcessor {
+
+    override var reloadableLocalizationInstances: List<ILocalization> by impl::reloadableLocalizationInstances
+
+}
+
+class DebugKeysInputProcessor() : InputAdapter(), IDebugKeysInputProcessor {
+
+    override var reloadableLocalizationInstances: List<ILocalization> = emptyList()
 
     private var shouldToggleDebugAfterKeyUp: Boolean = true
 
@@ -37,7 +53,8 @@ class DebugKeysInputProcessor() : InputAdapter() {
                             tag = "I18N"
                         )
 
-                        val uniqueKeys: Set<String> = localizationInstances.flatMap { it.getAllUniqueKeysForAllLocales() }.toSet()
+                        val uniqueKeys: Set<String> =
+                            localizationInstances.flatMap { it.getAllUniqueKeysForAllLocales() }.toSet()
                         Paintbox.LOGGER.debug(
                             "Total of ${uniqueKeys.size} unique keys across all localization instances",
                             tag = "I18N"

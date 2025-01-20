@@ -12,7 +12,7 @@ open class PaintboxArguments {
 
     @Parameter(
         names = ["--fps"],
-        description = "Manually sets the target FPS. Must be positive. If zero, the framerate is unbounded."
+        description = "Manually sets the target FPS. Must be greater than or equal to zero. If zero, the framerate is unbounded."
     )
     var fps: Int? = null
 

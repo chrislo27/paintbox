@@ -4,7 +4,7 @@ import com.badlogic.gdx.InputProcessor
 import paintbox.binding.BooleanVar
 
 
-class ToggleableInputProcessor(val delegateInputProcessor: InputProcessor) : InputProcessor {
+open class ToggleableInputProcessor(val delegateInputProcessor: InputProcessor) : InputProcessor {
     
     val enabled: BooleanVar = BooleanVar(true)
     
