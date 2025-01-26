@@ -2,7 +2,6 @@ package paintbox.desktop
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration
-import paintbox.Paintbox
 import paintbox.PaintboxGame
 import paintbox.util.CloseListener
 import kotlin.contracts.ExperimentalContracts
@@ -20,6 +19,7 @@ class PaintboxDesktopLauncher(val game: PaintboxGame, val arguments: PaintboxArg
 
     init {
         System.setProperty("file.encoding", "UTF-8")
+        System.setProperty("jna.nosys", "true")
 
         val fps = arguments.fps
         if (fps != null && fps >= 0) {
