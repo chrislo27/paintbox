@@ -14,13 +14,15 @@ import kotlin.contracts.contract
  * The system property `file.encoding` is set to `UTF-8`.
  */
 class PaintboxDesktopLauncher(val game: PaintboxGame, val arguments: PaintboxArguments) {
+    
+    init {
+        System.setProperty("file.encoding", "UTF-8")
+        System.setProperty("jna.nosys", "true")
+    }
 
     val config: Lwjgl3ApplicationConfiguration = Lwjgl3ApplicationConfiguration()
 
     init {
-        System.setProperty("file.encoding", "UTF-8")
-        System.setProperty("jna.nosys", "true")
-
         val fps = arguments.fps
         if (fps != null && fps >= 0) {
             config.setForegroundFPS(fps)
