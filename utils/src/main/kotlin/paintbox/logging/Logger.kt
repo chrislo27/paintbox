@@ -48,7 +48,7 @@ open class Logger {
     }
     
     protected open fun defaultPrint(level: LogLevel, msg: String, tag: String, throwable: Throwable?) {
-        val text = "${getTimestamp()}: [${level.getLogName()}][${Thread.currentThread().name}] ${if (tag.isEmpty()) "" else "[$tag] "}$msg"
+        val text = "${getTimestamp()} [${level.getLogName()}][${Thread.currentThread().name}] ${if (tag.isEmpty()) "" else "[$tag] "}$msg"
 
         val printStream: PrintStream = if (level.ordinal >= LogLevel.WARN.ordinal) System.err else System.out
         
