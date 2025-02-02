@@ -1,12 +1,13 @@
 package paintbox.desktop
 
 import com.beust.jcommander.Parameter
+import paintbox.IPaintboxArguments
 
 
-open class PaintboxArguments {
+open class PaintboxArguments : IPaintboxArguments {
 
     @Parameter(names = ["--help", "-h", "-?"], description = "Prints this usage menu.", help = true)
-    var printHelp: Boolean = false
+    override var printHelp: Boolean = false
 
     // -----------------------------------------------------------
 
@@ -14,9 +15,9 @@ open class PaintboxArguments {
         names = ["--fps"],
         description = "Manually sets the target FPS. Must be greater than or equal to zero. If zero, the framerate is unbounded."
     )
-    var fps: Int? = null
+    override var fps: Int? = null
 
     @Parameter(names = ["--vsync"], description = "Enables/disables VSync (vertical sync).", arity = 1)
-    var vsync: Boolean? = null
+    override var vsync: Boolean? = null
 
 }
