@@ -10,7 +10,7 @@ import paintbox.util.Version
 
 
 @Suppress("MemberVisibilityCanBePrivate")
-abstract class PaintboxPreferences<Game : PaintboxGame>(val main: Game, val prefs: Preferences) : Disposable {
+abstract class PaintboxPreferences<Game : PaintboxGame>(val game: Game, val prefs: Preferences) : Disposable {
 
     companion object {
 
@@ -94,10 +94,10 @@ abstract class PaintboxPreferences<Game : PaintboxGame>(val main: Game, val pref
      * Can be called by the implementation of [PaintboxGame] when initializing this instance.
      * This should be overridden by the implementation of [PaintboxPreferences].
      */
-    open fun setStartupSettings(game: Game) {
+    open fun setStartupSettings() {
     }
 
-    protected open fun setFpsAndVsync(game: Game, maxFramerate: Var<Int>, vsyncEnabled: Var<Boolean>) {
+    protected open fun setFpsAndVsync(maxFramerate: Var<Int>, vsyncEnabled: Var<Boolean>) {
         // LauncherSettings override properties
         val fps = game.launcherSettings.fps
         if (fps != null) {
@@ -115,7 +115,7 @@ abstract class PaintboxPreferences<Game : PaintboxGame>(val main: Game, val pref
     }
 
     override fun dispose() {
-        prefs.putString(getLastVersionKey(), main.version.toString()).flush()
+        prefs.putString(getLastVersionKey(), game.version.toString()).flush()
         persist()
     }
 
