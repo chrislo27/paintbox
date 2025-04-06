@@ -1,12 +1,15 @@
 package paintbox.prefs
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Graphics
 import com.badlogic.gdx.Preferences
 import com.badlogic.gdx.utils.Disposable
 import paintbox.Paintbox
 import paintbox.PaintboxGame
 import paintbox.binding.Var
+import paintbox.util.MonitorInfo
 import paintbox.util.Version
+import paintbox.util.WindowSize
 
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -95,6 +98,8 @@ abstract class PaintboxPreferences<Game : PaintboxGame>(val game: Game, val pref
      * This should be overridden by the implementation of [PaintboxPreferences].
      */
     open fun setStartupSettings() {
+        // Call setFpsAndVsync in impl...
+        // Call setFullscreenOrWindowed in impl...
     }
 
     protected open fun setFpsAndVsync(maxFramerate: Var<Int>, vsyncEnabled: Var<Boolean>) {
@@ -111,6 +116,31 @@ abstract class PaintboxPreferences<Game : PaintboxGame>(val game: Game, val pref
             val gr = Gdx.graphics
             gr.setForegroundFPS(maxFramerate.getOrCompute())
             gr.setVSync(vsyncEnabled.getOrCompute())
+        }
+    }
+
+    protected open fun setFullscreenOrWindowed(fullscreen: Var<Boolean>, fullscreenMonitor: Var<MonitorInfo?>, windowedResolution: Var<WindowSize>) {
+        val graphics = Gdx.graphics
+        if (fullscreen.getOrCompute()) {
+            val monitorInfo: MonitorInfo? = fullscreenMonitor.getOrCompute()
+            if (monitorInfo == null) {
+                // Use default display mode
+                graphics.setFullscreenMode(graphics.displayMode)
+            } else {
+                val monitors = graphics.monitors
+                // Search in order of: exact match, primary monitor if name matches, any monitor matches the name, then current monitor
+                val monitor: Graphics.Monitor = monitors.firstOrNull(monitorInfo::doesMonitorMatch)
+                    ?: graphics.primaryMonitor.takeIf { it.name == monitorInfo.name }
+                    ?: monitors.firstOrNull { it.name == monitorInfo.name }
+                    ?: graphics.monitor
+                val displayMode: Graphics.DisplayMode = graphics.getDisplayMode(monitor) ?: graphics.displayMode
+                graphics.setFullscreenMode(displayMode)
+            }
+        } else {
+            val res = windowedResolution.getOrCompute()
+            if (graphics.width != res.width || graphics.height != res.height) {
+                graphics.setWindowedMode(res.width, res.height)
+            }
         }
     }
 
