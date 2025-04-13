@@ -127,19 +127,25 @@ open class AssetRegistryInstance : Disposable {
         return (unmanagedAssets[key] as T?) != null || manager.isLoaded(assetMap[key], T::class.java)
     }
 
-    inline operator fun <reified T> get(key: String): T {
-        val unmanaged = (unmanagedAssets[key] as T?)
-        if (unmanaged != null) {
-            return unmanaged
-        }
-        if (assetMap[key] == null) {
-            error("Key not found in mappings: $key")
-        }
-        if (!manager.isLoaded(assetMap[key], T::class.java)) {
-            error("Asset not loaded/found: ${T::class.java.name} - $key")
+    inline operator fun <reified T : Any> get(key: String): T {
+        val unmanagedAsset = unmanagedAssets[key]
+        if (unmanagedAsset != null) {
+            if (unmanagedAsset !is T)
+                throw AssetRegistryException("Unmanaged asset with key \"$key\" is not a ${T::class.java.name}, instead it is ${unmanagedAsset::class.java.name}")
+            
+            return unmanagedAsset
         }
 
-        return manager.get(assetMap[key], T::class.java)
+        val keyToFilename = assetMap[key]
+        if (keyToFilename == null) {
+            throw AssetRegistryException("Asset key not found in mappings: $key")
+        }
+        if (!manager.isLoaded(keyToFilename, T::class.java)) {
+            val actualType = manager.getAssetType(keyToFilename)
+            throw AssetRegistryException("Managed asset \"$key\" not loaded for type ${T::class.java.name} (actual type is ${actualType::class.java.name})")
+        }
+
+        return manager.get(keyToFilename, T::class.java)
     }
 
     /**
@@ -185,6 +191,8 @@ open class AssetRegistryInstance : Disposable {
             .forEach { it.sound.resume() }
     }
 }
+
+open class AssetRegistryException(message: String) : Exception(message)
 
 /**
  * Holds all the global assets needed for a game and can be easily disposed of at the end.
