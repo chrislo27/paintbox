@@ -16,7 +16,6 @@ import paintbox.font.FontCache
 import paintbox.input.ExceptionHandlingInputMultiplexer
 import paintbox.logging.SysOutPiper
 import paintbox.registry.AssetRegistry
-import paintbox.registry.ScreenRegistry
 import paintbox.util.Version
 import paintbox.util.WindowSize
 import paintbox.util.gdxutils.GdxGame
@@ -248,7 +247,6 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() 
         fontCache.disposeQuietly(printStackTrace = true)
         staticAssets.disposeQuietly(printStackTrace = true)
 
-        ScreenRegistry.disposeQuietly(printStackTrace = true)
         AssetRegistry.disposeQuietly(printStackTrace = true)
 
         Paintbox.LOGGER.info("Dispose call finished, goodbye!")
