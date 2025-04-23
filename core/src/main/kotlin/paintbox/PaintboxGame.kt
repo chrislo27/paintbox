@@ -120,7 +120,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() 
 
         batch = SpriteBatch()
         shapeRenderer = ShapeRenderer()
-        fontCache = FontCache(this)
+        fontCache = FontCache()
         defaultFonts = DefaultFonts(this).apply { 
             registerDefaultFonts()
         }
