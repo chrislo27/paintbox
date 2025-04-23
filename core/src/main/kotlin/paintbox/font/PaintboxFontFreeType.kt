@@ -9,6 +9,8 @@ import paintbox.util.gdxutils.copy
 import kotlin.math.max
 import kotlin.math.min
 
+typealias FreeTypeFontAfterLoad = PaintboxFontFreeType.(BitmapFont) -> Unit
+
 /**
  * A wrapper around a [FreeTypeFontGenerator].
  *
@@ -50,7 +52,7 @@ open class PaintboxFontFreeType(
             field = value
         }
 
-    private var afterLoad: PaintboxFontFreeType.(BitmapFont) -> Unit = {}
+    private var afterLoad: FreeTypeFontAfterLoad = {}
 
     override fun begin(areaWidth: Float, areaHeight: Float): BitmapFont {
         if (isInBegin) {
@@ -132,7 +134,7 @@ open class PaintboxFontFreeType(
         this.isLoaded = true
     }
 
-    fun setAfterLoad(func: PaintboxFontFreeType.(BitmapFont) -> Unit): PaintboxFontFreeType {
+    fun setAfterLoad(func: FreeTypeFontAfterLoad): PaintboxFontFreeType {
         afterLoad = func
         return this
     }
