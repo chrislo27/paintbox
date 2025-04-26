@@ -1,5 +1,6 @@
 package paintbox.font
 
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import paintbox.binding.LongVar
@@ -120,7 +121,7 @@ open class PaintboxFontFreeType(
             newFtfParam.size = (oldFtfParam.size * scale).toInt()
             newFtfParam.borderWidth = oldFtfParam.borderWidth * scale
 
-            val generator: FreeTypeFontGenerator = FreeTypeFontGeneratorFix(params.file)
+            val generator: FreeTypeFontGenerator = createFreeTypeFontGenerator(params.file)
             val generatedBitmapFont = generator.generateFont(newFtfParam)
             this.generator = generator
             this.currentBitmapFont = generatedBitmapFont
@@ -135,6 +136,10 @@ open class PaintboxFontFreeType(
     fun setAfterLoad(func: FreeTypeFontAfterLoad): PaintboxFontFreeType {
         afterLoad = func
         return this
+    }
+    
+    protected open fun createFreeTypeFontGenerator(fileHandle: FileHandle): FreeTypeFontGenerator {
+        return FreeTypeFontGeneratorBaseLineRoundingFix(fileHandle)
     }
 
     @Synchronized
