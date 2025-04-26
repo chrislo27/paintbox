@@ -11,17 +11,18 @@ import paintbox.util.WindowSize
 
 class DefaultFonts(private val paintboxGame: PaintboxGame) {
 
-    private object FontKeys {
+    private enum class FontKeys {
 
-        const val UNIFONT: String = "UNIFONT"
-        const val DEBUG_FONT: String = "DEBUG_FONT"
-        const val DEBUG_FONT_BORDERED: String = "DEBUG_FONT_BORDERED"
-        const val DEBUG_FONT_BOLD: String = "DEBUG_FONT_BOLD"
-        const val DEBUG_FONT_BOLD_BORDERED: String = "DEBUG_FONT_BOLD_BORDERED"
-        const val DEBUG_FONT_ITALIC: String = "DEBUG_FONT_ITALIC"
-        const val DEBUG_FONT_ITALIC_BORDERED: String = "DEBUG_FONT_ITALIC_BORDERED"
-        const val DEBUG_FONT_BOLD_ITALIC: String = "DEBUG_FONT_BOLD_ITALIC"
-        const val DEBUG_FONT_BOLD_ITALIC_BORDERED: String = "DEBUG_FONT_BOLD_ITALIC_BORDERED"
+        UNIFONT,
+        DEBUG_FONT,
+        DEBUG_FONT_BORDERED,
+        DEBUG_FONT_BOLD,
+        DEBUG_FONT_BOLD_BORDERED,
+        DEBUG_FONT_ITALIC,
+        DEBUG_FONT_ITALIC_BORDERED,
+        DEBUG_FONT_BOLD_ITALIC,
+        DEBUG_FONT_BOLD_ITALIC_BORDERED
+        
     }
 
     private val fontCache: FontCache get() = paintboxGame.fontCache
