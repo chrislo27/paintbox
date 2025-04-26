@@ -63,9 +63,9 @@ class DefaultFonts(private val paintboxGame: PaintboxGame) {
         )
     }
 
-    
+
     fun registerDefaultFonts() {
-        fun makeParam() = FreeTypeFontGenerator.FreeTypeFontParameter().apply {
+        fun makeFtfParam() = FreeTypeFontGenerator.FreeTypeFontParameter().apply {
             magFilter = Texture.TextureFilter.Linear
             minFilter = Texture.TextureFilter.Linear
             genMipMaps = false
@@ -76,104 +76,79 @@ class DefaultFonts(private val paintboxGame: PaintboxGame) {
             characters = ""
             hinting = FreeTypeFontGenerator.Hinting.Full
         }
-        
-        val cache = fontCache
+
+        val defaultReferenceSize = WindowSize(1280, 720)
+        fun createDefaultFontParams(filename: String): PaintboxFontParams {
+            return PaintboxFontParams(
+                file = Gdx.files.internal("paintbox/fonts/$filename"),
+                scaleToReferenceSize = false,
+                referenceSize = defaultReferenceSize
+            )
+        }
 
         val afterLoad: PaintboxFontFreeType.(font: BitmapFont) -> Unit = { font ->
-//            font.data.blankLineScale = 0.75f
             font.setFixedWidthGlyphs("1234567890")
             font.setUseIntegerPositions(false)
         }
+
         val defaultFontSize = 16
         val defaultBorderWidth = 1.5f
         val normalFilename = "OpenSans-Regular.ttf"
         val normalItalicFilename = "OpenSans-Italic.ttf"
         val boldFilename = "OpenSans-Bold.ttf"
         val boldItalicFilename = "OpenSans-BoldItalic.ttf"
+
+        val cache = fontCache
+
         cache[FontKeys.DEBUG_FONT] = PaintboxFontFreeType(
-            PaintboxFontParams(
-                Gdx.files.internal("paintbox/fonts/$normalFilename"),
-                1,
-                1f,
-                false,
-                WindowSize(1280, 720)
-            ),
-            makeParam().apply {
+            createDefaultFontParams(normalFilename),
+            makeFtfParam().apply {
                 size = defaultFontSize
                 borderWidth = 0f
             }).setAfterLoad(afterLoad)
         cache[FontKeys.DEBUG_FONT_BORDERED] = PaintboxFontFreeType(
-            PaintboxFontParams(
-                Gdx.files.internal("paintbox/fonts/$normalFilename"),
-                1,
-                1f,
-                false,
-                WindowSize(1280, 720)
-            ),
-            makeParam().apply {
+            createDefaultFontParams(normalFilename),
+            makeFtfParam().apply {
                 size = defaultFontSize
                 borderWidth = defaultBorderWidth
             }).setAfterLoad(afterLoad)
         cache[FontKeys.DEBUG_FONT_ITALIC] = PaintboxFontFreeType(
-            PaintboxFontParams(
-                Gdx.files.internal("paintbox/fonts/$normalItalicFilename"),
-                1,
-                1f,
-                false,
-                WindowSize(1280, 720)
-            ),
-            makeParam().apply {
+            createDefaultFontParams(normalItalicFilename),
+            makeFtfParam().apply {
                 size = defaultFontSize
                 borderWidth = 0f
             }).setAfterLoad(afterLoad)
         cache[FontKeys.DEBUG_FONT_ITALIC_BORDERED] = PaintboxFontFreeType(
-            PaintboxFontParams(
-                Gdx.files.internal("paintbox/fonts/$normalItalicFilename"),
-                1,
-                1f,
-                false,
-                WindowSize(1280, 720)
-            ),
-            makeParam().apply {
+            createDefaultFontParams(normalItalicFilename),
+            makeFtfParam().apply {
                 size = defaultFontSize
                 borderWidth = defaultBorderWidth
             }).setAfterLoad(afterLoad)
         cache[FontKeys.DEBUG_FONT_BOLD] = PaintboxFontFreeType(
-            PaintboxFontParams(Gdx.files.internal("paintbox/fonts/$boldFilename"), 1, 1f, false, WindowSize(1280, 720)),
-            makeParam().apply {
+            createDefaultFontParams(boldFilename),
+            makeFtfParam().apply {
                 size = defaultFontSize
                 borderWidth = 0f
             }).setAfterLoad(afterLoad)
         cache[FontKeys.DEBUG_FONT_BOLD_BORDERED] = PaintboxFontFreeType(
-            PaintboxFontParams(Gdx.files.internal("paintbox/fonts/$boldFilename"), 1, 1f, false, WindowSize(1280, 720)),
-            makeParam().apply {
+            createDefaultFontParams(boldFilename),
+            makeFtfParam().apply {
                 size = defaultFontSize
                 borderWidth = defaultBorderWidth
             }).setAfterLoad(afterLoad)
         cache[FontKeys.DEBUG_FONT_BOLD_ITALIC] = PaintboxFontFreeType(
-            PaintboxFontParams(
-                Gdx.files.internal("paintbox/fonts/$boldItalicFilename"),
-                1,
-                1f,
-                false,
-                WindowSize(1280, 720)
-            ),
-            makeParam().apply {
+            createDefaultFontParams(boldItalicFilename),
+            makeFtfParam().apply {
                 size = defaultFontSize
                 borderWidth = 0f
             }).setAfterLoad(afterLoad)
         cache[FontKeys.DEBUG_FONT_BOLD_ITALIC_BORDERED] = PaintboxFontFreeType(
-            PaintboxFontParams(
-                Gdx.files.internal("paintbox/fonts/$boldItalicFilename"),
-                1,
-                1f,
-                false,
-                WindowSize(1280, 720)
-            ),
-            makeParam().apply {
+            createDefaultFontParams(boldItalicFilename),
+            makeFtfParam().apply {
                 size = defaultFontSize
                 borderWidth = defaultBorderWidth
             }).setAfterLoad(afterLoad)
+
         cache[FontKeys.UNIFONT] = UnifontFactory().createUnifont(fontSize = 16)
     }
 

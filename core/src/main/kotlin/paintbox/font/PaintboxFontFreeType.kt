@@ -13,13 +13,11 @@ typealias FreeTypeFontAfterLoad = PaintboxFontFreeType.(BitmapFont) -> Unit
 
 /**
  * A wrapper around a [FreeTypeFontGenerator].
- *
- * The [params] passed in will be copied with the [ftfParameter]'s font and border size.
  */
 open class PaintboxFontFreeType(
     params: PaintboxFontParams,
     val ftfParameter: FreeTypeFontGenerator.FreeTypeFontParameter,
-) : PaintboxFont(params.copy(fontSize = ftfParameter.size, borderSize = ftfParameter.borderWidth)) {
+) : PaintboxFont(params) {
 
     companion object {
         init {
@@ -43,7 +41,7 @@ open class PaintboxFontFreeType(
             field?.dispose()
             field = value
         }
-    private var currentFont: BitmapFont? = null
+    private var currentBitmapFont: BitmapFont? = null
         set(value) {
             if (value !== field) {
                 currentFontNum++
@@ -64,14 +62,14 @@ open class PaintboxFontFreeType(
         }
         isInBegin = true
 
-        if (!isLoaded || currentFont == null) {
+        if (!isLoaded || currentBitmapFont == null) {
             // If the loadPriority is ALWAYS, this will already have been loaded in resize()
             load()
         }
 
         val params = this.params.getOrCompute()
         if (params.scaleToReferenceSize) {
-            val font = currentFont!!
+            val font = currentBitmapFont!!
             val referenceSize = params.referenceSize
             val scaleX = (referenceSize.width / areaWidth)
             val scaleY = (referenceSize.height / areaHeight)
@@ -81,7 +79,7 @@ open class PaintboxFontFreeType(
             }
         }
 
-        return currentFont!!
+        return currentBitmapFont!!
     }
 
     override fun end() {
@@ -89,7 +87,7 @@ open class PaintboxFontFreeType(
         isInBegin = false
 
         // Sets font back to scaleXY = 1.0
-        val currentFont = this.currentFont
+        val currentFont = this.currentBitmapFont
         if (currentFont != null) {
             this.fontDataInfo.applyToFont(currentFont)
         }
@@ -99,7 +97,7 @@ open class PaintboxFontFreeType(
         this.dispose()
         lastWindowSize = WindowSize(width, height)
         val params = this.params.getOrCompute()
-        if (params.loadPriority == PaintboxFontParams.LoadPriority.ALWAYS/* || params.scaleToReferenceSize*/) {
+        if (params.loadPriority == PaintboxFontParams.LoadPriority.ALWAYS) {
             load()
         }
     }
@@ -117,18 +115,18 @@ open class PaintboxFontFreeType(
             this.dispose()
             this.currentRenderedScale = scale
 
-            val newParam = ftfParameter.copy()
-            val oldParams = params
-            newParam.size = (oldParams.fontSize * scale).toInt()
-            newParam.borderWidth = oldParams.borderSize * scale
+            val oldFtfParam = this.ftfParameter
+            val newFtfParam = this.ftfParameter.copy()
+            newFtfParam.size = (oldFtfParam.size * scale).toInt()
+            newFtfParam.borderWidth = oldFtfParam.borderWidth * scale
 
-            val generator = FreeTypeFontGeneratorFix(oldParams.file)
-            val generatedFont = generator.generateFont(newParam)
+            val generator: FreeTypeFontGenerator = FreeTypeFontGeneratorFix(params.file)
+            val generatedBitmapFont = generator.generateFont(newFtfParam)
             this.generator = generator
-            this.currentFont = generatedFont
+            this.currentBitmapFont = generatedBitmapFont
 
-            this.afterLoad(generatedFont)
-            this.fontDataInfo.copyFromFont(generatedFont)
+            this.afterLoad(generatedBitmapFont)
+            this.fontDataInfo.copyFromFont(generatedBitmapFont)
         }
 
         this.isLoaded = true

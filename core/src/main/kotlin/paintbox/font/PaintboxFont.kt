@@ -8,10 +8,9 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.utils.Disposable
 import paintbox.PaintboxGame
 import paintbox.binding.ReadOnlyLongVar
-import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
+import paintbox.font.PaintboxFont.Companion.LENIENT_BEGIN_END
 import paintbox.util.WindowSize
-import paintbox.util.gdxutils.disposeQuietly
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -190,7 +189,6 @@ abstract class PaintboxFont(params: PaintboxFontParams) : Disposable {
 
 data class PaintboxFontParams(
     val file: FileHandle,
-    val fontSize: Int, val borderSize: Float,
     val scaleToReferenceSize: Boolean, val referenceSize: WindowSize,
     val loadPriority: LoadPriority = LoadPriority.LAZY,
 ) {

@@ -18,20 +18,18 @@ open class UnifontFactory {
         textureFilter: TextureFilter = TextureFilter.Linear,
     ): PaintboxFontFreeType {
         return PaintboxFontFreeType(
-            createDefaultPaintboxFontParams(fontSize, borderWidth),
+            createDefaultPaintboxFontParams(),
             createDefaultFreeTypeFontParameter(fontSize, borderWidth, textureFilter)
         )
     }
 
-    fun createDefaultPaintboxFontParams(fontSize: Int, borderWidth: Float) = PaintboxFontParams(
-        getUnifontFileLocation(),
-        fontSize,
-        borderWidth,
-        false,
-        WindowSize(1280, 720)
+    protected open fun createDefaultPaintboxFontParams() = PaintboxFontParams(
+        file = getUnifontFileLocation(),
+        scaleToReferenceSize = false,
+        referenceSize = WindowSize(1280, 720)
     )
 
-    fun createDefaultFreeTypeFontParameter(
+    protected open fun createDefaultFreeTypeFontParameter(
         fontSize: Int,
         borderWidth: Float,
         textureFilter: TextureFilter,
