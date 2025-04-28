@@ -79,6 +79,15 @@ interface ReadOnlyVar<out T> {
     fun addListener(listener: VarChangedListener<T>)
 
     /**
+     * Adds a *strong* reference listener to this [ReadOnlyVar], and immediately fires it.
+     * @see addListener
+     */
+    fun addListenerAndFire(listener: VarChangedListener<T>) {
+        addListener(listener)
+        listener.onChange(this)
+    }
+
+    /**
      * Removes the given [listener] from this [ReadOnlyVar].
      */
     fun removeListener(listener: VarChangedListener<T>)
