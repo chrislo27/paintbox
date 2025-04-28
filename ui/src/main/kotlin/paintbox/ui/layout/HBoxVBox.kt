@@ -304,6 +304,7 @@ open class HBox : AbstractHVBox<HBox.Align>() {
 
     override fun sizeWidthToChildren(minimumWidth: Float, maximumWidth: Float): Float {
         // In an HBox, the last child in the flow determines the width (left to right -> last, right to left -> first)
+        val children = this.children.getOrCompute()
         val last = if (rightToLeft.get()) children.firstOrNull() else children.lastOrNull()
         var width = 0f
         if (last != null) {
@@ -365,6 +366,7 @@ open class VBox : AbstractHVBox<VBox.Align>() {
 
     override fun sizeHeightToChildren(minimumHeight: Float, maximumHeight: Float): Float {
         // In an VBox, the last child in the flow determines the width (top to bottom -> last, bottom to top -> first)
+        val children = this.children.getOrCompute()
         val last = if (bottomToTop.get()) children.firstOrNull() else children.lastOrNull()
         var height = 0f
         if (last != null) {

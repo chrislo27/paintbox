@@ -185,7 +185,7 @@ class InputSystem(private val sceneRoot: SceneRoot) : InputProcessor {
         // We found the closest parent that contains x, y, so we'll navigate to its deepest descendant that contains xy
         // starting from it, and the resulting "subpath" will be appended to our current path
         var wasTooltipTriggered = false
-        if (cursor != null && cursor.children.isNotEmpty()) {
+        if (cursor != null && cursor.children.getOrCompute().isNotEmpty()) {
             val subPath = cursor.pathToForInput(x - offX, y - offY)
             lastPath += subPath
             if (triggerTooltips) {

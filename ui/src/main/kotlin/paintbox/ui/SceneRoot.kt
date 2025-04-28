@@ -13,8 +13,8 @@ import paintbox.binding.*
 import paintbox.ui.animation.AnimationHandler
 import paintbox.ui.contextmenu.ContextMenu
 import paintbox.util.RectangleStack
-import paintbox.util.viewport.NoOpViewport
 import paintbox.util.gdxutils.drawRect
+import paintbox.util.viewport.NoOpViewport
 
 
 /**
@@ -200,7 +200,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
 
         val childOffsetX = originX + this.contentZone.x.get()
         val childOffsetY = originY - this.contentZone.y.get()
-        this.children.forEach { child ->
+        this.children.getOrCompute().forEach { child ->
             child.drawDebugRect(childOffsetX, childOffsetY, batch, onlyVisible)
         }
     }
@@ -403,7 +403,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         // Compute the width/height layouts
         // Position the context menu according to its parent (if any)
         val root = layer.root
-        if (contextMenu !in root.children) {
+        if (contextMenu !in root.children.getOrCompute()) {
             root.addChild(contextMenu)
 
             contextMenu.computeSize(this)

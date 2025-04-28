@@ -48,8 +48,8 @@ open class UIElement : UIBounds() {
 
     val parent: Var<UIElement?> = Var(null)
 
-    var children: List<UIElement> = emptyList()
-        private set
+    private val _children: Var<List<UIElement>> = Var(emptyList())
+    val children: ReadOnlyVar<List<UIElement>> get() = _children
 
     val inputListeners: Var<List<InputEventListener>> = Var(emptyList())
     val sceneRoot: ReadOnlyVar<SceneRoot?> = Var {
@@ -172,6 +172,7 @@ open class UIElement : UIBounds() {
         originX: Float, originY: Float, batch: SpriteBatch,
         currentClipRect: Rectangle, uiOriginX: Float, uiOriginY: Float,
     ) {
+        val children = this.children.getOrCompute()
         if (children.isEmpty()) return
 
         val tmpRect = RectangleStack.getAndPush()
@@ -194,13 +195,14 @@ open class UIElement : UIBounds() {
      * Adds the [child] at the given [atIndex] of this [UIElement]'s children list.
      */
     fun addChild(atIndex: Int, child: UIElement): Boolean {
+        val children = this._children.getOrCompute()
         if (child !in children) {
             child.parent.getOrCompute()?.removeChild(child)
 
             val childrenCopy = ArrayList<UIElement>(children.size + 1)
             childrenCopy.addAll(children)
             childrenCopy.add(atIndex, child)
-            children = childrenCopy
+            this._children.set(childrenCopy)
             child.parent.set(this)
             this.onChildAdded(child, atIndex)
             child.onAddedToParent(this)
@@ -214,7 +216,7 @@ open class UIElement : UIBounds() {
      * Adds the [child] to the end of this [UIElement]'s children list.
      */
     fun addChild(child: UIElement): Boolean {
-        return addChild(children.size, child)
+        return addChild(children.getOrCompute().size, child)
     }
 
     /**
@@ -228,7 +230,7 @@ open class UIElement : UIBounds() {
      * Removes the given [child] from this [UIElement].
      */
     fun removeChild(child: UIElement): Boolean {
-        return removeChild(children.indexOf(child))
+        return removeChild(children.getOrCompute().indexOf(child))
     }
 
     /**
@@ -236,6 +238,7 @@ open class UIElement : UIBounds() {
      * If the [index] is not in bounds, no action is taken.
      */
     fun removeChild(index: Int): Boolean {
+        val children = this._children.getOrCompute()
         if (index !in children.indices) return false
 
         val child = children[index]
@@ -245,9 +248,9 @@ open class UIElement : UIBounds() {
             childSceneRoot?.setFocusedElement(null)
         }
 
-        children = children.toMutableList().apply {
+        this._children.set(children.toMutableList().apply {
             removeAt(index)
-        }
+        })
         child.parent.set(null)
         this.onChildRemoved(child, index)
         child.onRemovedFromParent(this)
@@ -256,7 +259,7 @@ open class UIElement : UIBounds() {
     }
 
     fun removeAllChildren() {
-        val childrenSize = children.size
+        val childrenSize = children.getOrCompute().size
         if (childrenSize > 0) {
             // Delete backwards
             for (i in childrenSize - 1 downTo 0) {
@@ -290,7 +293,7 @@ open class UIElement : UIBounds() {
     }
 
     operator fun contains(other: UIElement): Boolean {
-        return other in children
+        return other in children.getOrCompute()
     }
 
     override fun toString(): String {
@@ -320,7 +323,7 @@ open class UIElement : UIBounds() {
 
     open fun sizeWidthToChildren(minimumWidth: Float = 0f, maximumWidth: Float = Float.POSITIVE_INFINITY): Float {
         // Use the farthest-right (X+) child based on right edge
-        val last = children.maxByOrNull { child ->
+        val last = children.getOrCompute().maxByOrNull { child ->
             child.bounds.x.get() + child.bounds.width.get()
         }
         var width = 0f
@@ -341,7 +344,7 @@ open class UIElement : UIBounds() {
 
     open fun sizeHeightToChildren(minimumHeight: Float = 0f, maximumHeight: Float = Float.POSITIVE_INFINITY): Float {
         // Use the farthest-down (Y+) child based on bottom edge
-        val last = children.maxByOrNull { child ->
+        val last = children.getOrCompute().maxByOrNull { child ->
             child.bounds.y.get() + child.bounds.height.get()
         }
         var height = 0f
@@ -569,15 +572,17 @@ open class UIElement : UIBounds() {
     fun pathTo(x: Float, y: Float): List<UIElement> {
         val res = mutableListOf<UIElement>()
         var current: UIElement = this
+        var currentChildren: List<UIElement> = current.children.getOrCompute()
         var currentBounds: ReadOnlyBounds = current.contentZone
         var xOffset: Float = currentBounds.x.get()
         var yOffset: Float = currentBounds.y.get()
-        while (current.children.isNotEmpty()) {
-            val found = current.children.findLast { child ->
+        while (currentChildren.isNotEmpty()) {
+            val found = currentChildren.findLast { child ->
                 child.bounds.containsPointLocal(x - xOffset, y - yOffset)
             } ?: break
             res += found
             current = found
+            currentChildren = current.children.getOrCompute()
             currentBounds = current.contentZone
             xOffset += currentBounds.x.get()
             yOffset += currentBounds.y.get()
@@ -593,10 +598,11 @@ open class UIElement : UIBounds() {
     fun pathToForInput(x: Float, y: Float): List<UIElement> {
         val res = mutableListOf<UIElement>()
         var current: UIElement = this
+        var currentChildren: List<UIElement> = current.children.getOrCompute()
         var currentBounds: ReadOnlyBounds = current.contentZone
         var xOffset: Float = currentBounds.x.get()
         var yOffset: Float = currentBounds.y.get()
-        while (current.children.isNotEmpty()) {
+        while (currentChildren.isNotEmpty()) {
             /*
             Clipping check:
             If current is clipped, then x and y MUST be within current to begin with!
@@ -604,13 +610,14 @@ open class UIElement : UIBounds() {
             if (current.doClipping.get()) {
                 if (!current.bounds.containsPointLocal(x, y)) break
             }
-            val found = current.children.findLast { child ->
+            val found = currentChildren.findLast { child ->
                 child.apparentVisibility.get() && !child.shouldExcludeFromInput()
                         && child.borderZone.containsPointLocal(x - xOffset, y - yOffset)
             } ?: break
 
             res += found
             current = found
+            currentChildren = current.children.getOrCompute()
             currentBounds = current.contentZone
             xOffset += currentBounds.x.get()
             yOffset += currentBounds.y.get()
