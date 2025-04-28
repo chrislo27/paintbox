@@ -1,7 +1,9 @@
 package paintbox.util
 
 import paintbox.util.wave.WaveUtils
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 
 /**
@@ -48,6 +50,15 @@ object MathHelper {
         if (abs <= 0.0)
             return value
         return (value / abs).roundToLong() * abs
+    }
+
+    /**
+     * Returns a new wrapped-around index, which is [currentIndex] plus [change].
+     */
+    fun indexWraparound(currentIndex: Int, change: Int, numItems: Int): Int {
+        if (numItems <= 0) throw IllegalArgumentException("numItems must be positive, got $numItems")
+        val newIndex = (currentIndex + change) % numItems
+        return if (newIndex >= 0) newIndex else (newIndex + numItems)
     }
 
     @Deprecated("Use WaveUtils instead")
