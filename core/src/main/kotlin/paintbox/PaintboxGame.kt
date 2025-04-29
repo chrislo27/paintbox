@@ -62,7 +62,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() 
     val debugInfo: DebugInfo = DebugInfo()
     var debugOverlay: DebugOverlay = DebugOverlay(this)
         protected set
-    val debugKeysInputProcessor: IDebugKeysInputProcessor = createDebugKeysInputProcessor()
+    val debugKeysInputProcessor: IDebugKeysInputProcessor by lazy { createDebugKeysInputProcessor() }
 
     lateinit var startingResolution: WindowSize
         private set
