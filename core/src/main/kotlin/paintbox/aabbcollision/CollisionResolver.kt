@@ -1,8 +1,8 @@
 package paintbox.aabbcollision
 
 import com.badlogic.gdx.math.Rectangle
+import com.badlogic.gdx.utils.DefaultPool
 import com.badlogic.gdx.utils.Pool
-import com.badlogic.gdx.utils.ReflectionPool
 import paintbox.util.gdxutils.intersects
 import paintbox.util.gdxutils.maxX
 import paintbox.util.gdxutils.maxY
@@ -15,7 +15,7 @@ import java.util.*
  */
 class CollisionResolver {
 
-    private val resultPool: Pool<CollisionResult> = ReflectionPool(CollisionResult::class.java, 4)
+    private val resultPool: Pool<CollisionResult> = DefaultPool(::CollisionResult, 4)
     private val tempResults = LinkedList<CollisionResult>()
     private val broadphase = Rectangle(0f, 0f, 1f, 1f)
     var timescale = 1f
