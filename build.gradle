@@ -19,7 +19,7 @@ allprojects {
 
     ext {
         appName = "Paintbox"
-        gdxVersion = '1.13.1'
+        gdxVersion = '1.13.5'
         gdxControllersVersion = '2.2.3'
         paintboxVersion = "1.0.0"
     }
