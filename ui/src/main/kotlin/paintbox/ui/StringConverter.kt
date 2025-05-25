@@ -1,19 +1,21 @@
 package paintbox.ui
 
 import paintbox.binding.ReadOnlyVar
-import paintbox.ui.StringConverter.Companion
 
 
 /**
  * A functional interface that converts an object [T] into a string.
  *
- * The default implementation ([Companion.DEFAULT_STRING_CONVERTER]) simply calls [toString].
+ * The default implementation ([Companion.createDefaultConverter]) simply calls [toString].
  */
 fun interface StringConverter<T> {
 
     companion object {
 
-        val DEFAULT_STRING_CONVERTER: StringConverter<Any?> = StringConverter { it.toString() }
+        private val DEFAULT_CONVERTER: StringConverter<Any?> = StringConverter { it.toString() }
+        
+        @Suppress("UNCHECKED_CAST")
+        fun <T> createDefaultConverter(): StringConverter<T> = DEFAULT_CONVERTER as StringConverter<T>
     }
 
     fun convert(item: T): String
@@ -27,7 +29,12 @@ fun interface StringVarConverter<T> {
 
     companion object {
 
-        val DEFAULT_CONVERTER: StringVarConverter<Any?> = StringConverter.DEFAULT_STRING_CONVERTER.toVarConverter()
+        private val DEFAULT_CONVERTER: StringVarConverter<Any?> =
+            StringVarConverter { ReadOnlyVar.const(it.toString()) }
+
+        @Suppress("UNCHECKED_CAST")
+        fun <T> createDefaultConverter(): StringVarConverter<T> =
+            DEFAULT_CONVERTER as StringVarConverter<T>
     }
 
     fun toVar(item: T): ReadOnlyVar<String>

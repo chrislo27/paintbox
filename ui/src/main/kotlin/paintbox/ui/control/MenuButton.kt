@@ -15,9 +15,7 @@ open class MenuButton<T>(startingList: List<T>, text: String, font: PaintboxFont
 
     override val items: Var<List<T>> = Var(startingList)
 
-    @Suppress("UNCHECKED_CAST")
-    override val itemStringConverter: Var<StringConverter<T>> =
-        Var(ComboBox.DEFAULT_STRING_CONVERTER as StringConverter<T>)
+    override val itemStringConverter: Var<StringConverter<T>> = Var(ComboBox.getDefaultStringConverter())
     override var onItemSelected: (T) -> Unit = {}
 
     override val contextMenuDefaultWidth: FloatVar = FloatVar { this@MenuButton.bounds.width.use() }

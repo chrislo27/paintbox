@@ -27,7 +27,6 @@ open class ComboBox<T>(
 
         const val COMBOBOX_SKIN_ID: String = "ComboBox"
 
-        val DEFAULT_STRING_CONVERTER: StringConverter<Any?> get() = StringConverter.DEFAULT_STRING_CONVERTER
         val DEFAULT_PADDING: Insets = Insets(2f, 2f, 4f, 4f)
 
         init {
@@ -49,14 +48,15 @@ open class ComboBox<T>(
                     ).toTextBlock()
             }
         }
+
+        fun <T> getDefaultStringConverter(): StringConverter<T> = StringConverter.createDefaultConverter()
     }
 
 
     override val items: Var<List<T>> = Var(startingList)
     override val selectedItem: Var<T> = Var(selectedItem)
 
-    @Suppress("UNCHECKED_CAST")
-    override val itemStringConverter: Var<StringConverter<T>> = Var(DEFAULT_STRING_CONVERTER as StringConverter<T>)
+    override val itemStringConverter: Var<StringConverter<T>> = Var(getDefaultStringConverter())
     override val text: ReadOnlyVar<String> = Var.bind {
         this@ComboBox.itemStringConverter.use().convert(this@ComboBox.selectedItem.use())
     }
