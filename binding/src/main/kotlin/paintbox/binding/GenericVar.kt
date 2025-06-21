@@ -3,20 +3,25 @@ package paintbox.binding
 
 /**
  * The default implementation of [Var].
- * 
+ *
  * Specialized versions of [Var] exist for primitives, such as [IntVar], [FloatVar], etc.
  */
 class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
-
-    private var binding: GenericBinding<T>
-    private var currentValue: T? = null
-    private var dependencies: Set<ReadOnlyVar<Any?>> =
-        emptySet() // Cannot be generic since it can depend on any other Var
 
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
      */
     private val invalidationListener: VarChangedListener<Any?> = InvalListener(this)
+
+    private var binding: GenericBinding<T>
+    private var currentValue: T? = null
+    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet()
+        set(newValue) {
+            field.forEach { it.removeListener(invalidationListener) }
+            field = newValue
+            newValue.forEach { it.addListener(invalidationListener) }
+        }
+
 
     constructor(item: T) {
         currentValue = item
@@ -38,7 +43,6 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
     }
 
     private fun resetState() {
-        dependencies.forEach { it.removeListener(invalidationListener) }
         dependencies = emptySet()
         invalidated = true
         currentValue = null
@@ -78,7 +82,7 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
                 if (invalidated) {
                     invalidated = false
                 }
-                @Suppress("UNCHECKED_CAST") (currentValue as T) // Cannot be currentValue!! since the actual type of T may be nullable
+                @Suppress("UNCHECKED_CAST") (currentValue as T)
             }
 
             is GenericBinding.Compute -> {
@@ -87,10 +91,7 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
                 } else {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.computation(ctx)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     result
@@ -101,10 +102,7 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
                 if (invalidated) {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     binding.item = result
@@ -119,6 +117,7 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
     }
 
     private sealed class GenericBinding<out T> {
+        
         data object Const : GenericBinding<Nothing>()
 
         class Compute<T>(val computation: ContextBinding<T>) : GenericBinding<T>()

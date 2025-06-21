@@ -56,15 +56,19 @@ internal class ReadOnlyConstDoubleVar(private val value: Double) : ReadOnlyVarBa
  */
 class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubleVar, Var<Double> {
 
-    private var binding: DoubleBinding
-    private var currentValue: Double = 0.0
-    private var dependencies: Set<ReadOnlyVar<Any?>> =
-        emptySet() // Cannot be generic since it can depend on any other Var
-
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
      */
     private val invalidationListener: VarChangedListener<Any?> = InvalListener(this)
+
+    private var binding: DoubleBinding
+    private var currentValue: Double = 0.0
+    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet() // Cannot be generic since it can depend on any other Var
+        set(newValue) {
+            field.forEach { it.removeListener(invalidationListener) }
+            field = newValue
+            newValue.forEach { it.addListener(invalidationListener) }
+        }
 
     constructor(item: Double) {
         binding = DoubleBinding.Const
@@ -139,10 +143,7 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
                 } else {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.computation(ctx)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     result
@@ -153,10 +154,7 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
                 if (invalidated) {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     binding.item = result
@@ -182,6 +180,7 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
     }
 
     private sealed class DoubleBinding {
+        
         /**
          * Represents a constant value. The value is actually stored in [DoubleVar.currentValue].
          */

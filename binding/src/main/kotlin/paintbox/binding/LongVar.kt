@@ -56,15 +56,19 @@ internal class ReadOnlyConstLongVar(private val value: Long) : ReadOnlyVarBase<L
  */
 class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Var<Long> {
 
-    private var binding: LongBinding
-    private var currentValue: Long = 0L
-    private var dependencies: Set<ReadOnlyVar<Any?>> =
-        emptySet() // Cannot be generic since it can depend on any other Var
-
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
      */
     private val invalidationListener: VarChangedListener<Any?> = InvalListener(this)
+
+    private var binding: LongBinding
+    private var currentValue: Long = 0L
+    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet()
+        set(newValue) {
+            field.forEach { it.removeListener(invalidationListener) }
+            field = newValue
+            newValue.forEach { it.addListener(invalidationListener) }
+        }
 
     constructor(item: Long) {
         binding = LongBinding.Const
@@ -139,10 +143,7 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
                 } else {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.computation(ctx)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     result
@@ -153,10 +154,7 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
                 if (invalidated) {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     binding.item = result
@@ -265,6 +263,7 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
     }
 
     private sealed class LongBinding {
+
         /**
          * Represents a constant value. The value is actually stored in [LongVar.currentValue].
          */

@@ -51,15 +51,19 @@ internal class ReadOnlyConstCharVar(private val value: Char) : ReadOnlyVarBase<C
  */
 class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Var<Char> {
 
-    private var binding: CharBinding
-    private var currentValue: Char = nullChar
-    private var dependencies: Set<ReadOnlyVar<Any?>> =
-        emptySet() // Cannot be generic since it can depend on any other Var
-
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
      */
     private val invalidationListener: VarChangedListener<Any?> = InvalListener(this)
+
+    private var binding: CharBinding
+    private var currentValue: Char = nullChar
+    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet()
+        set(newValue) {
+            field.forEach { it.removeListener(invalidationListener) }
+            field = newValue
+            newValue.forEach { it.addListener(invalidationListener) }
+        }
 
     constructor(item: Char) {
         binding = CharBinding.Const
@@ -134,10 +138,7 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
                 } else {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.computation(ctx)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     result
@@ -148,10 +149,7 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
                 if (invalidated) {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     binding.item = result
@@ -177,6 +175,7 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
     }
 
     private sealed class CharBinding {
+        
         /**
          * Represents a constant value. The value is actually stored in [CharVar.currentValue].
          */

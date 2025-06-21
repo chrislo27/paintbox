@@ -56,15 +56,19 @@ internal class ReadOnlyConstIntVar(private val value: Int) : ReadOnlyVarBase<Int
  */
 class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<Int> {
 
-    private var binding: IntBinding
-    private var currentValue: Int = 0
-    private var dependencies: Set<ReadOnlyVar<Any?>> =
-        emptySet() // Cannot be generic since it can depend on any other Var
-
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
      */
     private val invalidationListener: VarChangedListener<Any?> = InvalListener(this)
+
+    private var binding: IntBinding
+    private var currentValue: Int = 0
+    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet()
+        set(newValue) {
+            field.forEach { it.removeListener(invalidationListener) }
+            field = newValue
+            newValue.forEach { it.addListener(invalidationListener) }
+        }
 
     constructor(item: Int) {
         binding = IntBinding.Const
@@ -139,10 +143,7 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
                 } else {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.computation(ctx)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     result
@@ -153,10 +154,7 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
                 if (invalidated) {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     binding.item = result
@@ -265,6 +263,7 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
     }
 
     private sealed class IntBinding {
+        
         /**
          * Represents a constant value. The value is actually stored in [IntVar.currentValue].
          */

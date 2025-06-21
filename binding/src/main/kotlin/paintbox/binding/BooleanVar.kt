@@ -56,15 +56,20 @@ internal class ReadOnlyConstBooleanVar(private val value: Boolean) : ReadOnlyVar
  */
 class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBooleanVar, Var<Boolean> {
 
-    private var binding: BooleanBinding
-    private var currentValue: Boolean = false
-    private var dependencies: Set<ReadOnlyVar<Any?>> =
-        emptySet() // Cannot be generic since it can depend on any other Var
 
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
      */
     private val invalidationListener: VarChangedListener<Any?> = InvalListener(this)
+    
+    private var binding: BooleanBinding
+    private var currentValue: Boolean = false
+    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet()
+        set(newValue) {
+            field.forEach { it.removeListener(invalidationListener) }
+            field = newValue
+            newValue.forEach { it.addListener(invalidationListener) }
+        }
 
     constructor(item: Boolean) {
         binding = BooleanBinding.Const
@@ -139,10 +144,7 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
                 } else {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.computation(ctx)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     result
@@ -153,10 +155,7 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
                 if (invalidated) {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     binding.item = result
@@ -193,6 +192,7 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
     }
 
     private sealed class BooleanBinding {
+
         /**
          * Represents a constant value. The value is actually stored in [BooleanVar.currentValue].
          */

@@ -56,15 +56,19 @@ internal class ReadOnlyConstFloatVar(private val value: Float) : ReadOnlyVarBase
  */
 class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar, Var<Float> {
 
-    private var binding: FloatBinding
-    private var currentValue: Float = 0f
-    private var dependencies: Set<ReadOnlyVar<Any?>> =
-        emptySet() // Cannot be generic since it can depend on any other Var
-
     /**
      * This is intentionally generic type Any? so further unchecked casts are avoided when it is used
      */
     private val invalidationListener: VarChangedListener<Any?> = InvalListener(this)
+
+    private var binding: FloatBinding
+    private var currentValue: Float = 0f
+    private var dependencies: Set<ReadOnlyVar<Any?>> = emptySet()
+        set(newValue) {
+            field.forEach { it.removeListener(invalidationListener) }
+            field = newValue
+            newValue.forEach { it.addListener(invalidationListener) }
+        }
 
     constructor(item: Float) {
         binding = FloatBinding.Const
@@ -139,10 +143,7 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
                 } else {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.computation(ctx)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     result
@@ -153,10 +154,7 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
                 if (invalidated) {
                     val ctx = DependencyTrackingVarContext()
                     val result = binding.sideEffectingComputation(ctx, binding.item)
-                    val oldDependencies = dependencies
-                    oldDependencies.forEach { it.removeListener(invalidationListener) }
                     dependencies = ctx.dependencies
-                    dependencies.forEach { it.addListener(invalidationListener) }
                     currentValue = result
                     invalidated = false
                     binding.item = result
@@ -182,6 +180,7 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
     }
 
     private sealed class FloatBinding {
+        
         /**
          * Represents a constant value. The value is actually stored in [FloatVar.currentValue].
          */
