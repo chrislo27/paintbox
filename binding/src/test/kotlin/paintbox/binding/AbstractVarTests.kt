@@ -1,6 +1,9 @@
 package paintbox.binding
 
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
+import kotlin.test.assertTrue
 
 
 abstract class AbstractVarTests<V, T>
@@ -176,11 +179,65 @@ abstract class AbstractVarTests<V, T>
         // Assert
         assertEquals(1, listener.notifyCount)
     }
+
+    @Test
+    fun `binding and re-binding correctly adds and removes invalidation listeners`() {
+        // Arrange
+        val dependency1 = InvalidatableVar()
+        val dependency2 = InvalidatableVar()
+        
+        // Act & Assert
+        varr.bind {
+            dependency1.use()
+            getConstant()
+        }
+        varr.getOrCompute()
+        
+        assertEquals(1, dependency1.listeners.size)
+        assertEquals(0, dependency2.listeners.size)
+        
+        
+        varr.bind {
+            dependency2.use()
+            getConstant2()
+        }
+        varr.getOrCompute()
+        
+        assertEquals(1, dependency2.listeners.size)
+        assertEquals(0, dependency1.listeners.size)
+    }
+
+    @Test
+    fun `sideEffecting and re-sideEffecting correctly adds and removes invalidation listeners`() {
+        // Arrange
+        val dependency1 = InvalidatableVar()
+        val dependency2 = InvalidatableVar()
+        
+        // Act & Assert
+        varr.sideEffecting(getConstant2()) {
+            dependency1.use()
+            getConstant()
+        }
+        varr.getOrCompute()
+        
+        assertEquals(1, dependency1.listeners.size)
+        assertEquals(0, dependency2.listeners.size)
+        
+        
+        varr.sideEffecting(getConstant()) {
+            dependency2.use()
+            getConstant2()
+        }
+        varr.getOrCompute()
+        
+        assertEquals(1, dependency2.listeners.size)
+        assertEquals(0, dependency1.listeners.size)
+    }
     
     private class InvalidatableVar : ReadOnlyVar<Unit> {
 
         var invalidated = false
-        private val listeners: MutableSet<VarChangedListener<Unit>> = mutableSetOf()
+        val listeners: MutableSet<VarChangedListener<Unit>> = mutableSetOf()
 
         override fun getOrCompute() {
             invalidated = false
