@@ -80,7 +80,8 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
         binding = CharBinding.SideEffecting(item, sideEffecting)
     }
 
-    private fun reset() {
+    private fun resetState() {
+        dependencies.forEach { it.removeListener(invalidationListener) }
         dependencies = emptySet()
         invalidated = true
         currentValue = nullChar
@@ -91,20 +92,20 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
         if (existingBinding is CharBinding.Const && currentValue == item) {
             return
         }
-        reset()
+        resetState()
         currentValue = item
         binding = CharBinding.Const
         notifyListeners()
     }
 
     override fun bind(computation: ContextBinding<Char>) {
-        reset()
+        resetState()
         binding = CharBinding.Compute(computation)
         notifyListeners()
     }
 
     override fun sideEffecting(item: Char, sideEffecting: ContextSideEffecting<Char>) {
-        reset()
+        resetState()
         binding = CharBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }

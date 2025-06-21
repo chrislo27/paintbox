@@ -37,7 +37,8 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
         binding = GenericBinding.SideEffecting(item, sideEffecting)
     }
 
-    private fun reset() {
+    private fun resetState() {
+        dependencies.forEach { it.removeListener(invalidationListener) }
         dependencies = emptySet()
         invalidated = true
         currentValue = null
@@ -49,20 +50,20 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
         if (existingBinding is GenericBinding.Const && currentValue == item) {
             return
         }
-        reset()
+        resetState()
         currentValue = item
         binding = GenericBinding.Const
         notifyListeners()
     }
 
     override fun bind(computation: ContextBinding<T>) {
-        reset()
+        resetState()
         binding = GenericBinding.Compute(computation)
         notifyListeners()
     }
 
     override fun sideEffecting(item: T, sideEffecting: ContextSideEffecting<T>) {
-        reset()
+        resetState()
         binding = GenericBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }

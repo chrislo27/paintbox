@@ -85,7 +85,8 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
         binding = FloatBinding.SideEffecting(item, sideEffecting)
     }
 
-    private fun reset() {
+    private fun resetState() {
+        dependencies.forEach { it.removeListener(invalidationListener) }
         dependencies = emptySet()
         invalidated = true
         currentValue = 0f
@@ -96,20 +97,20 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
         if (existingBinding is FloatBinding.Const && currentValue == item) {
             return
         }
-        reset()
+        resetState()
         currentValue = item
         binding = FloatBinding.Const
         notifyListeners()
     }
 
     override fun bind(computation: ContextBinding<Float>) {
-        reset()
+        resetState()
         binding = FloatBinding.Compute(computation)
         notifyListeners()
     }
 
     override fun sideEffecting(item: Float, sideEffecting: ContextSideEffecting<Float>) {
-        reset()
+        resetState()
         binding = FloatBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }

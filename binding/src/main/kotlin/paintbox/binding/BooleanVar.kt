@@ -85,7 +85,8 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
         binding = BooleanBinding.SideEffecting(item, sideEffecting)
     }
 
-    private fun reset() {
+    private fun resetState() {
+        dependencies.forEach { it.removeListener(invalidationListener) }
         dependencies = emptySet()
         invalidated = true
         currentValue = false
@@ -96,20 +97,20 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
         if (existingBinding is BooleanBinding.Const && currentValue == item) {
             return
         }
-        reset()
+        resetState()
         currentValue = item
         binding = BooleanBinding.Const
         notifyListeners()
     }
 
     override fun bind(computation: ContextBinding<Boolean>) {
-        reset()
+        resetState()
         binding = BooleanBinding.Compute(computation)
         notifyListeners()
     }
 
     override fun sideEffecting(item: Boolean, sideEffecting: ContextSideEffecting<Boolean>) {
-        reset()
+        resetState()
         binding = BooleanBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }

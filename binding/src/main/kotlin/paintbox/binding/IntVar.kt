@@ -85,7 +85,8 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
         binding = IntBinding.SideEffecting(item, sideEffecting)
     }
 
-    private fun reset() {
+    private fun resetState() {
+        dependencies.forEach { it.removeListener(invalidationListener) }
         dependencies = emptySet()
         invalidated = true
         currentValue = 0
@@ -96,20 +97,20 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
         if (existingBinding is IntBinding.Const && currentValue == item) {
             return
         }
-        reset()
+        resetState()
         currentValue = item
         binding = IntBinding.Const
         notifyListeners()
     }
 
     override fun bind(computation: ContextBinding<Int>) {
-        reset()
+        resetState()
         binding = IntBinding.Compute(computation)
         notifyListeners()
     }
 
     override fun sideEffecting(item: Int, sideEffecting: ContextSideEffecting<Int>) {
-        reset()
+        resetState()
         binding = IntBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }

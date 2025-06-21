@@ -85,7 +85,8 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
         binding = LongBinding.SideEffecting(item, sideEffecting)
     }
 
-    private fun reset() {
+    private fun resetState() {
+        dependencies.forEach { it.removeListener(invalidationListener) }
         dependencies = emptySet()
         invalidated = true
         currentValue = 0L
@@ -96,20 +97,20 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
         if (existingBinding is LongBinding.Const && currentValue == item) {
             return
         }
-        reset()
+        resetState()
         currentValue = item
         binding = LongBinding.Const
         notifyListeners()
     }
 
     override fun bind(computation: ContextBinding<Long>) {
-        reset()
+        resetState()
         binding = LongBinding.Compute(computation)
         notifyListeners()
     }
 
     override fun sideEffecting(item: Long, sideEffecting: ContextSideEffecting<Long>) {
-        reset()
+        resetState()
         binding = LongBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }

@@ -85,7 +85,8 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
         binding = DoubleBinding.SideEffecting(item, sideEffecting)
     }
 
-    private fun reset() {
+    private fun resetState() {
+        dependencies.forEach { it.removeListener(invalidationListener) }
         dependencies = emptySet()
         invalidated = true
         currentValue = 0.0
@@ -96,20 +97,20 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
         if (existingBinding is DoubleBinding.Const && currentValue == item) {
             return
         }
-        reset()
+        resetState()
         currentValue = item
         binding = DoubleBinding.Const
         notifyListeners()
     }
 
     override fun bind(computation: ContextBinding<Double>) {
-        reset()
+        resetState()
         binding = DoubleBinding.Compute(computation)
         notifyListeners()
     }
 
     override fun sideEffecting(item: Double, sideEffecting: ContextSideEffecting<Double>) {
-        reset()
+        resetState()
         binding = DoubleBinding.SideEffecting(item, sideEffecting)
         notifyListeners()
     }
