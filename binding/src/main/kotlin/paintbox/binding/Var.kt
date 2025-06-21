@@ -1,5 +1,11 @@
 package paintbox.binding
 
+import paintbox.binding.Var.Companion.bind
+import paintbox.binding.Var.Companion.eagerBind
+import paintbox.binding.Var.Companion.of
+import paintbox.binding.Var.Companion.sideEffecting
+
+
 
 /**
  * Represents a mutable var.
@@ -55,7 +61,7 @@ interface Var<T> : ReadOnlyVar<T> {
             GenericVar(item, sideEffecting)
 
 
-        // Warnings for specialized versions of plain invoke -----------------------------------------------------------
+        //region Warnings for specialized versions of plain invoke
 
         @Deprecated(
             "Prefer using the FloatVar constructor to avoid confusion with generic versions",
@@ -99,6 +105,7 @@ interface Var<T> : ReadOnlyVar<T> {
         )
         operator fun invoke(item: Char): CharVar = CharVar(item)
 
+        //endregion
     }
 
     /**
@@ -125,6 +132,18 @@ interface Var<T> : ReadOnlyVar<T> {
     fun eagerBind(computation: ContextBinding<T>): T {
         bind(computation)
         return getOrCompute()
+    }
+
+    /**
+     * Directly binds this var to the same value as the given [readOnlyVar]. This has the benefit of ensuring that
+     * the only dependency for this [Var] is the given [readOnlyVar].
+     * 
+     * The default implementation of this function simply calls the [ContextBinding] overload of [bind].
+     * Implementations of this interface should override this with an optimized implementation
+     * that avoids recalculating dependencies.
+     */
+    fun bind(readOnlyVar: ReadOnlyVar<T>) {
+        this.bind({ readOnlyVar.use() })
     }
 
     /**
