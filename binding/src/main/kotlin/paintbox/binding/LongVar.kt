@@ -85,6 +85,11 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
         }
     }
 
+    constructor(readOnlyVar: ReadOnlyLongVar) {
+        binding = LongBinding.BindToLongVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
+    }
+
     constructor(item: Long, sideEffecting: ContextSideEffecting<Long>) {
         binding = LongBinding.SideEffecting(item, sideEffecting)
     }
@@ -110,6 +115,21 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
     override fun bind(computation: ContextBinding<Long>) {
         resetState()
         binding = LongBinding.Compute(computation)
+        notifyListeners()
+    }
+
+    override fun bind(readOnlyVar: ReadOnlyVar<Long>) {
+        if (readOnlyVar is ReadOnlyLongVar) {
+            this.bind(readOnlyVar)
+        } else {
+            super<Var>.bind(readOnlyVar)
+        }
+    }
+
+    fun bind(readOnlyVar: ReadOnlyLongVar) {
+        resetState()
+        binding = LongBinding.BindToLongVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
         notifyListeners()
     }
 
@@ -160,6 +180,17 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
                     binding.item = result
                 }
                 binding.item
+            }
+
+            is LongBinding.BindToLongVar -> {
+                if (!invalidated) {
+                    currentValue
+                } else {
+                    val result = binding.readOnlyVar.get()
+                    currentValue = result
+                    invalidated = false
+                    result
+                }
             }
         }
         return result
@@ -272,6 +303,8 @@ class LongVar : ReadOnlyVarBase<Long>, SpecializedVar<Long>, ReadOnlyLongVar, Va
         class Compute(val computation: ContextBinding<Long>) : LongBinding()
 
         class SideEffecting(var item: Long, val sideEffectingComputation: ContextSideEffecting<Long>) : LongBinding()
+
+        class BindToLongVar(val readOnlyVar: ReadOnlyLongVar) : LongBinding()
     }
 }
 

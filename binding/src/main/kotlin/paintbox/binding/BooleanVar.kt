@@ -86,6 +86,11 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
         }
     }
 
+    constructor(readOnlyVar: ReadOnlyBooleanVar) {
+        binding = BooleanBinding.BindToBooleanVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
+    }
+
     constructor(item: Boolean, sideEffecting: ContextSideEffecting<Boolean>) {
         binding = BooleanBinding.SideEffecting(item, sideEffecting)
     }
@@ -111,6 +116,21 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
     override fun bind(computation: ContextBinding<Boolean>) {
         resetState()
         binding = BooleanBinding.Compute(computation)
+        notifyListeners()
+    }
+
+    override fun bind(readOnlyVar: ReadOnlyVar<Boolean>) {
+        if (readOnlyVar is ReadOnlyBooleanVar) {
+            this.bind(readOnlyVar)
+        } else {
+            super<Var>.bind(readOnlyVar)
+        }
+    }
+
+    fun bind(readOnlyVar: ReadOnlyBooleanVar) {
+        resetState()
+        binding = BooleanBinding.BindToBooleanVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
         notifyListeners()
     }
 
@@ -162,6 +182,17 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
                 }
                 binding.item
             }
+
+            is BooleanBinding.BindToBooleanVar -> {
+                if (!invalidated) {
+                    currentValue
+                } else {
+                    val result = binding.readOnlyVar.get()
+                    currentValue = result
+                    invalidated = false
+                    result
+                }
+            }
         }
         return result
     }
@@ -204,6 +235,8 @@ class BooleanVar : ReadOnlyVarBase<Boolean>, SpecializedVar<Boolean>, ReadOnlyBo
             var item: Boolean,
             val sideEffectingComputation: ContextSideEffecting<Boolean>,
         ) : BooleanBinding()
+
+        class BindToBooleanVar(val readOnlyVar: ReadOnlyBooleanVar) : BooleanBinding()
     }
 }
 

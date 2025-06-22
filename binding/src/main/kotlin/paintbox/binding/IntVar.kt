@@ -85,6 +85,11 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
         }
     }
 
+    constructor(readOnlyVar: ReadOnlyIntVar) {
+        binding = IntBinding.BindToIntVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
+    }
+
     constructor(item: Int, sideEffecting: ContextSideEffecting<Int>) {
         binding = IntBinding.SideEffecting(item, sideEffecting)
     }
@@ -110,6 +115,21 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
     override fun bind(computation: ContextBinding<Int>) {
         resetState()
         binding = IntBinding.Compute(computation)
+        notifyListeners()
+    }
+
+    override fun bind(readOnlyVar: ReadOnlyVar<Int>) {
+        if (readOnlyVar is ReadOnlyIntVar) {
+            this.bind(readOnlyVar)
+        } else {
+            super<Var>.bind(readOnlyVar)
+        }
+    }
+
+    fun bind(readOnlyVar: ReadOnlyIntVar) {
+        resetState()
+        binding = IntBinding.BindToIntVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
         notifyListeners()
     }
 
@@ -160,6 +180,17 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
                     binding.item = result
                 }
                 binding.item
+            }
+
+            is IntBinding.BindToIntVar -> {
+                if (!invalidated) {
+                    currentValue
+                } else {
+                    val result = binding.readOnlyVar.get()
+                    currentValue = result
+                    invalidated = false
+                    result
+                }
             }
         }
         return result
@@ -272,6 +303,8 @@ class IntVar : ReadOnlyVarBase<Int>, SpecializedVar<Int>, ReadOnlyIntVar, Var<In
         class Compute(val computation: ContextBinding<Int>) : IntBinding()
 
         class SideEffecting(var item: Int, val sideEffectingComputation: ContextSideEffecting<Int>) : IntBinding()
+
+        class BindToIntVar(val readOnlyVar: ReadOnlyIntVar) : IntBinding()
     }
 }
 

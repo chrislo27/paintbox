@@ -1,7 +1,7 @@
 package paintbox.binding
 
 
-class LongVarTests : AbstractVarTests<LongVar, Long>() {
+class LongVarTests : SpecializedVarBaseTests<LongVar, Long>() {
 
     override fun createVar(): LongVar {
         return LongVar(0L)

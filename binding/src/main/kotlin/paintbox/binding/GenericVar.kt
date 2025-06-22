@@ -71,6 +71,13 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
         notifyListeners()
     }
 
+    override fun bind(readOnlyVar: ReadOnlyVar<T>) {
+        resetState()
+        binding = GenericBinding.BindToVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
+        notifyListeners()
+    }
+
     override fun sideEffecting(item: T, sideEffecting: ContextSideEffecting<T>) {
         resetState()
         binding = GenericBinding.SideEffecting(item, sideEffecting)
@@ -79,13 +86,6 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
 
     override fun sideEffectingAndRetain(sideEffecting: ContextSideEffecting<T>) {
         sideEffecting(getOrCompute(), sideEffecting)
-    }
-
-    override fun bind(readOnlyVar: ReadOnlyVar<T>) {
-        resetState()
-        binding = GenericBinding.BindToVar(readOnlyVar)
-        dependencies = setOf(readOnlyVar)
-        notifyListeners()
     }
 
     override fun getOrCompute(): T {

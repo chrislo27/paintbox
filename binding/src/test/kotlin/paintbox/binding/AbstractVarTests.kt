@@ -67,6 +67,31 @@ abstract class AbstractVarTests<V, T> where V : Var<T> {
         assertTrue(flag)
         assertEquals(constant, varr.getOrCompute()) // Second call is cached
     }
+
+    @Test
+    fun `binding to another ReadOnlyVar of the same type or specialization doesn't rediscover dependencies when invalidated`() {
+        // Arrange
+        val other = createVar()
+        val constant = getConstant()
+        other.set(constant)
+
+        varr.bind(other)
+
+        // Check if dependencies were reloaded in varr by using reflection to check dependencies object
+        val dependenciesField = varr::class.java.getDeclaredField("dependencies")
+        dependenciesField.isAccessible = true
+        
+        val dependenciesBefore = dependenciesField.get(varr) as Set<*>
+        
+        // Act
+        other.set(getConstant2())
+
+        // Assert
+        val dependenciesAfter = dependenciesField.get(varr) as Set<*>
+        assertTrue(dependenciesBefore === dependenciesAfter)
+        assertTrue(other in dependenciesAfter)
+        assertEquals(1, dependenciesAfter.size)
+    }
     
     @Test
     fun `sideEffecting calls the computation`() {

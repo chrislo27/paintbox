@@ -1,7 +1,7 @@
 package paintbox.binding
 
 
-class DoubleVarTests : AbstractVarTests<DoubleVar, Double>() {
+class DoubleVarTests : SpecializedVarBaseTests<DoubleVar, Double>() {
 
     override fun createVar(): DoubleVar {
         return DoubleVar(0.0)

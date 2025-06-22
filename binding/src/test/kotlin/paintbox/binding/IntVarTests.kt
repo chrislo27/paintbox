@@ -1,7 +1,7 @@
 package paintbox.binding
 
 
-class IntVarTests : AbstractVarTests<IntVar, Int>() {
+class IntVarTests : SpecializedVarBaseTests<IntVar, Int>() {
 
     override fun createVar(): IntVar {
         return IntVar(0)

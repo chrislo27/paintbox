@@ -1,7 +1,7 @@
 package paintbox.binding
 
 
-class BooleanVarTests : AbstractVarTests<BooleanVar, Boolean>() {
+class BooleanVarTests : SpecializedVarBaseTests<BooleanVar, Boolean>() {
 
     override fun createVar(): BooleanVar {
         return BooleanVar(false)

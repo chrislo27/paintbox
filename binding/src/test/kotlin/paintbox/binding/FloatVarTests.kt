@@ -1,7 +1,7 @@
 package paintbox.binding
 
 
-class FloatVarTests : AbstractVarTests<FloatVar, Float>() {
+class FloatVarTests : SpecializedVarBaseTests<FloatVar, Float>() {
     
     override fun createVar(): FloatVar {
         return FloatVar(0.0f)

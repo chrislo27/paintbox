@@ -80,6 +80,11 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
         }
     }
 
+    constructor(readOnlyVar: ReadOnlyCharVar) {
+        binding = CharBinding.BindToCharVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
+    }
+
     constructor(item: Char, sideEffecting: ContextSideEffecting<Char>) {
         binding = CharBinding.SideEffecting(item, sideEffecting)
     }
@@ -105,6 +110,21 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
     override fun bind(computation: ContextBinding<Char>) {
         resetState()
         binding = CharBinding.Compute(computation)
+        notifyListeners()
+    }
+
+    override fun bind(readOnlyVar: ReadOnlyVar<Char>) {
+        if (readOnlyVar is ReadOnlyCharVar) {
+            this.bind(readOnlyVar)
+        } else {
+            super<Var>.bind(readOnlyVar)
+        }
+    }
+
+    fun bind(readOnlyVar: ReadOnlyCharVar) {
+        resetState()
+        binding = CharBinding.BindToCharVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
         notifyListeners()
     }
 
@@ -156,6 +176,17 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
                 }
                 binding.item
             }
+
+            is CharBinding.BindToCharVar -> {
+                if (!invalidated) {
+                    currentValue
+                } else {
+                    val result = binding.readOnlyVar.get()
+                    currentValue = result
+                    invalidated = false
+                    result
+                }
+            }
         }
         return result
     }
@@ -184,5 +215,7 @@ class CharVar : ReadOnlyVarBase<Char>, SpecializedVar<Char>, ReadOnlyCharVar, Va
         class Compute(val computation: ContextBinding<Char>) : CharBinding()
 
         class SideEffecting(var item: Char, val sideEffectingComputation: ContextSideEffecting<Char>) : CharBinding()
+
+        class BindToCharVar(val readOnlyVar: ReadOnlyCharVar) : CharBinding()
     }
 }

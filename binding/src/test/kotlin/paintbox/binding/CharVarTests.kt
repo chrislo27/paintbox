@@ -1,7 +1,7 @@
 package paintbox.binding
 
 
-class CharVarTests : AbstractVarTests<CharVar, Char>() {
+class CharVarTests : SpecializedVarBaseTests<CharVar, Char>() {
 
     override fun createVar(): CharVar {
         return CharVar('a')

@@ -85,6 +85,11 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
         }
     }
 
+    constructor(readOnlyVar: ReadOnlyDoubleVar) {
+        binding = DoubleBinding.BindToDoubleVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
+    }
+
     constructor(item: Double, sideEffecting: ContextSideEffecting<Double>) {
         binding = DoubleBinding.SideEffecting(item, sideEffecting)
     }
@@ -110,6 +115,21 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
     override fun bind(computation: ContextBinding<Double>) {
         resetState()
         binding = DoubleBinding.Compute(computation)
+        notifyListeners()
+    }
+
+    override fun bind(readOnlyVar: ReadOnlyVar<Double>) {
+        if (readOnlyVar is ReadOnlyDoubleVar) {
+            this.bind(readOnlyVar)
+        } else {
+            super<Var>.bind(readOnlyVar)
+        }
+    }
+
+    fun bind(readOnlyVar: ReadOnlyDoubleVar) {
+        resetState()
+        binding = DoubleBinding.BindToDoubleVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
         notifyListeners()
     }
 
@@ -161,6 +181,17 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
                 }
                 binding.item
             }
+
+            is DoubleBinding.BindToDoubleVar -> {
+                if (!invalidated) {
+                    currentValue
+                } else {
+                    val result = binding.readOnlyVar.get()
+                    currentValue = result
+                    invalidated = false
+                    result
+                }
+            }
         }
         return result
     }
@@ -192,5 +223,7 @@ class DoubleVar : ReadOnlyVarBase<Double>, SpecializedVar<Double>, ReadOnlyDoubl
             var item: Double,
             val sideEffectingComputation: ContextSideEffecting<Double>
         ) : DoubleBinding()
+        
+        class BindToDoubleVar(val readOnlyVar: ReadOnlyDoubleVar) : DoubleBinding()
     }
 }

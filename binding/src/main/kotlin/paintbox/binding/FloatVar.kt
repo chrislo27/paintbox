@@ -85,6 +85,11 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
         }
     }
 
+    constructor(readOnlyVar: ReadOnlyFloatVar) {
+        binding = FloatBinding.BindToFloatVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
+    }
+
     constructor(item: Float, sideEffecting: ContextSideEffecting<Float>) {
         binding = FloatBinding.SideEffecting(item, sideEffecting)
     }
@@ -110,6 +115,21 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
     override fun bind(computation: ContextBinding<Float>) {
         resetState()
         binding = FloatBinding.Compute(computation)
+        notifyListeners()
+    }
+
+    override fun bind(readOnlyVar: ReadOnlyVar<Float>) {
+        if (readOnlyVar is ReadOnlyFloatVar) {
+            this.bind(readOnlyVar)
+        } else {
+            super<Var>.bind(readOnlyVar)
+        }
+    }
+    
+    fun bind(readOnlyVar: ReadOnlyFloatVar) {
+        resetState()
+        binding = FloatBinding.BindToFloatVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
         notifyListeners()
     }
 
@@ -161,6 +181,17 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
                 }
                 binding.item
             }
+
+            is FloatBinding.BindToFloatVar -> {
+                if (!invalidated) {
+                    currentValue
+                } else {
+                    val result = binding.readOnlyVar.get()
+                    currentValue = result
+                    invalidated = false
+                    result
+                }
+            }
         }
         return result
     }
@@ -189,5 +220,7 @@ class FloatVar : ReadOnlyVarBase<Float>, SpecializedVar<Float>, ReadOnlyFloatVar
         class Compute(val computation: ContextBinding<Float>) : FloatBinding()
 
         class SideEffecting(var item: Float, val sideEffectingComputation: ContextSideEffecting<Float>) : FloatBinding()
+
+        class BindToFloatVar(val readOnlyVar: ReadOnlyFloatVar) : FloatBinding()
     }
 }
