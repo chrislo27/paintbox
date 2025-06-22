@@ -6,13 +6,14 @@ import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 
-abstract class AbstractVarTests<V, T>
-        where V : Var<T> {
+abstract class AbstractVarTests<V, T> where V : Var<T> {
     
-    abstract val varr: V
     
+    abstract fun createVar(): V
     abstract fun getConstant(): T
     abstract fun getConstant2(): T
+    
+    val varr: V = createVar()
     
     @Test
     fun `set stores a value`() {
@@ -43,6 +44,28 @@ abstract class AbstractVarTests<V, T>
         // Assert
         assertEquals(constant, result)
         assertTrue(flag)
+        assertEquals(constant, varr.getOrCompute()) // Second call is cached
+    }
+    
+    @Test
+    fun `bind(ReadOnlyVar) binds to the given var`() {
+        // Arrange
+        val other = createVar()
+        val constant = getConstant()
+        var flag = false
+        other.bind {
+            flag = true
+            constant
+        }
+
+        // Act
+        varr.bind(other)
+        val result = varr.getOrCompute()
+
+        // Assert
+        assertEquals(constant, result)
+        assertTrue(flag)
+        assertEquals(constant, varr.getOrCompute()) // Second call is cached
     }
     
     @Test

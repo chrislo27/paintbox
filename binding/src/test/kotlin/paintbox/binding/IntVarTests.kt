@@ -3,7 +3,9 @@ package paintbox.binding
 
 class IntVarTests : AbstractVarTests<IntVar, Int>() {
 
-    override val varr: IntVar = IntVar(0)
+    override fun createVar(): IntVar {
+        return IntVar(0)
+    }
 
     override fun getConstant(): Int = 42
 

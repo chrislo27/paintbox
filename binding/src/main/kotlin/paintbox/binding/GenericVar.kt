@@ -38,6 +38,11 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
         }
     }
 
+    constructor(readOnlyVar: ReadOnlyVar<T>) {
+        binding = GenericBinding.BindToVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
+    }
+
     constructor(item: T, sideEffecting: ContextSideEffecting<T>) {
         binding = GenericBinding.SideEffecting(item, sideEffecting)
     }
@@ -76,6 +81,13 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
         sideEffecting(getOrCompute(), sideEffecting)
     }
 
+    override fun bind(readOnlyVar: ReadOnlyVar<T>) {
+        resetState()
+        binding = GenericBinding.BindToVar(readOnlyVar)
+        dependencies = setOf(readOnlyVar)
+        notifyListeners()
+    }
+
     override fun getOrCompute(): T {
         return when (val binding = this.binding) {
             is GenericBinding.Const -> {
@@ -109,6 +121,17 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
                 }
                 binding.item
             }
+
+            is GenericBinding.BindToVar -> {
+                if (!invalidated) {
+                    @Suppress("UNCHECKED_CAST") (currentValue as T)
+                } else {
+                    val result = binding.readOnlyVar.getOrCompute()
+                    currentValue = result
+                    invalidated = false
+                    result
+                }
+            }
         }
     }
 
@@ -123,5 +146,7 @@ class GenericVar<T> : ReadOnlyVarBase<T>, Var<T> {
         class Compute<T>(val computation: ContextBinding<T>) : GenericBinding<T>()
 
         class SideEffecting<T>(var item: T, val sideEffectingComputation: ContextSideEffecting<T>) : GenericBinding<T>()
+        
+        class BindToVar<T>(val readOnlyVar: ReadOnlyVar<T>) : GenericBinding<T>()
     }
 }

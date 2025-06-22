@@ -3,7 +3,9 @@ package paintbox.binding
 
 class LongVarTests : AbstractVarTests<LongVar, Long>() {
 
-    override val varr: LongVar = LongVar(0L)
+    override fun createVar(): LongVar {
+        return LongVar(0L)
+    }
 
     override fun getConstant(): Long = 42L
 

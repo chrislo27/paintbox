@@ -5,7 +5,9 @@ abstract class AbstractGenericVarTests<T> : AbstractVarTests<GenericVar<T>, T>()
 
 class GenericVarTests : AbstractGenericVarTests<String>() {
 
-    override val varr: GenericVar<String> = GenericVar("")
+    override fun createVar(): GenericVar<String> {
+        return GenericVar("")
+    }
 
     override fun getConstant(): String = "Hello world!"
 

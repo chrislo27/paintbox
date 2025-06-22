@@ -3,7 +3,9 @@ package paintbox.binding
 
 class DoubleVarTests : AbstractVarTests<DoubleVar, Double>() {
 
-    override val varr: DoubleVar = DoubleVar(0.0)
+    override fun createVar(): DoubleVar {
+        return DoubleVar(0.0)
+    }
 
     override fun getConstant(): Double = 42.0
 
