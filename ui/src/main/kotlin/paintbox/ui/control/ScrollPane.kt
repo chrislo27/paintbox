@@ -6,7 +6,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import paintbox.binding.FloatVar
 import paintbox.binding.ReadOnlyFloatVar
 import paintbox.binding.Var
-import paintbox.ui.*
+import paintbox.ui.Anchor
+import paintbox.ui.Pane
+import paintbox.ui.Scrolled
+import paintbox.ui.UIElement
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
@@ -94,12 +97,12 @@ open class ScrollPane : Control<ScrollPane>() {
     }
 
     init {
-        hBar.bounds.height.bind { barSize.use() }
+        hBar.bounds.height.bind(barSize)
         hBar.bindWidthToParent {
             if (vBar.visible.use()) (-barSize.use()) else 0f
         }
         Anchor.BottomLeft.configure(hBar)
-        vBar.bounds.width.bind { barSize.use() }
+        vBar.bounds.width.bind(barSize)
         vBar.bindHeightToParent {
             if (hBar.visible.use()) (-barSize.use()) else 0f
         }

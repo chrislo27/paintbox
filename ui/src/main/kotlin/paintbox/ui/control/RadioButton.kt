@@ -49,19 +49,19 @@ open class RadioButton(text: String, font: PaintboxFont = UIElement.defaultFont)
         val height: ReadOnlyFloatVar = FloatVar {
             contentZone.height.use()
         }
-        textLabel.bounds.x.bind { height.use() }
+        textLabel.bounds.x.bind(height)
         textLabel.bindWidthToParent { -height.use() }
         textLabel.margin.set(Insets(2f))
         imageNode.bounds.x.set(0f)
-        imageNode.bounds.width.bind { height.use() }
+        imageNode.bounds.width.bind(height)
         imageNode.textureRegion.bind {
             val state = checkedState.use()
             getTextureRegionForType(state)
         }
         imageNode.margin.set(Insets(2f))
 
-        textLabel.textColor.bind { color.use() }
-        imageNode.tint.bind { color.use() }
+        textLabel.textColor.bind(color)
+        imageNode.tint.bind(color)
 
         this.addChild(textLabel)
         this.addChild(imageNode)
@@ -90,7 +90,9 @@ open class RadioButton(text: String, font: PaintboxFont = UIElement.defaultFont)
     }
 
     constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
-            : this({ bindable.use() }, font)
+            : this("", font) {
+        textLabel.text.bind(bindable)
+    }
 
     open fun getTextureRegionForType(state: Boolean): TextureRegion {
         val spritesheet = PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet

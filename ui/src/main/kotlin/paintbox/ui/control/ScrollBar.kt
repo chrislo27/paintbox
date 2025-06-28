@@ -418,7 +418,7 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
         init {
             this.defaultBgColor.set(Color(1f, 1f, 1f, 0f))
             this.hoveredBgColor.set(Color(0.85f, 0.85f, 0.85f, 0.5f))
-            this.disabledBgColor.bind { defaultBgColor.use() }
+            this.disabledBgColor.bind(defaultBgColor)
 
             this.roundedRadius.set(0)
         }

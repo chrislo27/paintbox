@@ -69,7 +69,7 @@ open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont) : 
             if (boxAlignment.use() == BoxAlign.LEFT) 0f else ((imageNode.parent.use()?.bounds?.width?.use()
                 ?: 0f) - height.use())
         }
-        imageNode.bounds.width.bind { height.use() }
+        imageNode.bounds.width.bind(height)
         imageNode.textureRegion.bind {
             val type = checkType.use()
             val state = checkedState.use()
@@ -80,8 +80,8 @@ open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont) : 
         textLabel.renderAlign.bind { if (boxAlignment.use() == BoxAlign.LEFT) RenderAlign.left else RenderAlign.right }
         textLabel.textAlign.bind { if (boxAlignment.use() == BoxAlign.LEFT) TextAlign.LEFT else TextAlign.RIGHT }
 
-        textLabel.textColor.bind { currentColor.use() }
-        imageNode.tint.bind { currentColor.use() }
+        textLabel.textColor.bind(currentColor)
+        imageNode.tint.bind(currentColor)
 
         this.addChild(textLabel)
         this.addChild(imageNode)
@@ -108,7 +108,9 @@ open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont) : 
     }
 
     constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
-            : this({ bindable.use() }, font)
+            : this("", font) {
+        textLabel.text.bind(bindable)
+    }
 
     open fun getTextureRegionForType(type: CheckType, state: Boolean): TextureRegion {
         val spritesheet = PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet

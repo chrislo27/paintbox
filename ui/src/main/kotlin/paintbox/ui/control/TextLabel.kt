@@ -5,14 +5,14 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.Align
 import paintbox.binding.*
-import paintbox.util.ColorStack
-import paintbox.ui.skin.DefaultSkins
-import paintbox.ui.skin.Skin
-import paintbox.ui.skin.SkinFactory
 import paintbox.font.*
 import paintbox.ui.UIElement
 import paintbox.ui.area.Insets
 import paintbox.ui.border.Border
+import paintbox.ui.skin.DefaultSkins
+import paintbox.ui.skin.Skin
+import paintbox.ui.skin.SkinFactory
+import paintbox.util.ColorStack
 import paintbox.util.gdxutils.fillRect
 import kotlin.math.min
 
@@ -143,7 +143,9 @@ open class TextLabel(text: String, font: PaintboxFont = UIElement.defaultFont) :
     }
 
     constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
-            : this({ bindable.use() }, font)
+            : this("", font) {
+        text.bind(bindable)
+    }
 
     init {
         val autosizeListener = VarChangedListener<Any?> {

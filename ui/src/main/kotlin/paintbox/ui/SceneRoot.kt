@@ -85,7 +85,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
 
     init {
         (sceneRoot as Var).set(this)
-        this.doClipping.bind { applyViewport.use() }
+        this.doClipping.bind(applyViewport)
 
         val width = camera.viewportWidth
         val height = camera.viewportHeight
@@ -286,9 +286,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         val currentElementWithTooltip = currentElementWithTooltip as Var
         cancelTooltip()
         currentElementWithTooltip.set(element)
-        (currentTooltipVar as Var).bind {
-            tooltipVar.use()
-        }
+        (currentTooltipVar as Var).bind(tooltipVar)
     }
 
     /**

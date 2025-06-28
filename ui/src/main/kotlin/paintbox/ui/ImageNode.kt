@@ -5,10 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Align
-import paintbox.binding.ContextBinding
-import paintbox.binding.FloatVar
-import paintbox.binding.IntVar
-import paintbox.binding.Var
+import paintbox.binding.*
 import paintbox.util.ColorStack
 import paintbox.util.gdxutils.drawUV
 import kotlin.math.max
@@ -58,8 +55,8 @@ open class ImageNode(
     }
 
     fun useOneScaleForBothAxes() {
-        scaleX.bind { scale.use() }
-        scaleY.bind { scale.use() }
+        scaleX.bind(scale)
+        scaleY.bind(scale)
     }
 
     override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
@@ -162,6 +159,10 @@ open class ImageWindowNode(tex: TextureRegion? = null) : UIElement() {
     val windowV2: FloatVar = FloatVar(1f)
 
     constructor(binding: ContextBinding<TextureRegion?>) : this(null) {
+        textureRegion.bind(binding)
+    }
+
+    constructor(binding: ReadOnlyVar<TextureRegion?>) : this(null) {
         textureRegion.bind(binding)
     }
 

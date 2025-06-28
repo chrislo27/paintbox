@@ -33,7 +33,7 @@ open class MenuButton<T>(startingList: List<T>, text: String, font: PaintboxFont
     constructor(startingList: List<T>, bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
             : this(startingList, "", font) {
         @Suppress("LeakingThis")
-        this.text.bind { bindable.use() }
+        this.text.bind(bindable)
     }
 
     init {

@@ -76,7 +76,9 @@ open class Button(text: String, font: PaintboxFont = UIElement.defaultFont) : Co
     }
 
     constructor(bindable: ReadOnlyVar<String>, font: PaintboxFont = UIElement.defaultFont)
-            : this({ bindable.use() }, font)
+            : this("", font) {
+        text.bind(bindable)
+    }
 
     init {
         this.padding.set(DEFAULT_PADDING)

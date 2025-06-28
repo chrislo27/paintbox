@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import paintbox.PaintboxGame
 import paintbox.binding.BooleanVar
 import paintbox.binding.ContextBinding
+import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
 import paintbox.ui.UIElement
 import paintbox.ui.area.Insets
@@ -23,6 +24,10 @@ class SolidBorder(initColor: Color) : Border {
     constructor() : this(Color.WHITE)
 
     constructor(binding: ContextBinding<Color>) : this() {
+        color.bind(binding)
+    }
+
+    constructor(binding: ReadOnlyVar<Color>) : this() {
         color.bind(binding)
     }
 

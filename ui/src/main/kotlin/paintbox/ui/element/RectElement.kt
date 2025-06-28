@@ -3,9 +3,10 @@ package paintbox.ui.element
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import paintbox.binding.ContextBinding
-import paintbox.util.ColorStack
-import paintbox.ui.UIElement
+import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
+import paintbox.ui.UIElement
+import paintbox.util.ColorStack
 import paintbox.util.gdxutils.fillRect
 
 
@@ -17,6 +18,10 @@ open class RectElement(initColor: Color) : UIElement() {
 
     constructor(binding: ContextBinding<Color>) : this() {
         color.bind(binding)
+    }
+
+    constructor(bindable: ReadOnlyVar<Color>) : this() {
+        color.bind(bindable)
     }
 
     override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {

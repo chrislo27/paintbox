@@ -102,7 +102,7 @@ open class ComboBox<T>(
     init {
         this.border.set(Insets(1f))
         this.borderStyle.set(SolidBorder().also { border ->
-            border.color.bind { contrastColor.use() }
+            border.color.bind(contrastColor)
         })
         this.padding.set(DEFAULT_PADDING)
 

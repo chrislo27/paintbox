@@ -124,8 +124,8 @@ abstract class AbstractColumnarContainer<Container : UIElement>(
         }
         if (element != null) {
             addChild(element)
-            getDimensional(element).bind { spacing.use() }
-            getPositional(element).bind { spacerPositions[spacerIndex].use() }
+            getDimensional(element).bind(spacing)
+            getPositional(element).bind(spacerPositions[spacerIndex])
         }
 
         spacersList[spacerIndex] = element

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import paintbox.PaintboxGame
 import paintbox.binding.ContextBinding
 import paintbox.binding.FloatVar
+import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
 import paintbox.ui.UIElement
 import paintbox.util.ColorStack
@@ -47,6 +48,7 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
     val bottomRightTextureV: FloatVar = FloatVar { bottomRightOffsetV.use() }
 
     constructor(initColorAll: Color) : this(initColorAll, initColorAll, initColorAll, initColorAll)
+
     constructor() : this(Color.WHITE)
 
     constructor(bindingAll: ContextBinding<Color>) : this() {
@@ -54,6 +56,13 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
         topRightColor.bind(bindingAll)
         bottomLeftColor.bind(bindingAll)
         bottomRightColor.bind(bindingAll)
+    }
+
+    constructor(bindableAll: ReadOnlyVar<Color>) : this() {
+        topLeftColor.bind(bindableAll)
+        topRightColor.bind(bindableAll)
+        bottomLeftColor.bind(bindableAll)
+        bottomRightColor.bind(bindableAll)
     }
 
     fun leftRightGradient(left: Color, right: Color) {
@@ -70,6 +79,13 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
         bottomRightColor.bind(right)
     }
 
+    fun leftRightGradient(left: ReadOnlyVar<Color>, right: ReadOnlyVar<Color>) {
+        topLeftColor.bind(left)
+        bottomLeftColor.bind(left)
+        topRightColor.bind(right)
+        bottomRightColor.bind(right)
+    }
+
     fun topBottomGradient(top: Color, bottom: Color) {
         topLeftColor.set(top.cpy())
         topRightColor.set(top.cpy())
@@ -78,6 +94,13 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
     }
 
     fun topBottomGradient(top: ContextBinding<Color>, bottom: ContextBinding<Color>) {
+        topLeftColor.bind(top)
+        topRightColor.bind(top)
+        bottomLeftColor.bind(bottom)
+        bottomRightColor.bind(bottom)
+    }
+
+    fun topBottomGradient(top: ReadOnlyVar<Color>, bottom: ReadOnlyVar<Color>) {
         topLeftColor.bind(top)
         topRightColor.bind(top)
         bottomLeftColor.bind(bottom)

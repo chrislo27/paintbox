@@ -141,7 +141,7 @@ open class ContextMenu : Control<ContextMenu>() {
             when (item) {
                 is CustomMenuItem -> {
                     useHovered.set(false)
-                    basePane.bounds.width.bind { width.use() }
+                    basePane.bounds.width.bind(width)
                     val contentPadding = contentPane.padding.getOrCompute()
                     val w = item.element.bounds.width.get() + contentPadding.left + contentPadding.right
                     if (width.get() < w) {
@@ -157,7 +157,7 @@ open class ContextMenu : Control<ContextMenu>() {
                     useHovered.set(false)
                     val panePadding = Insets(4f, 4f, 2f, 2f)
                     basePane.bounds.height.set(panePadding.top + panePadding.bottom + 1f)
-                    basePane.bounds.width.bind { width.use() }
+                    basePane.bounds.width.bind(width)
 
                     contentPane.also { pane ->
                         pane.padding.set(panePadding)
@@ -171,7 +171,7 @@ open class ContextMenu : Control<ContextMenu>() {
                     val panePadding = contentPane.padding.getOrCompute()
                     item.textBlock.computeLayouts()
                     basePane.bounds.height.set(panePadding.top + panePadding.bottom + padding * 2 + item.textBlock.height)
-                    basePane.bounds.width.bind { width.use() }
+                    basePane.bounds.width.bind(width)
 
                     contentPane.also { pane ->
                         pane.addChild(TextLabel("").apply {
@@ -189,7 +189,7 @@ open class ContextMenu : Control<ContextMenu>() {
                     val panePadding = contentPane.padding.getOrCompute()
                     item.textBlock.computeLayouts()
                     basePane.bounds.height.set(panePadding.top + panePadding.bottom + padding * 2 + item.textBlock.height)
-                    basePane.bounds.width.bind { width.use() }
+                    basePane.bounds.width.bind(width)
 
                     contentPane.also { pane ->
                         pane.addChild(Button("").apply {
@@ -217,7 +217,7 @@ open class ContextMenu : Control<ContextMenu>() {
                     val panePadding = contentPane.padding.getOrCompute()
                     item.textBlock.computeLayouts()
                     basePane.bounds.height.set(panePadding.top + panePadding.bottom + padding * 2 + item.textBlock.height)
-                    basePane.bounds.width.bind { width.use() }
+                    basePane.bounds.width.bind(width)
 
                     contentPane.also { pane ->
                         pane.addChild(CheckBox("").apply {
