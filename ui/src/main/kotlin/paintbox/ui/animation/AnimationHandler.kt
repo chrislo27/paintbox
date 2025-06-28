@@ -1,8 +1,6 @@
 package paintbox.ui.animation
 
-import com.badlogic.gdx.Gdx
 import paintbox.binding.FloatVar
-import paintbox.ui.SceneRoot
 import java.util.concurrent.ConcurrentHashMap
 
 
@@ -93,6 +91,11 @@ class AnimationHandler {
             existing.callOnComplete()
         }
         return existing?.animation
+    }
+    
+    fun cancelAllAnimations() {
+        val floatVars = animations.keys.toList()
+        floatVars.forEach { cancelAnimationFor(it) }
     }
 
 }
