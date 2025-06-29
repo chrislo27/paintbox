@@ -6,18 +6,29 @@ import paintbox.binding.ReadOnlyFloatVar
 import paintbox.binding.VarChangedListener
 
 
-class TransitioningFloatVar(
+class TransitioningFloatVar private constructor(
     private val animationHandler: AnimationHandler,
-    binding: ContextBinding<Float>,
+    immediateValueVar: FloatVar,
     animationFactory: (currentValue: Float, targetValue: Float) -> Animation?,
 ) : ReadOnlyFloatVar {
     
-    private val immediateValue: FloatVar = FloatVar(binding)
+    constructor(
+        animationHandler: AnimationHandler, 
+        binding: ContextBinding<Float>, 
+        animationFactory: (currentValue: Float, targetValue: Float) -> Animation?
+    ) : this(animationHandler, FloatVar(binding), animationFactory)
     
+    constructor(
+        animationHandler: AnimationHandler, 
+        bindable: ReadOnlyFloatVar, 
+        animationFactory: (currentValue: Float, targetValue: Float) -> Animation?
+    ) : this(animationHandler, FloatVar(bindable), animationFactory)
+
+    private val immediateValue: FloatVar = immediateValueVar
     private val transitioningVar: FloatVar
     
     init {
-        immediateValue.addListener { v ->
+        this.immediateValue.addListener { v ->
             val targetValue = v.getOrCompute()
             val newAnimation = animationFactory(transitioningVar.get(), targetValue)
             if (newAnimation != null) {
