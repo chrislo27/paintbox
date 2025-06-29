@@ -20,6 +20,7 @@ data class TextRun(
     val carryOverOffsetY: Boolean = false,
     val xAdvanceEm: Float = 0f,
     val lineHeightScale: Float = 1f,
+    val opacity: Float = 1f,
 ) {
 
     constructor(
@@ -27,9 +28,10 @@ data class TextRun(
         scaleX: Float = 1f, scaleY: Float = 1f, offsetXEm: Float = 0f, offsetYEm: Float = 0f,
         carryOverOffsetX: Boolean = true, carryOverOffsetY: Boolean = false, xAdvanceEm: Float = 0f,
         lineHeightScale: Float = 1f,
+        opacity: Float = 1f,
     ) : this(
         font, text, Color.argb8888(color), scaleX, scaleY,
-        offsetXEm, offsetYEm, carryOverOffsetX, carryOverOffsetY, xAdvanceEm, lineHeightScale
+        offsetXEm, offsetYEm, carryOverOffsetX, carryOverOffsetY, xAdvanceEm, lineHeightScale, opacity
     )
 
     fun toTextBlock(): TextBlock = TextBlock(listOf(this))

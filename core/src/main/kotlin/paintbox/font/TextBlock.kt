@@ -76,7 +76,10 @@ class TextBlock(val runs: TextRunList) {
             l.width = glyphRun.width
 
             l.colors.add(0) // Start glyph
-            val argb = textRunInfo.run.color
+            var argb = textRunInfo.run.color
+            var alphaHex = ((argb ushr 24) and 0xFF)
+            alphaHex = (alphaHex * textRunInfo.run.opacity).toInt().coerceIn(0, 0xFF)
+            argb = (argb and 0x00FFFFFF) or (alphaHex shl 24)
             val runColorAbgr = argb.argbToAbgr()
             l.colors.add(runColorAbgr)
         }
@@ -193,6 +196,7 @@ class TextBlock(val runs: TextRunList) {
 
             val color = Color(1f, 1f, 1f, 1f)
             Color.argb8888ToColor(color, textRun.color)
+            color.a *= textRun.opacity
             val textRunInfo = TextRunInfo(
                 textRun, paintboxFont.currentFontNumber,
                 if (doLineWrapping) {

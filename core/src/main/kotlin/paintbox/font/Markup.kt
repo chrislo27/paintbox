@@ -3,7 +3,6 @@ package paintbox.font
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Colors
 import paintbox.Paintbox
-import java.lang.NumberFormatException
 
 
 /**
@@ -37,6 +36,7 @@ import java.lang.NumberFormatException
  * color=#RRGGBBAA : Defines the text run color.
  * color=#RRGGBB : Defines the text run color with alpha being FF.
  * color=color_name : Defines the text run color using the name defined in com.badlogic.gdx.graphics.Colors. If there is no color then it does not take effect.
+ * opacity=0.5 : Opacity multiplied on top of the color.
  * scalex=1.0 : Defines the scaleX, should be a float
  * scaley=1.0 : Defines the scaleY, should be a float
  * offsetx=1.0 : Defines the offsetXEm, should be a float
@@ -77,6 +77,7 @@ class Markup(
         val TAG_NOINHERIT: String = "noinherit"
         val TAG_FONT: String = "font"
         val TAG_COLOR: String = "color"
+        val TAG_OPACITY: String = "opacity"
         val TAG_SCALEX: String = "scalex"
         val TAG_SCALEY: String = "scaley"
         val TAG_OFFSETX: String = "offsetx"
@@ -194,14 +195,15 @@ class Markup(
                     Color.argb8888(c ?: Color.WHITE)
                 }
             } else if (colorAttr is Int) colorAttr else Color.argb8888(Color.WHITE)
+            val opacity: Float = tag.attrMap[TAG_OPACITY]?.valueAsFloatOr(1f) ?: 1f
             var scaleX = tag.attrMap[TAG_SCALEX]?.valueAsFloatOr(1f) ?: 1f
             var scaleY = tag.attrMap[TAG_SCALEY]?.valueAsFloatOr(1f) ?: 1f
-            var offsetX = tag.attrMap[TAG_OFFSETX]?.valueAsFloatOr(0f) ?: 0f
+            val offsetX = tag.attrMap[TAG_OFFSETX]?.valueAsFloatOr(0f) ?: 0f
             var offsetY = tag.attrMap[TAG_OFFSETY]?.valueAsFloatOr(0f) ?: 0f
-            var carryoverX = tag.attrMap[TAG_CARRYOVERX]?.valueAsBooleanOr(true) ?: true
+            val carryoverX = tag.attrMap[TAG_CARRYOVERX]?.valueAsBooleanOr(true) ?: true
             var carryoverY = tag.attrMap[TAG_CARRYOVERY]?.valueAsBooleanOr(false) ?: false
-            var xAdvance = tag.attrMap[TAG_XADVANCE]?.valueAsFloatOr(0f) ?: 0f
-            var lineHeightScale = tag.attrMap[TAG_LINEHEIGHT]?.valueAsFloatOr(1f) ?: 1f
+            val xAdvance = tag.attrMap[TAG_XADVANCE]?.valueAsFloatOr(0f) ?: 0f
+            val lineHeightScale = tag.attrMap[TAG_LINEHEIGHT]?.valueAsFloatOr(1f) ?: 1f
 
 
             val scale = tag.attrMap[TAG_SCALE]?.valueAsFloatOr(1f) ?: 1f
@@ -258,7 +260,8 @@ class Markup(
                 carryoverX,
                 carryoverY,
                 xAdvance,
-                lineHeightScale
+                lineHeightScale,
+                opacity,
             )
         }
 
@@ -272,6 +275,7 @@ class Markup(
             linkedSetOf(
                 Attribute(TAG_FONT, DEFAULT_FONT_NAME),
                 Attribute(TAG_COLOR, defaultTextRun.color),
+                Attribute(TAG_OPACITY, defaultTextRun.opacity),
                 Attribute(TAG_SCALEX, defaultTextRun.scaleX),
                 Attribute(TAG_SCALEY, defaultTextRun.scaleY),
                 Attribute(TAG_OFFSETX, defaultTextRun.offsetXEm),
@@ -543,6 +547,8 @@ class Markup(
 
         fun color(color: Color): Builder = addAttributeToStartTag(Attribute(TAG_COLOR, Color.argb8888(color)))
         fun color(colorName: String): Builder = addAttributeToStartTag(Attribute(TAG_COLOR, colorName))
+
+        fun opacity(opacity: Float): Builder = addAttributeToStartTag(Attribute(TAG_OPACITY, opacity))
 
         fun scaleX(value: Float): Builder = addAttributeToStartTag(Attribute(TAG_SCALEX, value))
         fun scaleY(value: Float): Builder = addAttributeToStartTag(Attribute(TAG_SCALEY, value))
