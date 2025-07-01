@@ -82,7 +82,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
     val caretWidth: FloatVar = FloatVar(DEFAULT_CARET_WIDTH)
 
     private val _focusGroup: Var<FocusGroup?> = Var(null)
-    final override val focusGroup: ReadOnlyVar<FocusGroup?> get() = _focusGroup
+    override val focusGroup: ReadOnlyVar<FocusGroup?> = _focusGroup
 
     protected val renderedText: ReadOnlyVar<String> = Var {
         translateTextToRenderable(text.use(), isPassword.use(), newlineWrapChar.use())
@@ -195,7 +195,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
         }
     }
 
-    final override fun setFocusGroup(group: FocusGroup?) {
+    override fun setFocusGroup(group: FocusGroup?) {
         _focusGroup.set(group)
     }
 
