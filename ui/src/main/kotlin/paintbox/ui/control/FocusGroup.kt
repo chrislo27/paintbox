@@ -1,7 +1,6 @@
 package paintbox.ui.control
 
 import paintbox.ui.Focusable
-import paintbox.ui.SceneRoot
 import kotlin.math.sign
 
 
@@ -14,14 +13,14 @@ class FocusGroup {
             focusables += focusable
             val oldGroup = focusable.focusGroup.getOrCompute()
             oldGroup?.removeFocusable(focusable)
-            focusable.focusGroup.set(this)
+            focusable.setFocusGroup(this)
         }
     }
 
     fun removeFocusable(focusable: Focusable) {
         if (focusable.focusGroup.getOrCompute() == this) {
             focusables -= focusable
-            focusable.focusGroup.set(null)
+            focusable.setFocusGroup(null)
         }
     }
 
