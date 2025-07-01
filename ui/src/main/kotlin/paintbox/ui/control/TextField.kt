@@ -36,9 +36,11 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
         const val DELETE: Char = 127.toChar()
         const val BULLET: Char = 149.toChar()
 
+        // TODO make these three values configurable, globally and/or locally
         const val KEY_REPEAT_INITIAL_TIME: Float = 0.4f
         const val KEY_REPEAT_INTERVAL: Float = 0.05f
         const val CARET_BLINK_RATE: Float = 0.5f
+        
         const val DEFAULT_NEWLINE_WRAP: Char = '\uE056'
         const val DEFAULT_CARET_WIDTH: Float = 2f
         val DEFAULT_INPUT_FILTER: (Char) -> Boolean = { true }

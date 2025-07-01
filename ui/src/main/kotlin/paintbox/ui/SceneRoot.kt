@@ -244,16 +244,22 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         )
     }
 
-    fun <E> setFocusedElement(element: E?)
-            where E : UIElement, E : Focusable {
+    fun <E> setFocusedElement(element: E?) where E : UIElement, E : Focusable {
         val current = _currentFocused.getOrCompute()
         if (current === element) return
+
         if (current != null) {
             _currentFocused.set(null)
             current.onFocusLost()
+
+            GlobalFocusableListeners.onFocusLost(this, current)
         }
+
         _currentFocused.set(element)
-        element?.onFocusGained()
+        if (element != null) {
+            element.onFocusGained()
+            GlobalFocusableListeners.onFocusGained(this, element)
+        }
     }
 
     private fun updateTooltipPosition(tooltip: UIElement? = currentTooltip) {
