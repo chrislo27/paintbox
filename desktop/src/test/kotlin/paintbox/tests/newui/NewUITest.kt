@@ -8,16 +8,16 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
+import org.lwjgl.glfw.GLFW
 import paintbox.PaintboxGame
 import paintbox.PaintboxScreen
-import paintbox.PaintboxSettings
+import paintbox.tests.TestPaintboxSettings
 import paintbox.ui.*
 import paintbox.util.gdxutils.fillRect
-import org.lwjgl.glfw.GLFW
 import paintbox.util.wave.WaveUtils
 
 
-internal class NewUITestGame(paintboxSettings: PaintboxSettings, val screenFactory: (NewUITestGame) -> Screen) :
+internal class NewUITestGame(paintboxSettings: TestPaintboxSettings, val screenFactory: (NewUITestGame) -> Screen) :
     PaintboxGame(paintboxSettings) {
 
     override fun getWindowTitle(): String {
@@ -30,7 +30,7 @@ internal class NewUITestGame(paintboxSettings: PaintboxSettings, val screenFacto
     }
 }
 
-internal class ScaledFontTestGame(paintboxSettings: PaintboxSettings) : PaintboxGame(paintboxSettings) {
+internal class ScaledFontTestGame(paintboxSettings: TestPaintboxSettings) : PaintboxGame(paintboxSettings) {
 
     override fun getWindowTitle(): String {
         return "ScaledFont test"

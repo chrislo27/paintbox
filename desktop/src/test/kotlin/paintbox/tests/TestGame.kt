@@ -3,13 +3,12 @@ package paintbox.tests
 import com.badlogic.gdx.Gdx
 import paintbox.PaintboxGame
 import paintbox.PaintboxScreen
-import paintbox.PaintboxSettings
 import paintbox.util.gdxutils.fillRect
 
 
 internal abstract class TestPbScreen(override val main: TestGame) : PaintboxScreen()
 
-internal class TestGame(paintboxSettings: PaintboxSettings) : PaintboxGame(paintboxSettings) {
+internal class TestGame(paintboxSettings: TestPaintboxSettings) : PaintboxGame(paintboxSettings) {
 
     override fun getWindowTitle(): String {
         return "TestGame"

@@ -29,7 +29,7 @@ import kotlin.system.measureNanoTime
  * [ResizeAction] and its other size parameters in [paintboxSettings]
  * are behaviours for how resizing works, which is is important for fonts that scale up with render size.
  */
-abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() {
+abstract class PaintboxGame(val paintboxSettings: IPaintboxSettings) : GdxGame() {
 
     companion object {
         
@@ -259,17 +259,21 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() 
     fun removeDisposeCall(runnable: Runnable) {
         disposeCalls -= runnable
     }
+    
+    protected fun OrthographicCamera.setToMinimumSizeIfNeeded() {
+        val minimumSize = paintboxSettings.minimumSize
+        if (this.viewportWidth < minimumSize.width || this.viewportHeight < minimumSize.height) {
+            this.setToOrtho(false, minimumSize.width.toFloat(), minimumSize.height.toFloat())
+        }
+    }
 
     fun resetCameras() {
         val resizeAction = paintboxSettings.resizeAction
         val emulatedSize = paintboxSettings.emulatedSize
-        val minimumSize = paintboxSettings.minimumSize
-
+        
         val actualWindowSizeCamera = actualWindowSizeCamera
         actualWindowSizeCamera.setToOrtho(false, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
-        if (actualWindowSizeCamera.viewportWidth < minimumSize.width || actualWindowSizeCamera.viewportHeight < minimumSize.height) {
-            actualWindowSizeCamera.setToOrtho(false, minimumSize.width.toFloat(), minimumSize.height.toFloat())
-        }
+        actualWindowSizeCamera.setToMinimumSizeIfNeeded()
         actualWindowSizeCamera.update()
 
         val emulatedCamera = emulatedCamera
@@ -299,9 +303,7 @@ abstract class PaintboxGame(val paintboxSettings: PaintboxSettings) : GdxGame() 
                 emulatedCamera.setToOrtho(false, width, height)
             }
         }
-        if (emulatedCamera.viewportWidth < minimumSize.width || emulatedCamera.viewportHeight < minimumSize.height) {
-            emulatedCamera.setToOrtho(false, minimumSize.width.toFloat(), minimumSize.height.toFloat())
-        }
+        emulatedCamera.setToMinimumSizeIfNeeded()
         emulatedCamera.update()
     }
     

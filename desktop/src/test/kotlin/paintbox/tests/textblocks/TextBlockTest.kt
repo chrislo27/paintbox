@@ -4,15 +4,15 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
 import paintbox.PaintboxGame
 import paintbox.PaintboxScreen
-import paintbox.PaintboxSettings
 import paintbox.font.TextAlign
 import paintbox.font.TextBlock
 import paintbox.font.TextRun
+import paintbox.tests.TestPaintboxSettings
 import paintbox.util.gdxutils.drawRect
 import paintbox.util.gdxutils.fillRect
 
 
-internal class TextBlockTestGame(paintboxSettings: PaintboxSettings) : PaintboxGame(paintboxSettings) {
+internal class TextBlockTestGame(paintboxSettings: TestPaintboxSettings) : PaintboxGame(paintboxSettings) {
 
     override fun getWindowTitle(): String {
         return "Text block test"

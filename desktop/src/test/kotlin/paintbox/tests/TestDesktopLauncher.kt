@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.glutils.HdpiMode
 import com.beust.jcommander.JCommander
 import paintbox.PaintboxGame
-import paintbox.PaintboxSettings
 import paintbox.ResizeAction
 import paintbox.desktop.PaintboxArguments
 import paintbox.desktop.PaintboxDesktopLauncher
@@ -52,7 +51,7 @@ internal object TestDesktopLauncher {
         }
 
         val logger = Logger()
-        val settings = PaintboxSettings(
+        val settings = TestPaintboxSettings(
             args.toList(), logger, null, Version(0, 1, 0),
             WindowSize(1280, 720), ResizeAction.ANY_SIZE, WindowSize(800, 450)
         )
