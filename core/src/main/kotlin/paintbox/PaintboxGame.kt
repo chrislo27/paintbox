@@ -106,11 +106,12 @@ abstract class PaintboxGame(val paintboxSettings: IPaintboxSettings) : GdxGame()
     protected open fun createDebugKeysInputProcessor(): IDebugKeysInputProcessor = DebugKeysInputProcessor()
     
     override fun create() {
-        val logToFile = paintboxSettings.logToFile
-        if (logToFile != null) {
-            SysOutPiper.pipe(paintboxSettings.launchArguments, this, logToFile)
+        val loggerSettings = paintboxSettings.loggerSettings
+        val teeConsoleToFile = loggerSettings.teeConsoleToFile
+        if (teeConsoleToFile != null) {
+            SysOutPiper.pipe(paintboxSettings.launchArguments, this, teeConsoleToFile)
         }
-        Paintbox.LOGGER = paintboxSettings.logger
+        Paintbox.LOGGER = loggerSettings.logger
         gameInstance = this
 
         startingResolution = WindowSize(Gdx.graphics.width, Gdx.graphics.height)
