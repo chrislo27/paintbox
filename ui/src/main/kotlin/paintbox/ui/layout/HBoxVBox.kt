@@ -76,7 +76,6 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : AbstractLayou
      */
     val reverseLayout: BooleanVar = BooleanVar(false)
 
-    // TODO autosizing doesn't work with non-MIN internal alignment
     protected val internalAlignment: Var<InternalAlignment> = Var(InternalAlignment.MIN)
     private var isDoingLayout: Boolean = false
 
@@ -303,12 +302,14 @@ open class HBox : AbstractHVBox<HBox.Align>() {
     }
 
     override fun sizeWidthToChildren(minimumWidth: Float, maximumWidth: Float): Float {
-        // In an HBox, the last child in the flow determines the width (left to right -> last, right to left -> first)
-        val children = this.children.getOrCompute()
-        val last = if (rightToLeft.get()) children.firstOrNull() else children.lastOrNull()
         var width = 0f
-        if (last != null) {
-            width = last.bounds.x.get() + last.bounds.width.get()
+        
+        val children = this.children.getOrCompute()
+        if (children.isNotEmpty()) {
+            // In an HBox, the last child in the flow determines the width (left to right -> last, right to left -> first)
+            val firstmost = if (rightToLeft.get()) children.last() else children.first()
+            val lastmost = if (rightToLeft.get()) children.first() else children.last()
+            width = lastmost.bounds.x.get() - firstmost.bounds.x.get() + lastmost.bounds.width.get()
         }
 
         val borderInsets = this.border.getOrCompute()
@@ -366,11 +367,12 @@ open class VBox : AbstractHVBox<VBox.Align>() {
 
     override fun sizeHeightToChildren(minimumHeight: Float, maximumHeight: Float): Float {
         // In an VBox, the last child in the flow determines the width (top to bottom -> last, bottom to top -> first)
-        val children = this.children.getOrCompute()
-        val last = if (bottomToTop.get()) children.firstOrNull() else children.lastOrNull()
         var height = 0f
-        if (last != null) {
-            height = last.bounds.y.get() + last.bounds.height.get()
+        val children = this.children.getOrCompute()
+        if (children.isNotEmpty()) {
+            val firstmost = if (bottomToTop.get()) children.last() else children.first()
+            val lastmost = if (bottomToTop.get()) children.first() else children.last()
+            height = lastmost.bounds.y.get() - firstmost.bounds.y.get() + lastmost.bounds.height.get()
         }
 
         val borderInsets = this.border.getOrCompute()
