@@ -28,13 +28,23 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : AbstractLayou
         val internalAlignment: InternalAlignment
     }
 
-    protected inner class ElementData(val element: UIElement, var index: Int, var dimension: Float) {
+    protected inner class ElementData(val element: UIElement, var index: Int, var length: Float) {
 
-        var position: Float = 0f
+        var start: Float = 0f
         var nextSpacing: Float = 0f
 
-        val sizeListener: VarChangedListener<Float> = VarChangedListener {
+        private val sizeListener: VarChangedListener<Float> = VarChangedListener {
             this@AbstractHVBox.attemptLayout(index)
+        }
+        
+        fun addListenersToElement() {
+            val dimensional = this@AbstractHVBox.getDimensional(element)
+            dimensional.addListener(this.sizeListener)
+        }
+        
+        fun removeListenersFromElement() {
+            val dimensional = this@AbstractHVBox.getDimensional(element)
+            dimensional.removeListener(this.sizeListener)
         }
     }
 
@@ -108,13 +118,13 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : AbstractLayou
             }
         }
         autoSizeMinimumSize.addListener { minSize ->
-            if (autoSizeToChildren.get() && this.getThisDimensional().get() < minSize.getOrCompute()) {
-                doAutosize()
+            if (this.getThisDimensional().get() < minSize.getOrCompute()) {
+                autosizeIfNecessary()
             }
         }
         autoSizeMaximumSize.addListener { maxSize ->
-            if (autoSizeToChildren.get() && this.getThisDimensional().get() > maxSize.getOrCompute()) {
-                doAutosize()
+            if (this.getThisDimensional().get() > maxSize.getOrCompute()) {
+                autosizeIfNecessary()
             }
         }
     }
@@ -138,6 +148,12 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : AbstractLayou
      * Called when autosizing is attempted. Should call [sizeWidthToChildren] or [sizeHeightToChildren].
      */
     abstract fun doAutosize()
+    
+    fun autosizeIfNecessary() {
+        if (autoSizeToChildren.get()) {
+            doAutosize()
+        }
+    }
 
     /**
      * Sets [disableLayouts] to true, runs the [func], then sets [disableLayouts] to false
@@ -165,10 +181,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : AbstractLayou
     protected fun attemptLayout(index: Int) {
         if (isDoingLayout || disableLayouts.get()) return
         if (index >= elementCache.size) {
-            // Autosize if necessary
-            if (autoSizeToChildren.get()) {
-                doAutosize()
-            }
+            autosizeIfNecessary()
             return
         }
 
@@ -180,21 +193,21 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : AbstractLayou
                 cache = cache.asReversed()
                 idx = cache.size - idx - 1
             }
-            var acc = if (idx > 0) (cache[idx - 1].let { it.position + it.dimension + it.nextSpacing }) else 0f
+            var acc = if (idx > 0) (cache[idx - 1].let { it.start + it.length + it.nextSpacing }) else 0f
             val cacheSize = cache.size
             val spacingValue = spacing.get()
 
             for (i in idx..<cacheSize) {
                 val d = cache[i]
                 val element = d.element
-                d.position = acc
-                d.dimension = getDimensional(element).get()
+                d.start = acc
+                d.length = getDimensional(element).get()
                 d.nextSpacing = spacingValue
 
                 val pos = getPositional(element)
-                pos.set(d.position)
+                pos.set(d.start)
 
-                acc += d.dimension
+                acc += d.length
                 if (i < cacheSize - 1) {
                     acc += d.nextSpacing
                 }
@@ -203,10 +216,12 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : AbstractLayou
             // Alignment
             val align = this.internalAlignment.getOrCompute()
             if (align != InternalAlignment.MIN) {
-                val totalSize = cache.last().let { it.position + it.dimension }
+                val totalSize = cache.last().let { it.start + it.length }
                 val thisSize = getThisDimensional().get()
+                
+                @Suppress("KotlinConstantConditions")
                 val offset: Float = when (align) {
-                    InternalAlignment.MIN -> 0f // Not a possible branch
+                    InternalAlignment.MIN -> 0f // Not a possible branch, but required to satisfy when branches
                     InternalAlignment.MIDDLE -> (thisSize - totalSize) / 2f
                     InternalAlignment.MAX -> (thisSize - totalSize)
                 }
@@ -215,14 +230,11 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : AbstractLayou
                     val d = elementCache[i]
                     val element = d.element
                     val pos = getPositional(element)
-                    pos.set(d.position + offset)
+                    pos.set(d.start + offset)
                 }
             }
 
-            // Autosize if necessary
-            if (autoSizeToChildren.get()) {
-                doAutosize()
-            }
+            autosizeIfNecessary()
         } finally {
             isDoingLayout = false
         }
@@ -235,7 +247,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : AbstractLayou
         val currentCache = elementCache.toList()
         val dimensional = getDimensional(newChild)
         val elementData = ElementData(newChild, currentCache.size, dimensional.get())
-        dimensional.addListener(elementData.sizeListener)
+        elementData.addListenersToElement()
         elementCache.add(atIndex, elementData)
         attemptLayout((atIndex).coerceAtLeast(0))
     }
@@ -251,7 +263,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : AbstractLayou
         if (index < 0) return
 
         val removedData = elementCache.removeAt(index)
-        getDimensional(oldChild).removeListener(removedData.sizeListener)
+        removedData.removeListenersFromElement()
 
         for (i in (index + 1)..<currentCache.size) {
             currentCache[i].index = i - 1
