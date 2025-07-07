@@ -216,10 +216,10 @@ abstract class PaintboxGame(val paintboxSettings: IPaintboxSettings) : GdxGame()
     override fun resize(width: Int, height: Int) {
         resetCameras()
 
-        val actualWindowSizeCamera = actualWindowSizeCamera
-        val nativeCamWidth = actualWindowSizeCamera.viewportWidth.toInt()
-        val nativeCamHeight = actualWindowSizeCamera.viewportHeight.toInt()
-        fontCache.resizeAll(nativeCamWidth, nativeCamHeight)
+        val actualWindowSizeCamera = this.actualWindowSizeCamera
+        val actualWindowCamWidth = actualWindowSizeCamera.viewportWidth.toInt()
+        val actualWindowCamHeight = actualWindowSizeCamera.viewportHeight.toInt()
+        fontCache.resizeAll(actualWindowCamWidth, actualWindowCamHeight)
         
         super.resize(width, height)
     }
@@ -272,16 +272,19 @@ abstract class PaintboxGame(val paintboxSettings: IPaintboxSettings) : GdxGame()
         val resizeAction = paintboxSettings.resizeAction
         val emulatedSize = paintboxSettings.emulatedSize
         
+        val width = Gdx.graphics.width
+        val height = Gdx.graphics.height
+        
         val actualWindowSizeCamera = actualWindowSizeCamera
-        actualWindowSizeCamera.setToOrtho(false, Gdx.graphics.width.toFloat(), Gdx.graphics.height.toFloat())
+        actualWindowSizeCamera.setToOrtho(false, width.toFloat(), height.toFloat())
         actualWindowSizeCamera.setToMinimumSizeIfNeeded()
         actualWindowSizeCamera.update()
 
         val emulatedCamera = emulatedCamera
         when (resizeAction) {
             ResizeAction.ANY_SIZE -> emulatedCamera.setToOrtho(
-                false, Gdx.graphics.width.toFloat(),
-                Gdx.graphics.height.toFloat()
+                false, width.toFloat(),
+                height.toFloat()
             )
 
             ResizeAction.LOCKED -> emulatedCamera.setToOrtho(
@@ -290,18 +293,18 @@ abstract class PaintboxGame(val paintboxSettings: IPaintboxSettings) : GdxGame()
             )
 
             ResizeAction.KEEP_ASPECT_RATIO -> {
-                val width: Float
-                val height: Float
+                val w: Float
+                val h: Float
 
-                if (Gdx.graphics.width < Gdx.graphics.height) {
-                    width = Gdx.graphics.width.toFloat()
-                    height = (emulatedSize.height.toFloat() / emulatedSize.width) * width
+                if (width < height) {
+                    w = width.toFloat()
+                    h = (emulatedSize.height.toFloat() / emulatedSize.width) * width
                 } else {
-                    height = Gdx.graphics.height.toFloat()
-                    width = (emulatedSize.width.toFloat() / emulatedSize.height) * height
+                    h = height.toFloat()
+                    w = (emulatedSize.width.toFloat() / emulatedSize.height) * height
                 }
 
-                emulatedCamera.setToOrtho(false, width, height)
+                emulatedCamera.setToOrtho(false, w, h)
             }
         }
         emulatedCamera.setToMinimumSizeIfNeeded()
