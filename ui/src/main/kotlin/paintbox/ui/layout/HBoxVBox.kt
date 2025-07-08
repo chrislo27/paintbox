@@ -180,6 +180,7 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : AbstractLayou
 
     protected fun attemptLayout(index: Int) {
         if (isDoingLayout || disableLayouts.get()) return
+
         if (index >= elementCache.size) {
             autosizeIfNecessary()
             return
@@ -187,51 +188,48 @@ abstract class AbstractHVBox<AlignEnum : AbstractHVBox.BoxAlign> : AbstractLayou
 
         isDoingLayout = true
         try {
-            var idx = index
-            var cache = elementCache.toList()
-            if (reverseLayout.get()) {
-                cache = cache.asReversed()
-                idx = cache.size - idx - 1
-            }
-            var acc = if (idx > 0) (cache[idx - 1].let { it.start + it.length + it.nextSpacing }) else 0f
+            val idx = index
+            val cache = elementCache.toList()
+            var posAccumulator = if (idx > 0) (cache[idx - 1].let { it.start + it.length + it.nextSpacing }) else 0f
             val cacheSize = cache.size
             val spacingValue = spacing.get()
 
             for (i in idx..<cacheSize) {
                 val d = cache[i]
                 val element = d.element
-                d.start = acc
+                d.start = posAccumulator
                 d.length = getDimensional(element).get()
                 d.nextSpacing = spacingValue
 
                 val pos = getPositional(element)
                 pos.set(d.start)
 
-                acc += d.length
+                posAccumulator += d.length
                 if (i < cacheSize - 1) {
-                    acc += d.nextSpacing
+                    posAccumulator += d.nextSpacing
                 }
             }
-
-            // Alignment
+            
+            // Alignment and reverse layout
+            // Reverse layout: Flip along the cross axis (i.e. negate direction) and offset back into positive
             val align = this.internalAlignment.getOrCompute()
-            if (align != InternalAlignment.MIN) {
-                val totalSize = cache.last().let { it.start + it.length }
-                val thisSize = getThisDimensional().get()
-                
-                @Suppress("KotlinConstantConditions")
-                val offset: Float = when (align) {
-                    InternalAlignment.MIN -> 0f // Not a possible branch, but required to satisfy when branches
-                    InternalAlignment.MIDDLE -> (thisSize - totalSize) / 2f
-                    InternalAlignment.MAX -> (thisSize - totalSize)
-                }
+            val doReverseLayout = reverseLayout.get()
+            val totalSize = cache.last().let { it.start + it.length }
+            val thisSize = getThisDimensional().get()
 
-                for (i in 0..<cacheSize) {
-                    val d = elementCache[i]
-                    val element = d.element
-                    val pos = getPositional(element)
-                    pos.set(d.start + offset)
-                }
+            val alignmentOffset: Float = when (align) {
+                InternalAlignment.MIN -> 0f
+                InternalAlignment.MIDDLE -> (thisSize - totalSize) / 2f
+                InternalAlignment.MAX -> (thisSize - totalSize)
+            }
+
+            for (i in 0..<cacheSize) {
+                val d = cache[i]
+                val element = d.element
+                val pos = getPositional(element)
+
+                val layoutPos = if (doReverseLayout) (-d.start - d.length + totalSize) else (d.start)
+                pos.set(layoutPos + alignmentOffset)
             }
 
             autosizeIfNecessary()
