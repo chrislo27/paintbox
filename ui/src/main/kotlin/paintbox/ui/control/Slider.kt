@@ -23,9 +23,6 @@ import paintbox.util.gdxutils.fillRoundedRect
 import kotlin.math.sign
 
 
-/**
- * A [Slider] is a scroll bar intended to be used with a [ScrollPane].
- */
 open class Slider : Control<Slider>() {
 
     companion object {
