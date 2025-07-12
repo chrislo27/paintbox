@@ -2,7 +2,6 @@ package paintbox.ui.control
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import paintbox.PaintboxGame
@@ -89,10 +88,6 @@ open class Slider : Control<Slider>() {
         _value.set(snapped.coerceIn(minimum.get(), maximum.get()))
     }
 
-    protected open fun getArrowButtonTexReg(): TextureRegion {
-        return PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet.upArrow
-    }
-
     protected fun convertValueToPercentage(v: Float): Float {
         val min = minimum.get()
         val max = maximum.get()
@@ -122,6 +117,8 @@ open class Slider : Control<Slider>() {
         val bgColorToUse: ReadOnlyVar<Color> = Var {
             if (element.apparentDisabledState.use()) disabledBgColor.use() else bgColor.use()
         }
+        
+        val circleSizeMultiplier: FloatVar = FloatVar(1f)
 
         override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
             val contentBounds = element.contentZone
@@ -135,7 +132,7 @@ open class Slider : Control<Slider>() {
 
             val lineH = rectH * 0.4f
             val linePad = 4f
-            val circleH = rectH
+            val circleH = rectH * circleSizeMultiplier.get()
 
             tmpColor.set(bgColorToUse.getOrCompute())
             tmpColor.a *= opacity
@@ -166,7 +163,7 @@ open class Slider : Control<Slider>() {
             batch.draw(
                 PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet.circleFilled,
                 rectX + (valueAsPercent * (rectW - circleH)),
-                rectY - rectH,
+                rectY - rectH * 0.5f - circleH * 0.5f,
                 circleH,
                 circleH
             )
