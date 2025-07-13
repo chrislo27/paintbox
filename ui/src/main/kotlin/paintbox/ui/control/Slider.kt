@@ -80,12 +80,22 @@ open class Slider : Control<Slider>() {
         }
     }
 
-    fun setValue(value: Float) {
+    fun setValue(value: Float): Float {
         val tick = tickUnit.get().coerceAtLeast(0f)
         val snapped = if (tick > 0f) {
             MathHelper.snapToNearest(value, tick)
         } else value
-        _value.set(snapped.coerceIn(minimum.get(), maximum.get()))
+        val newValue = snapped.coerceIn(minimum.get(), maximum.get())
+        _value.set(newValue)
+        return newValue
+    }
+    
+    fun nudgeValue(direction: Int): Float {
+        return if (direction < 0) {
+            setValue(value.get() - tickUnit.get())
+        } else if (direction > 0) {
+            setValue(value.get() + tickUnit.get())
+        } else value.get()
     }
 
     protected fun convertValueToPercentage(v: Float): Float {
