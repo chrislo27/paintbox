@@ -129,6 +129,7 @@ open class Slider : Control<Slider>() {
         }
         
         val circleSizeMultiplier: FloatVar = FloatVar(1f)
+        val barHeightMultiplier: FloatVar = FloatVar(1f)
 
         override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
             val contentBounds = element.contentZone
@@ -140,7 +141,7 @@ open class Slider : Control<Slider>() {
             val opacity = element.apparentOpacity.get()
             val tmpColor = ColorStack.getAndPush()
 
-            val lineH = rectH * 0.4f
+            val lineH = rectH * 0.4f * barHeightMultiplier.get()
             val linePad = 4f
             val circleH = rectH * circleSizeMultiplier.get()
 
