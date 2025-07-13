@@ -19,6 +19,8 @@ interface IFullscreenWindowedInputProcessor : InputProcessor {
     fun attemptEndFullscreen()
 
     fun attemptResetWindow()
+    
+    fun attemptSetWindowed(windowSize: WindowSize)
 
 }
 
@@ -45,12 +47,19 @@ abstract class FullscreenWindowedInputProcessor(
     }
 
     override fun attemptEndFullscreen() {
-        val last = lastWindowed
-        Gdx.graphics.setWindowedMode(last.width, last.height)
+        setWindowedMode(lastWindowed)
     }
 
     override fun attemptResetWindow() {
-        Gdx.graphics.setWindowedMode(defaultWindowSize.width, defaultWindowSize.height)
+        setWindowedMode(defaultWindowSize)
+    }
+
+    override fun attemptSetWindowed(windowSize: WindowSize) {
+        setWindowedMode(windowSize)
+    }
+    
+    private fun setWindowedMode(windowSize: WindowSize) {
+        Gdx.graphics.setWindowedMode(windowSize.width, windowSize.height)
     }
 
     override fun keyDown(keycode: Int): Boolean {
@@ -115,6 +124,12 @@ class DefaultFullscreenWindowedInputProcessor<Prefs : PaintboxPreferences<*>>(
         if (displayMode != null && displayMode.width >= originalLastWindowed.width && displayMode.height >= originalLastWindowed.height) {
             this.lastWindowed = persistedWindowRes
         }
+    }
+
+    override fun attemptSetWindowed(windowSize: WindowSize) {
+        super.attemptSetWindowed(windowSize)
+
+        windowedResolutionVar(prefs()).set(windowSize)
     }
 
     override fun persistFullscreenMonitorToSettings(monitor: Graphics.Monitor) {
