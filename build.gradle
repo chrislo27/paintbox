@@ -80,6 +80,29 @@ project(":binding") {
     }
 }
 
+project(":eventbus") {
+    dependencies {
+        api project(":binding")
+    }
+
+    kotlin {
+        compilerOptions {
+            freeCompilerArgs.add("-Xcontext-parameters")
+        }
+    }
+
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId = 'com.github.chrislo27'
+                artifactId = 'paintbox-eventbus'
+
+                from components.java
+            }
+        }
+    }
+}
+
 project(":utils") {
     dependencies {
         api "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
