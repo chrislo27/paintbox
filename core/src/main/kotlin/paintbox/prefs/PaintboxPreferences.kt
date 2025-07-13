@@ -16,6 +16,8 @@ import paintbox.util.WindowSize
 abstract class PaintboxPreferences<Game : PaintboxGame>(val game: Game, val prefs: Preferences) : Disposable {
 
     companion object {
+        
+        val UNLIMITED_FPS: Int = 0
 
         fun determineMaxRefreshRate(minimum: Int = 24, fallback: Int = 60): Int {
             return try {
@@ -106,7 +108,7 @@ abstract class PaintboxPreferences<Game : PaintboxGame>(val game: Game, val pref
         // LauncherSettings override properties
         val fps = game.launcherSettings.fps
         if (fps != null) {
-            maxFramerate.set(fps.coerceAtLeast(0))
+            maxFramerate.set(fps.coerceAtLeast(UNLIMITED_FPS))
         }
         val vsync = game.launcherSettings.vsync
         if (vsync != null) {
