@@ -34,6 +34,7 @@ class TransitioningFloatVar private constructor(
             if (newAnimation != null) {
                 animationHandler.enqueueAnimation(newAnimation, transitioningVar)
             } else {
+                animationHandler.cancelAnimationFor(transitioningVar)
                 transitioningVar.set(targetValue)
             }
         }
