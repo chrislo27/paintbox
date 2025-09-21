@@ -153,6 +153,31 @@ abstract class KeyValue<T>(val key: String, val defaultValue: T) {
         }
     }
 
+    open class Enum<E : kotlin.Enum<E>>(key: String, defaultValue: E) : KeyValue<E>(key, defaultValue) {
+
+        override val value: Var<E> = Var(defaultValue)
+
+        override fun load(prefs: Preferences) {
+            if (prefs.contains(this.key)) {
+                this.value.set(deserializeEnum(prefs.getString(this.key, "") ?: "") ?: this.defaultValue)
+            }
+        }
+
+        override fun persist(prefs: Preferences) {
+            prefs.putString(this.key, serializeEnum(this.value.getOrCompute()))
+        }
+
+        open fun serializeEnum(e: E): String = e.name
+
+        open fun deserializeEnum(s: String): E? {
+            return try {
+                java.lang.Enum.valueOf(defaultValue.javaClass, s)
+            } catch (_: IllegalArgumentException) {
+                null
+            }
+        }
+    }
+
     class WindowSize(key: String, defaultValue: paintbox.util.WindowSize) :
         KeyValue<paintbox.util.WindowSize>(key, defaultValue) {
 
