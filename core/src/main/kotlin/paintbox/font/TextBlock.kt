@@ -306,14 +306,24 @@ class TextBlock(val runs: TextRunList) {
                 glyphRunInfo.posY = posY + capHeight
 
                 // Bump x forward by width of GlyphRun
-                // We have to account for the xAdvance of the last glyph.
-                // GlyphLayout replaces it with the width of the last glyph instead. See GlyphLayout#setLastGlyphXAdvance
                 val glyphRunXadv = glyphRun.xAdvances
                 var advanceWidth = 0f
-                for (i in 0..<glyphRun.glyphs.size) {
-                    advanceWidth += glyphRunXadv[i]
+                val isLastGlyphRun = glyphRunInfoIndex == textRunInfo.glyphRunInfo.size - 1
+                // Note that GlyphLayout replaces the xAdvance of the last glyph with its width.
+                // This is not what we want, unless this is the last glyph run.
+                // See GlyphLayout#setLastGlyphXAdvance
+                if (isLastGlyphRun) {
+                    // Add up all xAdvances
+                    for (i in 0..glyphRun.glyphs.size) {
+                        advanceWidth += glyphRunXadv[i]
+                    }
+                } else {
+                    // Add up all glyphs' (except last glyph's) xAdvances, manually add last glyph's true xAdvance
+                    for (i in 0..<glyphRun.glyphs.size) {
+                        advanceWidth += glyphRunXadv[i]
+                    }
+                    advanceWidth += glyphRun.glyphs.last().let { it.xadvance * font.data.scaleX }
                 }
-                advanceWidth += glyphRun.glyphs.last().let { it.xadvance * font.data.scaleX }
 
                 posX += advanceWidth
                 if (posX > maxPosX) {
