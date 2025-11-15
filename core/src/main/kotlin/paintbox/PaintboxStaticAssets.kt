@@ -9,7 +9,7 @@ import com.badlogic.gdx.utils.Disposable
 /**
  * Must be instantiated on the gdx main thread.
  */
-open class PaintboxStaticAssets : Disposable {
+class PaintboxStaticAssets : Disposable {
     
     val fillTexture: Texture
     val paintboxSpritesheet: PaintboxSpritesheet
@@ -22,7 +22,7 @@ open class PaintboxStaticAssets : Disposable {
         fillTexture = Texture(pixmap)
         pixmap.dispose()
         
-        val spritesheetTexture = Texture(Gdx.files.internal("paintbox/paintbox_spritesheet_noborder.png"), true).apply {
+        val spritesheetTexture = Texture(Gdx.files.internal("paintbox/paintbox_spritesheet_noborder.tga"), true).apply {
             this.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
         }
         paintboxSpritesheet = PaintboxSpritesheet(spritesheetTexture, ownsTexture = true)
