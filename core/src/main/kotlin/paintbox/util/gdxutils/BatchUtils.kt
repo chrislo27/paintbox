@@ -2,6 +2,7 @@ package paintbox.util.gdxutils
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Matrix4
@@ -13,15 +14,19 @@ import kotlin.contracts.contract
 
 private val fillTexture: Texture get() = PaintboxGame.gameInstance.staticAssets.fillTexture
 
-fun SpriteBatch.fillRect(x: Float, y: Float, width: Float, height: Float) {
+fun Batch.setColor(color: Color, alpha: Float = color.a, multiply: Boolean = false) {
+    this.setColor(color.r, color.g, color.b, if (multiply) (color.a * alpha) else alpha)
+}
+
+fun Batch.fillRect(x: Float, y: Float, width: Float, height: Float) {
     this.draw(fillTexture, x, y, width, height)
 }
 
-fun SpriteBatch.fillRect(rect: Rectangle) {
+fun Batch.fillRect(rect: Rectangle) {
     this.fillRect(rect.x, rect.y, rect.width, rect.height)
 }
 
-fun SpriteBatch.drawRect(x: Float, y: Float, width: Float, height: Float, lineX: Float, lineY: Float) {
+fun Batch.drawRect(x: Float, y: Float, width: Float, height: Float, lineX: Float, lineY: Float) {
     this.draw(fillTexture, x, y, width, lineY.coerceAtMost(height))
     this.draw(fillTexture, x, y + height, width, -(lineY.coerceAtMost(height)))
     this.draw(
@@ -40,19 +45,19 @@ fun SpriteBatch.drawRect(x: Float, y: Float, width: Float, height: Float, lineX:
     )
 }
 
-fun SpriteBatch.drawRect(x: Float, y: Float, width: Float, height: Float, line: Float) {
+fun Batch.drawRect(x: Float, y: Float, width: Float, height: Float, line: Float) {
     this.drawRect(x, y, width, height, line, line)
 }
 
-fun SpriteBatch.drawRect(rect: Rectangle, lineX: Float, lineY: Float) {
+fun Batch.drawRect(rect: Rectangle, lineX: Float, lineY: Float) {
     this.drawRect(rect.x, rect.y, rect.width, rect.height, lineX, lineY)
 }
 
-fun SpriteBatch.drawRect(rect: Rectangle, line: Float) {
+fun Batch.drawRect(rect: Rectangle, line: Float) {
     this.drawRect(rect, line, line)
 }
 
-fun SpriteBatch.fillRoundedRect(x: Float, y: Float, w: Float, h: Float, cornerRad: Float) {
+fun Batch.fillRoundedRect(x: Float, y: Float, w: Float, h: Float, cornerRad: Float) {
     var roundedRad = cornerRad
     if (roundedRad > w / 2f) {
         roundedRad = (w / 2f)
@@ -81,9 +86,9 @@ fun SpriteBatch.fillRoundedRect(x: Float, y: Float, w: Float, h: Float, cornerRa
 private val quadVerts: FloatArray = FloatArray(20)
 
 /**
- * bottom left, bottom right, top right, top left
+ * Order: bottom left, bottom right, top right, top left
  */
-fun SpriteBatch.drawQuad(
+fun Batch.drawQuad(
     x1: Float, y1: Float, color1: Color,
     x2: Float, y2: Float, color2: Color,
     x3: Float, y3: Float, color3: Color,
@@ -100,9 +105,9 @@ fun SpriteBatch.drawQuad(
 }
 
 /**
- * bottom left, bottom right, top right, top left
+ * Order: bottom left, bottom right, top right, top left
  */
-fun SpriteBatch.drawQuad(
+fun Batch.drawQuad(
     x1: Float, y1: Float, color1: Float,
     x2: Float, y2: Float, color2: Float,
     x3: Float, y3: Float, color3: Float,
@@ -141,7 +146,7 @@ fun SpriteBatch.drawQuad(
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun SpriteBatch.batchCall(projection: Matrix4 = this.projectionMatrix, drawFunction: SpriteBatch.() -> Unit) {
+inline fun <B : Batch> B.batchCall(projection: Matrix4 = this.projectionMatrix, drawFunction: B.() -> Unit) {
     contract {
         callsInPlace(drawFunction, InvocationKind.EXACTLY_ONCE)
     }
@@ -161,12 +166,12 @@ inline fun SpriteBatch.batchCall(projection: Matrix4 = this.projectionMatrix, dr
 }
 
 /**
- * The same as [SpriteBatch.draw(texture, x, y, width, height, u, v, u2, v2)] but [u] and [v] are in the top left, and
+ * The same as [Batch.draw(texture, x, y, width, height, u, v, u2, v2)] but [u] and [v] are in the top left, and
  * [u2] and [v2] are in the bottom right. The original [SpriteBatch] draw function has the origin in the bottom left.
  *
  * The uv order for this function is more akin to [TextureRegion]'s internal uv representation.
  */
-fun SpriteBatch.drawUV(
+fun Batch.drawUV(
     tex: Texture,
     x: Float,
     y: Float,
