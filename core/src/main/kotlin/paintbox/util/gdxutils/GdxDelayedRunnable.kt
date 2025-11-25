@@ -36,6 +36,6 @@ class GdxDelayedRunnable(val delaySec: Float, val action: () -> Unit) : Runnable
         }
     }
 
-    override fun run() = runnableTransition.run()
+    override fun run() = runnableTransition.toRunnable().run()
 
 }
