@@ -20,8 +20,20 @@ data class GdxRunnableTransition(
     val delaySec: Float = 0f,
     val onUpdate: (currentValue: Float, progress: Float) -> Unit,
 ) {
+    
+    interface State : Runnable {
+        
+        fun isCompleted(): Boolean
 
-    fun toRunnable(): Runnable = object : Runnable {
+        /**
+         * Cancels this [Runnable] and doesn't do any further updates.
+         * @param setToEndValue If true, [onUpdate] will be called as if this transition finished. Otherwise nothing happens.
+         */
+        fun cancel(setToEndValue: Boolean)
+        
+    }
+
+    fun toRunnable(): State = object : State {
         
         private var started: Boolean = false
         private lateinit var app: Application
@@ -31,13 +43,13 @@ data class GdxRunnableTransition(
         private var complete: Boolean = false
         private var timeElapsed: Float = if (delaySec > 0) -delaySec else 0f
 
-        fun isCompleted(): Boolean = complete
+        override fun isCompleted(): Boolean = complete
 
         /**
          * Cancels this object and doesn't do any further updates.
          * @param setToEndValue If true, [onUpdate] will be called as if this transition finished. Otherwise nothing happens.
          */
-        fun cancel(setToEndValue: Boolean) {
+        override fun cancel(setToEndValue: Boolean) {
             if (!complete) {
                 complete = true
                 if (setToEndValue) {
