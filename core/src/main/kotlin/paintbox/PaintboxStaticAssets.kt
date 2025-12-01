@@ -23,7 +23,7 @@ class PaintboxStaticAssets : Disposable {
         pixmap.dispose()
         
         val spritesheetTexture = Texture(Gdx.files.internal("paintbox/paintbox_spritesheet_noborder.tga"), true).apply {
-            this.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear)
+            this.setFilter(Texture.TextureFilter.MipMapLinearLinear, Texture.TextureFilter.Linear)
         }
         paintboxSpritesheet = PaintboxSpritesheet(spritesheetTexture, ownsTexture = true)
     }
