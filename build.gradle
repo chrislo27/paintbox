@@ -209,7 +209,7 @@ project(":ui") {
 project(":desktop") {
     dependencies {
         api project(":core")
-        testApi project(":ui")
+        testImplementation project(":ui")
 
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
