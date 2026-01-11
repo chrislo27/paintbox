@@ -8,8 +8,10 @@ internal class LanguageObject {
     lateinit var name: String
     lateinit var locale: LocaleObject
 
+    var metadata: HashMap<String, String>? = null
+
     fun toNamedLocale(): NamedLocale =
-        NamedLocale(name, Locale.of(locale.language ?: "", locale.country ?: "", locale.variant ?: ""))
+        NamedLocale(name, Locale.of(locale.language ?: "", locale.country ?: "", locale.variant ?: ""), metadata ?: emptyMap())
 
 }
 
