@@ -202,7 +202,7 @@ abstract class AbstractVarTests<V, T> where V : Var<T> {
         // Act
         varr.addListener(listener)
         varr.invalidate()
-        
+
         // Assert
         assertEquals(1, listener.notifyCount)
     }
@@ -226,6 +226,23 @@ abstract class AbstractVarTests<V, T> where V : Var<T> {
         
         // Assert
         assertEquals(1, listener.notifyCount)
+    }
+
+    @Test
+    fun `addListenerAndFire registers the listener and then fires it immediately`() {
+        // Arrange
+        val listener = NotifyListener()
+        varr.bind {
+            getConstant()
+        }
+        varr.getOrCompute()
+
+        // Act
+        varr.addListenerAndFire(listener)
+        varr.invalidate()
+
+        // Assert
+        assertEquals(2, listener.notifyCount)
     }
 
     @Test
