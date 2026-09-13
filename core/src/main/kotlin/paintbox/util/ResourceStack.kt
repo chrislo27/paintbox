@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.Pool
-import java.util.LinkedList
+import java.util.*
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -41,7 +41,7 @@ abstract class ResourceStack<T>(initialCapacity: Int = 64) {
      */
     fun pop(): Boolean {
         if (stack.isEmpty()) return false
-        val last = stack.removeLast()
+        val last = stack.removeLastOrNull()
             ?: error("[Thread ${Thread.currentThread().name}] Stack's last item from stack.removeLast() was null. This could be a threading issue. numFree: ${pool.free} ResourceStack: ${this.javaClass.name}")
         pool.free(last)
         return true
