@@ -12,7 +12,6 @@ import paintbox.ui.area.Insets
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
-import paintbox.util.ColorStack
 import paintbox.util.gdxutils.fillRect
 import paintbox.util.gdxutils.fillRoundedRect
 
@@ -349,7 +348,7 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
             val rectH = contentBounds.height.get()
             val lastPackedColor = batch.packedColor
             val opacity = element.apparentOpacity.get()
-            val tmpColor = ColorStack.getAndPush()
+            val tmpColor = Color()
 
             tmpColor.set(bgColor.getOrCompute())
             tmpColor.a *= opacity
@@ -407,7 +406,6 @@ open class ScrollBar(val orientation: Orientation) : Control<ScrollBar>() {
             }
 
             batch.packedColor = lastPackedColor
-            ColorStack.pop()
         }
 
         override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {

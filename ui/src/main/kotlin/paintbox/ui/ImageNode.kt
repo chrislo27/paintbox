@@ -6,7 +6,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Align
 import paintbox.binding.*
-import paintbox.util.ColorStack
 import paintbox.util.gdxutils.drawUV
 import kotlin.math.max
 import kotlin.math.min
@@ -64,12 +63,9 @@ open class ImageNode(
         if (tex != null) {
             val old = batch.packedColor
 
-            val tmpColor = ColorStack.getAndPush()
-            tmpColor.set(tint.getOrCompute())
+            val tint = tint.getOrCompute()
             val opacity = apparentOpacity.get()
-            tmpColor.a *= opacity
-
-            batch.color = tmpColor
+            batch.setColor(tint.r, tint.g, tint.b, tint.a * opacity)
 
             val renderBounds = this.contentZone
             val x = renderBounds.x.get() + originX
@@ -124,8 +120,6 @@ open class ImageNode(
                 }
             }
 
-            ColorStack.pop()
-
             batch.packedColor = old
         }
     }
@@ -170,13 +164,10 @@ open class ImageWindowNode(tex: TextureRegion? = null) : UIElement() {
         val tex = textureRegion.getOrCompute()
         if (tex != null) {
             val old = batch.packedColor
-
-            val tmpColor = ColorStack.getAndPush()
-            tmpColor.set(tint.getOrCompute())
+            
+            val tint = tint.getOrCompute()
             val opacity = apparentOpacity.get()
-            tmpColor.a *= opacity
-
-            batch.color = tmpColor
+            batch.setColor(tint.r, tint.g, tint.b, tint.a * opacity)
 
             val renderBounds = this.contentZone
             val x = renderBounds.x.get() + originX
@@ -200,8 +191,6 @@ open class ImageWindowNode(tex: TextureRegion? = null) : UIElement() {
                 MathUtils.lerp(tex.u, tex.u2, u2),
                 MathUtils.lerp(tex.v, tex.v2, v2)
             )
-
-            ColorStack.pop()
 
             batch.packedColor = old
         }

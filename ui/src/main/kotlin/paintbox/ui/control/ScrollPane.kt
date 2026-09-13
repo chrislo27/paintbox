@@ -13,7 +13,6 @@ import paintbox.ui.UIElement
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
-import paintbox.util.ColorStack
 import paintbox.util.gdxutils.fillRect
 import paintbox.util.gdxutils.isAltDown
 import paintbox.util.gdxutils.isControlDown
@@ -213,16 +212,12 @@ open class ScrollPaneSkin(element: ScrollPane) : Skin<ScrollPane>(element) {
         val rectH = contentBounds.height.get()
         val lastPackedColor = batch.packedColor
         val opacity = element.apparentOpacity.get()
-        val tmpColor = ColorStack.getAndPush()
+        val bgColor = bgColor.getOrCompute()
 
-        tmpColor.set(bgColor.getOrCompute())
-        tmpColor.a *= opacity
-
-        batch.color = tmpColor
+        batch.setColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a * opacity)
         batch.fillRect(rectX, rectY - rectH, rectW, rectH)
 
         batch.packedColor = lastPackedColor
-        ColorStack.pop()
     }
 
     override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {

@@ -12,7 +12,6 @@ import paintbox.ui.border.Border
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
-import paintbox.util.ColorStack
 import paintbox.util.gdxutils.fillRect
 import kotlin.math.min
 
@@ -262,7 +261,7 @@ open class TextLabelSkin(element: TextLabel) : Skin<TextLabel>(element) {
         val h = bounds.height.get()
         val lastPackedColor = batch.packedColor
         val opacity = element.apparentOpacity.get()
-        val tmpColor = ColorStack.getAndPush()
+        val tmpColor = Color()
         tmpColor.set(batch.color).mul(textColorToUse.getOrCompute())
         tmpColor.a *= opacity
 
@@ -294,14 +293,13 @@ open class TextLabelSkin(element: TextLabel) : Skin<TextLabel>(element) {
             val bw = (if (compressX) min(w, textWidth) else textWidth) + bgPaddingInsets.left + bgPaddingInsets.right
             val bh = textHeight + bgPaddingInsets.top + bgPaddingInsets.bottom
 
-            val bgColor = ColorStack.getAndPush().set(bgColorToUse.getOrCompute())
+            val bgColor = Color(bgColorToUse.getOrCompute())
             bgColor.a *= opacity
             batch.color = bgColor
             batch.fillRect(
                 bx.coerceAtLeast(x), by/*.coerceAtLeast(y - bh.coerceAtMost(h))*/,
                 if (compressX) bw.coerceAtMost(w) else bw, bh/*.coerceAtMost(h)*/
             )
-            ColorStack.pop()
         }
 
         batch.color = tmpColor // Sets the opacity of the text
@@ -315,7 +313,6 @@ open class TextLabelSkin(element: TextLabel) : Skin<TextLabel>(element) {
         } else {
             text.draw(batch, x + xOffset, (y - h + yOffset), element.textAlign.getOrCompute(), scaleX, scaleY)
         }
-        ColorStack.pop()
 
         batch.packedColor = lastPackedColor
     }
@@ -368,7 +365,7 @@ class ScrollingTextLabelSkin(element: TextLabel) : TextLabelSkin(element) {
         val h = bounds.height.get()
         val lastPackedColor = batch.packedColor
         val opacity = element.apparentOpacity.get()
-        val tmpColor = ColorStack.getAndPush()
+        val tmpColor = Color()
         tmpColor.set(batch.color).mul(textColorToUse.getOrCompute())
         tmpColor.a *= opacity
 
@@ -403,14 +400,13 @@ class ScrollingTextLabelSkin(element: TextLabel) : TextLabelSkin(element) {
             val bw = (if (compressX) min(w, textWidth) else textWidth) + bgPaddingInsets.left + bgPaddingInsets.right
             val bh = textHeight + bgPaddingInsets.top + bgPaddingInsets.bottom
 
-            val bgColor = ColorStack.getAndPush().set(bgColorToUse.getOrCompute())
+            val bgColor = Color(bgColorToUse.getOrCompute())
             bgColor.a *= opacity
             batch.color = bgColor
             batch.fillRect(
                 bx.coerceAtLeast(x), by/*.coerceAtLeast(y - bh.coerceAtMost(h))*/,
                 if (compressX) bw.coerceAtMost(w) else bw, bh/*.coerceAtMost(h)*/
             )
-            ColorStack.pop()
         }
 
         batch.color = tmpColor // Sets the opacity of the text
@@ -467,7 +463,6 @@ class ScrollingTextLabelSkin(element: TextLabel) : TextLabelSkin(element) {
                 )
             }
         }
-        ColorStack.pop()
 
         batch.packedColor = lastPackedColor
     }

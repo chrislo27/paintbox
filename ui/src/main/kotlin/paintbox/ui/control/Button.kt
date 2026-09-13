@@ -13,7 +13,6 @@ import paintbox.ui.area.Insets
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
-import paintbox.util.ColorStack
 import paintbox.util.gdxutils.fillRect
 import java.util.*
 import kotlin.math.min
@@ -142,10 +141,8 @@ open class ButtonSkin(element: Button) : Skin<Button>(element) {
         val lastPackedColor = batch.packedColor
         val opacity = element.apparentOpacity.get()
 
-        val rectColor: Color = ColorStack.getAndPush()
-        rectColor.set(bgColorToUse.getOrCompute())
-        rectColor.a *= opacity
-        batch.color = rectColor
+        val rectColor = bgColorToUse.getOrCompute()
+        batch.setColor(rectColor.r, rectColor.g, rectColor.b, rectColor.a * opacity)
         var roundedRad = roundedRadius.get()
         val paintboxSpritesheet = PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet
         val spritesheetFill: TextureRegion = paintboxSpritesheet.fill
@@ -193,7 +190,6 @@ open class ButtonSkin(element: Button) : Skin<Button>(element) {
             ) // BR
         }
         batch.packedColor = lastPackedColor
-        ColorStack.pop()
 
         val text = element.internalTextBlock.getOrCompute()
         if (text.runs.isNotEmpty()) {
@@ -203,7 +199,7 @@ open class ButtonSkin(element: Button) : Skin<Button>(element) {
             val textW = textBounds.width.get()
             val textH = textBounds.height.get()
 
-            val tmpColor = ColorStack.getAndPush()
+            val tmpColor = Color()
             tmpColor.set(batch.color).mul(textColorToUse.getOrCompute())
             tmpColor.a *= opacity
 
@@ -232,7 +228,6 @@ open class ButtonSkin(element: Button) : Skin<Button>(element) {
                 batch, textX + xOffset, textY - textH + yOffset,
                 if (compressX) (textW) else 0f, element.textAlign.getOrCompute(), scaleX, scaleY
             )
-            ColorStack.pop()
         }
 
         batch.packedColor = lastPackedColor

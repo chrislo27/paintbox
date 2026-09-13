@@ -10,7 +10,6 @@ import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
 import paintbox.ui.Corner
 import paintbox.ui.UIElement
-import paintbox.util.ColorStack
 import paintbox.util.gdxutils.fillRect
 import java.util.*
 
@@ -40,7 +39,7 @@ open class RoundedRectElement(initColor: Color) : UIElement() {
         val lastPackedColor = batch.packedColor
 
         val opacity: Float = this.apparentOpacity.get()
-        val tmpColor: Color = ColorStack.getAndPush()
+        val tmpColor = Color()
         tmpColor.set(color.getOrCompute())
         tmpColor.a *= opacity
         batch.color = tmpColor
@@ -92,7 +91,6 @@ open class RoundedRectElement(initColor: Color) : UIElement() {
             ) // BR
         }
 
-        ColorStack.pop()
         batch.packedColor = lastPackedColor
     }
 }

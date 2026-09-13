@@ -16,7 +16,6 @@ import paintbox.ui.TouchDragged
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
-import paintbox.util.ColorStack
 import paintbox.util.MathHelper
 import paintbox.util.gdxutils.fillRoundedRect
 import kotlin.math.sign
@@ -139,7 +138,7 @@ open class Slider : Control<Slider>() {
             val rectH = contentBounds.height.get()
             val lastPackedColor = batch.packedColor
             val opacity = element.apparentOpacity.get()
-            val tmpColor = ColorStack.getAndPush()
+            val tmpColor = Color()
 
             val lineH = rectH * 0.4f * barHeightMultiplier.get()
             val linePad = 4f
@@ -180,7 +179,6 @@ open class Slider : Control<Slider>() {
             )
 
             batch.packedColor = lastPackedColor
-            ColorStack.pop()
         }
 
         override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {

@@ -13,7 +13,6 @@ import paintbox.ui.border.SolidBorder
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
-import paintbox.util.ColorStack
 import paintbox.util.gdxutils.fillRect
 import kotlin.math.min
 
@@ -131,7 +130,7 @@ open class ComboBoxSkin(element: ComboBox<Any?>) : Skin<ComboBox<Any?>>(element)
         val opacity = element.apparentOpacity.get()
         val disabled = element.apparentDisabledState.get()
 
-        val rectColor: Color = ColorStack.getAndPush()
+        val rectColor = Color()
         rectColor.set(element.backgroundColor.getOrCompute())
         rectColor.a *= opacity
         batch.color = rectColor
@@ -153,7 +152,6 @@ open class ComboBoxSkin(element: ComboBox<Any?>) : Skin<ComboBox<Any?>>(element)
         }
 
         batch.packedColor = lastPackedColor
-        ColorStack.pop()
 
         val text = element.internalTextBlock.getOrCompute()
         if (text.runs.isNotEmpty()) {
@@ -162,7 +160,7 @@ open class ComboBoxSkin(element: ComboBox<Any?>) : Skin<ComboBox<Any?>>(element)
             val textW = contentW - arrowSize
             val textH = contentH
 
-            val tmpColor = ColorStack.getAndPush()
+            val tmpColor = Color()
             tmpColor.set(batch.color).mul(element.textColor.getOrCompute())
             tmpColor.a *= opacity
             if (disabled) {
@@ -189,7 +187,6 @@ open class ComboBoxSkin(element: ComboBox<Any?>) : Skin<ComboBox<Any?>>(element)
                 batch, textX + xOffset, textY - textH + yOffset,
                 if (compressX) (textW) else 0f, element.textAlign.getOrCompute()
             )
-            ColorStack.pop()
         }
 
         batch.packedColor = lastPackedColor

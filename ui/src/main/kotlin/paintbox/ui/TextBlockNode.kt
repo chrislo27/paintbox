@@ -5,12 +5,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.utils.Align
 import paintbox.binding.BooleanVar
 import paintbox.binding.IntVar
+import paintbox.binding.Var
 import paintbox.font.PaintboxFont
 import paintbox.font.TextAlign
 import paintbox.font.TextBlock
 import paintbox.font.TextRun
-import paintbox.binding.Var
-import paintbox.util.ColorStack
 import kotlin.math.min
 
 
@@ -42,7 +41,7 @@ open class TextBlockNode(textBlock: TextBlock = TextBlock(emptyList())) : UIElem
         val h = renderBounds.height.get()
         val lastPackedColor = batch.packedColor
         val opacity = apparentOpacity.get()
-        val tmpColor = ColorStack.getAndPush()
+        val tmpColor = Color()
         tmpColor.set(batch.color).mul(textColor.getOrCompute())
         tmpColor.a *= opacity
 
@@ -63,7 +62,6 @@ open class TextBlockNode(textBlock: TextBlock = TextBlock(emptyList())) : UIElem
 
         batch.color = tmpColor // Sets the opacity
         text.drawCompressed(batch, x + xOffset, y - h + yOffset, if (compressX) w else 0f, textAlign.getOrCompute())
-        ColorStack.pop()
 
         batch.packedColor = lastPackedColor
     }

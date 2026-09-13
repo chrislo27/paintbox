@@ -9,7 +9,6 @@ import paintbox.binding.FloatVar
 import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
 import paintbox.ui.UIElement
-import paintbox.util.ColorStack
 import paintbox.util.gdxutils.drawQuad
 
 
@@ -116,16 +115,16 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
         val lastPackedColor = batch.packedColor
 
         val opacity: Float = this.apparentOpacity.get()
-        val tmpColorTL: Color = ColorStack.getAndPush()
+        val tmpColorTL = Color()
         tmpColorTL.set(topLeftColor.getOrCompute())
         tmpColorTL.a *= opacity
-        val tmpColorTR: Color = ColorStack.getAndPush()
+        val tmpColorTR = Color()
         tmpColorTR.set(topRightColor.getOrCompute())
         tmpColorTR.a *= opacity
-        val tmpColorBL: Color = ColorStack.getAndPush()
+        val tmpColorBL = Color()
         tmpColorBL.set(bottomLeftColor.getOrCompute())
         tmpColorBL.a *= opacity
-        val tmpColorBR: Color = ColorStack.getAndPush()
+        val tmpColorBR = Color()
         tmpColorBR.set(bottomRightColor.getOrCompute())
         tmpColorBR.a *= opacity
 
@@ -142,10 +141,6 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
             tlU = topLeftTextureU.get(), tlV = topLeftTextureV.get()
         )
 
-        ColorStack.pop()
-        ColorStack.pop()
-        ColorStack.pop()
-        ColorStack.pop()
         batch.packedColor = lastPackedColor
     }
 }

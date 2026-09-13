@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Align
 import paintbox.binding.BooleanVar
 import paintbox.binding.FloatVar
-import paintbox.util.ColorStack
 import paintbox.util.gdxutils.copy
 import paintbox.util.gdxutils.scaleMul
 
@@ -433,7 +432,7 @@ class TextBlock(val runs: TextRunList) {
 
         val batchColor: Float = batch.packedColor
 
-        val tint = ColorStack.getAndPush().set(batch.color)
+        val tint = Color(batch.color)
         val requiresTinting = tint.r != 1f || tint.g != 1f || tint.b != 1f || tint.a != 1f
 
         val globalScaleX: Float =
@@ -441,7 +440,6 @@ class TextBlock(val runs: TextRunList) {
         val globalScaleY: Float = scaleY
 
         if (globalScaleX <= MathUtils.FLOAT_ROUNDING_ERROR || globalScaleY <= MathUtils.FLOAT_ROUNDING_ERROR || !globalScaleX.isFinite() || !globalScaleY.isFinite()) {
-            ColorStack.pop()
             return
         }
 
@@ -490,7 +488,7 @@ class TextBlock(val runs: TextRunList) {
                     // IntArray pair of ints of start index and ABGR8888 color (Color#toIntBits)
                     val colors = layout.colors
                     val numColors = colors.size / 2
-                    val tmpColor = ColorStack.getAndPush()
+                    val tmpColor = Color()
 
                     val colorStack: MutableList<Color> = tmpColorStack
 
@@ -498,7 +496,7 @@ class TextBlock(val runs: TextRunList) {
                     for (i in 0..<numColors) {
                         val colorsIndex = i * 2 + 1
                         Color.abgr8888ToColor(tmpColor, colors[colorsIndex])
-                        colorStack += ColorStack.getAndPush().set(tmpColor)
+                        colorStack += Color(tmpColor)
 
                         if (tmpColor.r == 1f && tmpColor.g == 1f && tmpColor.b == 1f) {
                             tmpColor.mul(tint)
@@ -522,12 +520,8 @@ class TextBlock(val runs: TextRunList) {
                     for (index in numColors - 1 downTo 0) {
                         val popped = colorStack[index]
                         colors[index * 2 + 1] = popped.toIntBits()
-                        ColorStack.pop()
                     }
                     colorStack.clear()
-
-                    // Pop tmpColor
-                    ColorStack.pop()
                 } else {
                     font.draw(
                         batch, layout,
@@ -557,8 +551,6 @@ class TextBlock(val runs: TextRunList) {
             resetFontForTextRun(font, textRunInfo.run)
             paintboxFont.end()
         }
-
-        ColorStack.pop()
 
         batch.packedColor = batchColor
     }

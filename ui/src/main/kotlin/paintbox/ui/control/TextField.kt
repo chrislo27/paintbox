@@ -14,7 +14,6 @@ import paintbox.ui.*
 import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
-import paintbox.util.ColorStack
 import paintbox.util.gdxutils.*
 import kotlin.math.max
 import kotlin.math.min
@@ -632,7 +631,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
             val lastPackedColor = batch.packedColor
             val opacity = element.apparentOpacity.get()
 
-            val tmpColor = ColorStack.getAndPush()
+            val tmpColor = Color()
             val layout: GlyphLayout = element.glyphLayout.getOrCompute()
             val paintboxFont = element.font.getOrCompute()
             var caretHeight: Float
@@ -698,7 +697,6 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
                 }
             }
 
-            ColorStack.pop()
             batch.packedColor = lastPackedColor
         }
 

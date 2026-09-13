@@ -10,7 +10,6 @@ import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
 import paintbox.ui.UIElement
 import paintbox.ui.area.Insets
-import paintbox.util.ColorStack
 import paintbox.util.gdxutils.fillRect
 import kotlin.math.max
 import kotlin.math.roundToInt
@@ -45,9 +44,7 @@ class SolidBorder(initColor: Color) : Border {
         val lastColor = batch.packedColor
         val thisColor = this.color.getOrCompute()
         val opacity = element.apparentOpacity.get()
-        val tmpColor = ColorStack.getAndPush().set(thisColor)
-        tmpColor.a *= opacity
-        batch.color = tmpColor
+        batch.setColor(thisColor.r, thisColor.g, thisColor.b, thisColor.a * opacity)
 
         if (roundedCorners.get()) {
             val paintboxSpritesheet = PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet
@@ -89,7 +86,6 @@ class SolidBorder(initColor: Color) : Border {
             batch.fillRect(x + insets.left, y - insets.top, topBottomWidth, insets.top)
         }
 
-        ColorStack.pop()
         batch.packedColor = lastColor
     }
 

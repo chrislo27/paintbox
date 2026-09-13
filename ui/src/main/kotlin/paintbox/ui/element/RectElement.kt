@@ -6,7 +6,6 @@ import paintbox.binding.ContextBinding
 import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
 import paintbox.ui.UIElement
-import paintbox.util.ColorStack
 import paintbox.util.gdxutils.fillRect
 
 
@@ -33,13 +32,10 @@ open class RectElement(initColor: Color) : UIElement() {
         val lastPackedColor = batch.packedColor
 
         val opacity: Float = this.apparentOpacity.get()
-        val tmpColor: Color = ColorStack.getAndPush()
-        tmpColor.set(color.getOrCompute())
-        tmpColor.a *= opacity
-        batch.color = tmpColor
+        val c = color.getOrCompute()
+        batch.setColor(c.r, c.g, c.b, c.a * opacity)
         batch.fillRect(x, y - h, w, h)
 
-        ColorStack.pop()
         batch.packedColor = lastPackedColor
     }
 }
