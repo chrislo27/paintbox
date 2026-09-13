@@ -10,7 +10,6 @@ import paintbox.font.PaintboxFont
 import paintbox.ui.area.ReadOnlyBounds
 import paintbox.ui.border.Border
 import paintbox.ui.border.NoBorder
-import paintbox.util.RectangleStack
 import paintbox.util.gdxutils.intersects
 import kotlin.math.max
 import kotlin.math.min
@@ -132,7 +131,7 @@ open class UIElement : UIBounds() {
                 val minY = max(childCullingRect.y, suggestedClipY)
                 val maxX = min(childCullingRect.x + childCullingRect.width, suggestedClipX + suggestedClipWidth)
                 val maxY = min(childCullingRect.y + childCullingRect.height, suggestedClipY + suggestedClipHeight)
-                val newChildCullingRect = RectangleStack.getAndPush().set(
+                val newChildCullingRect = Rectangle(
                     minX - CHILD_CULLING_RECT_EXTRA_BUFFER,
                     minY - CHILD_CULLING_RECT_EXTRA_BUFFER,
                     (maxX - minX) + CHILD_CULLING_RECT_EXTRA_BUFFER * 2,
@@ -143,8 +142,6 @@ open class UIElement : UIBounds() {
                     originX + childOriginX, originY - childOriginY, batch,
                     newChildCullingRect, newUIOriginX, newUIOriginY
                 )
-
-                RectangleStack.pop()
             } else {
                 this.renderChildren(
                     originX + childOriginX, originY - childOriginY, batch,
@@ -175,7 +172,7 @@ open class UIElement : UIBounds() {
         val children = this.children.getOrCompute()
         if (children.isEmpty()) return
 
-        val tmpRect = RectangleStack.getAndPush()
+        val tmpRect = Rectangle()
         for (child in children) {
             val childX = uiOriginX + child.bounds.x.get()
             val childY = uiOriginY + child.bounds.y.get()
@@ -185,7 +182,6 @@ open class UIElement : UIBounds() {
             }
             child.render(originX, originY, batch, childCullingRect, uiOriginX, uiOriginY)
         }
-        RectangleStack.pop()
     }
 
     protected open fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
@@ -384,7 +380,7 @@ open class UIElement : UIBounds() {
         val scissorY = ((originY - y) / rootHeight) * camHeight
         val scissorW = (width / rootWidth) * camWidth
         val scissorH = (height / rootHeight) * camHeight
-        val scissor = RectangleStack.getAndPush().set(scissorX, scissorY - scissorH, scissorW, scissorH)
+        val scissor = Rectangle(scissorX, scissorY - scissorH, scissorW, scissorH)
 
         val pushScissor = if (root?.applyViewport?.get() == true)
             ScissorStack.pushScissor(scissor, viewport?.screenX ?: 0, viewport?.screenY ?: 0)
@@ -401,10 +397,7 @@ open class UIElement : UIBounds() {
     }
 
     fun clipEnd() {
-        val rect = ScissorStack.popScissor()
-        if (rect != null) {
-            RectangleStack.pop()
-        }
+        ScissorStack.popScissor()
     }
 
 

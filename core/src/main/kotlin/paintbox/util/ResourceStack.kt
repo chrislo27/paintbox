@@ -84,9 +84,7 @@ abstract class ResourceStack<T>(initialCapacity: Int = 64) {
     }
 }
 
-/**
- * A convenience singleton for implementing temporary, pooled [com.badlogic.gdx.graphics.Color]s in a stack method.
- */
+@Deprecated("ResourceStack<Color> is too CPU-heavy. Use new objects instead (or make a static instance)")
 object ColorStack : ResourceStack<Color>() {
 
     override fun newObject(): Color {
@@ -98,6 +96,7 @@ object ColorStack : ResourceStack<Color>() {
     }
 }
 
+@Deprecated("ResourceStack<Rectangle> is too CPU-heavy. Use new objects instead (or make a static instance)")
 object RectangleStack : ResourceStack<Rectangle>() {
 
     override fun newObject(): Rectangle {
@@ -109,6 +108,7 @@ object RectangleStack : ResourceStack<Rectangle>() {
     }
 }
 
+@Deprecated("ResourceStack<Vector2> is too CPU-heavy. Use new objects instead (or make a static instance)")
 object Vector2Stack : ResourceStack<Vector2>() {
 
     override fun newObject(): Vector2 {
@@ -120,6 +120,7 @@ object Vector2Stack : ResourceStack<Vector2>() {
     }
 }
 
+@Deprecated("ResourceStack<Vector3> is too CPU-heavy. Use new objects instead (or make a static instance)")
 object Vector3Stack : ResourceStack<Vector3>() {
 
     override fun newObject(): Vector3 {
@@ -131,6 +132,7 @@ object Vector3Stack : ResourceStack<Vector3>() {
     }
 }
 
+@Deprecated("ResourceStack<Matrix4> is too CPU-heavy. Use new objects instead (or make a static instance)")
 object Matrix4Stack : ResourceStack<Matrix4>() {
 
     override fun newObject(): Matrix4 {

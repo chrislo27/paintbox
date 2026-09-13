@@ -15,7 +15,6 @@ import paintbox.ui.skin.DefaultSkins
 import paintbox.ui.skin.Skin
 import paintbox.ui.skin.SkinFactory
 import paintbox.util.ColorStack
-import paintbox.util.Vector2Stack
 import paintbox.util.gdxutils.*
 import kotlin.math.max
 import kotlin.math.min
@@ -508,7 +507,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
     }
 
     protected fun moveCaretFromMouse(event: MouseInputEvent) {
-        val lastMouseInside: Vector2 = this.getPosRelativeToRoot(Vector2Stack.getAndPush())
+        val lastMouseInside: Vector2 = this.getPosRelativeToRoot(Vector2())
         lastMouseInside.x = event.x - lastMouseInside.x
         lastMouseInside.y = event.y - lastMouseInside.y
 
@@ -538,7 +537,6 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
             }
         }
 
-        Vector2Stack.pop()
         resetCaretBlinkTimer()
     }
 

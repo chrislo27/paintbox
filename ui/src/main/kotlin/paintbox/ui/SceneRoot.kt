@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.viewport.Viewport
@@ -12,7 +13,6 @@ import paintbox.Paintbox
 import paintbox.binding.*
 import paintbox.ui.animation.AnimationHandler
 import paintbox.ui.contextmenu.ContextMenu
-import paintbox.util.RectangleStack
 import paintbox.util.gdxutils.drawRect
 import paintbox.util.viewport.NoOpViewport
 
@@ -155,16 +155,15 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
 
         animations.frameUpdate(Gdx.graphics.deltaTime)
 
+        val layerCurrentClipRect = Rectangle()
         for (layer in allLayers) {
             val layerRoot = layer.root
             val layerBounds = layerRoot.bounds
             val originX = layerBounds.x.get()
             val originY = layerBounds.y.get() + layerBounds.height.get()
 
-            val currentClipRect = RectangleStack.getAndPush()
-                .set(layerBounds.x.get(), layerBounds.y.get(), layerBounds.width.get(), layerBounds.height.get())
-            layerRoot.render(originX, originY, batch, currentClipRect, layerBounds.x.get(), layerBounds.y.get())
-            RectangleStack.pop()
+            layerCurrentClipRect.set(layerBounds.x.get(), layerBounds.y.get(), layerBounds.width.get(), layerBounds.height.get())
+            layerRoot.render(originX, originY, batch, layerCurrentClipRect, layerBounds.x.get(), layerBounds.y.get())
         }
 
         val drawOutlines = Paintbox.uiDebugOutlines.getOrCompute()
