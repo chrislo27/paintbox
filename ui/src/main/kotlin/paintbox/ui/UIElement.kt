@@ -21,7 +21,7 @@ open class UIElement : UIBounds() {
     companion object {
 
         private val DEFAULT_MULTIPLIER_BINDING: ContextBinding<Float> = { 1f }
-        private const val CLIP_RECT_BUFFER: Float = 16f
+        private const val CHILD_CULLING_RECT_EXTRA_BUFFER: Float = 16f
 
         private var defaultFontOverride: PaintboxFont? = null
 
@@ -107,7 +107,7 @@ open class UIElement : UIBounds() {
     @Suppress("RedundantModalityModifier")
     final fun render(
         originX: Float, originY: Float, batch: SpriteBatch,
-        currentClipRect: Rectangle, uiOriginX: Float, uiOriginY: Float,
+        childCullingRect: Rectangle, uiOriginX: Float, uiOriginY: Float,
     ) {
         if (!visible.get()) return
 
@@ -128,25 +128,27 @@ open class UIElement : UIBounds() {
                 val suggestedClipWidth = childOriginBounds.width.get()
                 val suggestedClipHeight = childOriginBounds.height.get()
                 // Take the minimal area from the old clip and new rect
-                val minX = max(currentClipRect.x, suggestedClipX)
-                val minY = max(currentClipRect.y, suggestedClipY)
-                val maxX = min(currentClipRect.x + currentClipRect.width, suggestedClipX + suggestedClipWidth)
-                val maxY = min(currentClipRect.y + currentClipRect.height, suggestedClipY + suggestedClipHeight)
-                val newClipRect = RectangleStack.getAndPush().set(
-                    minX - CLIP_RECT_BUFFER, minY - CLIP_RECT_BUFFER,
-                    (maxX - minX) + CLIP_RECT_BUFFER * 2, (maxY - minY) + CLIP_RECT_BUFFER * 2
+                val minX = max(childCullingRect.x, suggestedClipX)
+                val minY = max(childCullingRect.y, suggestedClipY)
+                val maxX = min(childCullingRect.x + childCullingRect.width, suggestedClipX + suggestedClipWidth)
+                val maxY = min(childCullingRect.y + childCullingRect.height, suggestedClipY + suggestedClipHeight)
+                val newChildCullingRect = RectangleStack.getAndPush().set(
+                    minX - CHILD_CULLING_RECT_EXTRA_BUFFER,
+                    minY - CHILD_CULLING_RECT_EXTRA_BUFFER,
+                    (maxX - minX) + CHILD_CULLING_RECT_EXTRA_BUFFER * 2,
+                    (maxY - minY) + CHILD_CULLING_RECT_EXTRA_BUFFER * 2
                 )
 
                 this.renderChildren(
                     originX + childOriginX, originY - childOriginY, batch,
-                    newClipRect, newUIOriginX, newUIOriginY
+                    newChildCullingRect, newUIOriginX, newUIOriginY
                 )
 
                 RectangleStack.pop()
             } else {
                 this.renderChildren(
                     originX + childOriginX, originY - childOriginY, batch,
-                    currentClipRect, newUIOriginX, newUIOriginY
+                    childCullingRect, newUIOriginX, newUIOriginY
                 )
             }
 
@@ -168,7 +170,7 @@ open class UIElement : UIBounds() {
 
     private fun renderChildren(
         originX: Float, originY: Float, batch: SpriteBatch,
-        currentClipRect: Rectangle, uiOriginX: Float, uiOriginY: Float,
+        childCullingRect: Rectangle, uiOriginX: Float, uiOriginY: Float,
     ) {
         val children = this.children.getOrCompute()
         if (children.isEmpty()) return
@@ -178,10 +180,10 @@ open class UIElement : UIBounds() {
             val childX = uiOriginX + child.bounds.x.get()
             val childY = uiOriginY + child.bounds.y.get()
             tmpRect.set(childX, childY, child.bounds.width.get(), child.bounds.height.get())
-            if (!tmpRect.intersects(currentClipRect)) {
+            if (!tmpRect.intersects(childCullingRect)) {
                 continue
             }
-            child.render(originX, originY, batch, currentClipRect, uiOriginX, uiOriginY)
+            child.render(originX, originY, batch, childCullingRect, uiOriginX, uiOriginY)
         }
         RectangleStack.pop()
     }
