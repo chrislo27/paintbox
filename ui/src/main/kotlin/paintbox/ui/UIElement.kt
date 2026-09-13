@@ -7,8 +7,6 @@ import com.badlogic.gdx.math.Vector2
 import paintbox.PaintboxGame
 import paintbox.binding.*
 import paintbox.font.PaintboxFont
-import paintbox.ui.UIElement.Companion.clearDefaultFontOverride
-import paintbox.ui.UIElement.Companion.defaultFont
 import paintbox.ui.area.ReadOnlyBounds
 import paintbox.ui.border.Border
 import paintbox.ui.border.NoBorder
@@ -29,7 +27,7 @@ open class UIElement : UIBounds() {
 
         /**
          * The default font to use in various controls.
-         * Defaults to [PaintboxGame.gameInstance.defaultFonts.debugFont][PaintboxGame.defaultFonts.debugFont], but can be overridden.
+         * Defaults to [PaintboxGame.gameInstance.defaultFonts.debugFont][paintbox.DefaultFonts.debugFont], but can be overridden.
          * @see clearDefaultFontOverride
          */
         var defaultFont: PaintboxFont
@@ -48,8 +46,8 @@ open class UIElement : UIBounds() {
 
     val parent: Var<UIElement?> = Var(null)
 
-    private val _children: Var<List<UIElement>> = Var(emptyList())
-    val children: ReadOnlyVar<List<UIElement>> get() = _children
+    val children: ReadOnlyVar<List<UIElement>>
+        field: Var<List<UIElement>> = Var(emptyList())
 
     val inputListeners: Var<List<InputEventListener>> = Var(emptyList())
     val sceneRoot: ReadOnlyVar<SceneRoot?> = Var {
@@ -195,14 +193,14 @@ open class UIElement : UIBounds() {
      * Adds the [child] at the given [atIndex] of this [UIElement]'s children list.
      */
     fun addChild(atIndex: Int, child: UIElement): Boolean {
-        val children = this._children.getOrCompute()
+        val children = children.getOrCompute()
         if (child !in children) {
             child.parent.getOrCompute()?.removeChild(child)
 
             val childrenCopy = ArrayList<UIElement>(children.size + 1)
             childrenCopy.addAll(children)
             childrenCopy.add(atIndex, child)
-            this._children.set(childrenCopy)
+            this.children.set(childrenCopy)
             child.parent.set(this)
             this.onChildAdded(child, atIndex)
             child.onAddedToParent(this)
@@ -238,7 +236,7 @@ open class UIElement : UIBounds() {
      * If the [index] is not in bounds, no action is taken.
      */
     fun removeChild(index: Int): Boolean {
-        val children = this._children.getOrCompute()
+        val children = children.getOrCompute()
         if (index !in children.indices) return false
 
         val child = children[index]
@@ -248,7 +246,7 @@ open class UIElement : UIBounds() {
             childSceneRoot?.setFocusedElement(null)
         }
 
-        this._children.set(children.toMutableList().apply {
+        this.children.set(children.toMutableList().apply {
             removeAt(index)
         })
         child.parent.set(null)

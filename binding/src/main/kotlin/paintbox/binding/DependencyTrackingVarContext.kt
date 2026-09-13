@@ -6,41 +6,41 @@ package paintbox.binding
  */
 class DependencyTrackingVarContext : VarContext {
 
-    private val _dependencies: MutableSet<ReadOnlyVar<Any?>> = LinkedHashSet(2)
-    val dependencies: Set<ReadOnlyVar<Any?>> get() = _dependencies
+    val dependencies: Set<ReadOnlyVar<Any?>>
+        field: MutableSet<ReadOnlyVar<Any?>> = LinkedHashSet(2)
 
     override fun <R> bindAndGet(varr: ReadOnlyVar<R>): R {
-        _dependencies += varr
+        dependencies += varr
         return varr.getOrCompute()
     }
 
     override fun ReadOnlyFloatVar.use(): Float {
-        _dependencies += this
+        dependencies += this
         return this.get()
     }
 
     override fun ReadOnlyBooleanVar.use(): Boolean {
-        _dependencies += this
+        dependencies += this
         return this.get()
     }
 
     override fun ReadOnlyIntVar.use(): Int {
-        _dependencies += this
+        dependencies += this
         return this.get()
     }
 
     override fun ReadOnlyLongVar.use(): Long {
-        _dependencies += this
+        dependencies += this
         return this.get()
     }
 
     override fun ReadOnlyDoubleVar.use(): Double {
-        _dependencies += this
+        dependencies += this
         return this.get()
     }
 
     override fun ReadOnlyCharVar.use(): Char {
-        _dependencies += this
+        dependencies += this
         return this.get()
     }
 }

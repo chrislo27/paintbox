@@ -14,8 +14,8 @@ class ToggleGroup {
 
     private val linkedToggles: MutableMap<Toggle, Metadata> = mutableMapOf()
 
-    private val _activeToggle: Var<Toggle?> = Var(null)
-    val activeToggle: ReadOnlyVar<Toggle?> get() = _activeToggle
+    val activeToggle: ReadOnlyVar<Toggle?>
+        field: Var<Toggle?> = Var(null)
 
     fun addToggle(toggle: Toggle) {
         val toggleCurrentGroup = toggle.toggleGroup.getOrCompute()
@@ -33,7 +33,7 @@ class ToggleGroup {
             val currentActive = activeToggle.getOrCompute()
             if (toggle.selectedState.get()) {
                 if (currentActive == null || currentActive !== toggle) {
-                    _activeToggle.set(toggle)
+                    activeToggle.set(toggle)
                 }
             }
         }
@@ -44,13 +44,13 @@ class ToggleGroup {
         if (metadata != null) toggle.selectedState.removeListener(metadata.listener)
         toggle.toggleGroup.set(null)
         if (activeToggle.getOrCompute() === toggle) {
-            _activeToggle.set(null)
+            activeToggle.set(null)
         }
     }
 
     private fun update(property: ReadOnlyVar<Boolean>, toggle: Toggle) {
         if (property.getOrCompute()) {
-            _activeToggle.set(toggle)
+            activeToggle.set(toggle)
             // Update the other Toggles to be false (unless the property is the same)
             linkedToggles.keys.toList().forEach { t ->
                 if (t !== toggle) {
@@ -61,8 +61,8 @@ class ToggleGroup {
                 }
             }
         } else {
-            if (_activeToggle.getOrCompute() === toggle) {
-                _activeToggle.set(null)
+            if (activeToggle.getOrCompute() === toggle) {
+                activeToggle.set(null)
             }
         }
     }
