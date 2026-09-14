@@ -2,7 +2,7 @@ package paintbox.util.gdxutils
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
@@ -15,10 +15,10 @@ import kotlin.contracts.contract
  */
 @OptIn(ExperimentalContracts::class)
 inline fun ShapeRenderer.prepareStencilMask(
-    batch: SpriteBatch, clearDepthBuffer: Boolean = true,
+    batch: Batch, clearDepthBuffer: Boolean = true,
     inverted: Boolean = false,
     drawing: ShapeRenderer.() -> Unit,
-): SpriteBatch {
+): Batch {
     contract {
         callsInPlace(drawing, InvocationKind.AT_MOST_ONCE)
     }
@@ -47,7 +47,7 @@ inline fun ShapeRenderer.prepareStencilMask(
 }
 
 @OptIn(ExperimentalContracts::class)
-inline fun SpriteBatch.useStencilMask(drawing: () -> Unit) {
+inline fun Batch.useStencilMask(drawing: () -> Unit) {
     contract {
         callsInPlace(drawing, InvocationKind.EXACTLY_ONCE)
     }

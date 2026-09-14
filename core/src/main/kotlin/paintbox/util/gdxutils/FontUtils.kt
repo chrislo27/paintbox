@@ -1,9 +1,9 @@
 package paintbox.util.gdxutils
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator
 import com.badlogic.gdx.utils.Align
 import com.badlogic.gdx.utils.Pool
@@ -59,7 +59,7 @@ fun BitmapFont.scaleMul(coefficient: Float) {
 }
 
 fun BitmapFont.drawCompressed(
-    batch: SpriteBatch, text: String, x: Float, y: Float, width: Float,
+    batch: Batch, text: String, x: Float, y: Float, width: Float,
     align: Int,
 ): GlyphLayout {
     val font = this
@@ -81,7 +81,7 @@ fun BitmapFont.drawCompressed(
 }
 
 fun BitmapFont.drawConstrained(
-    batch: SpriteBatch, text: String, x: Float, y: Float, width: Float, height: Float,
+    batch: Batch, text: String, x: Float, y: Float, width: Float, height: Float,
     align: Int,
 ): GlyphLayout {
     val font = this
