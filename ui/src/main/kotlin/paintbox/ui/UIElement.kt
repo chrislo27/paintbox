@@ -20,7 +20,7 @@ open class UIElement : UIBounds() {
     companion object {
 
         private val DEFAULT_MULTIPLIER_BINDING: ContextBinding<Float> = { 1f }
-        private const val CHILD_CULLING_RECT_EXTRA_BUFFER: Float = 16f
+        const val DEFAULT_CHILD_CULLING_RECT_EXTRA_BUFFER: Float = 16f
 
         private var defaultFontOverride: PaintboxFont? = null
 
@@ -137,11 +137,12 @@ open class UIElement : UIBounds() {
                 val minY = max(childCullingRect.y, suggestedClipY)
                 val maxX = min(childCullingRect.x + childCullingRect.width, suggestedClipX + suggestedClipWidth)
                 val maxY = min(childCullingRect.y + childCullingRect.height, suggestedClipY + suggestedClipHeight)
+                val extraBuffer = getClippingChildCullingRectBuffer()
                 val newChildCullingRect = Rectangle(
-                    minX - CHILD_CULLING_RECT_EXTRA_BUFFER,
-                    minY - CHILD_CULLING_RECT_EXTRA_BUFFER,
-                    (maxX - minX) + CHILD_CULLING_RECT_EXTRA_BUFFER * 2,
-                    (maxY - minY) + CHILD_CULLING_RECT_EXTRA_BUFFER * 2
+                    minX - extraBuffer,
+                    minY - extraBuffer,
+                    (maxX - minX) + extraBuffer * 2,
+                    (maxY - minY) + extraBuffer * 2
                 )
 
                 this.renderChildren(
@@ -191,6 +192,8 @@ open class UIElement : UIBounds() {
 
     protected open fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
     }
+    
+    protected open fun getClippingChildCullingRectBuffer(): Float = DEFAULT_CHILD_CULLING_RECT_EXTRA_BUFFER
 
     /**
      * Adds the [child] at the given [atIndex] of this [UIElement]'s children list.
