@@ -6,7 +6,7 @@ import com.badlogic.gdx.Screen
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Graphics
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import org.lwjgl.glfw.GLFW
 import paintbox.PaintboxGame
@@ -156,7 +156,7 @@ internal class TestColorElement(val color: Color) : UIElement() {
         }
     }
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         val renderBounds = this.paddingZone
         val x = renderBounds.x.get() + originX
         val y = originY - renderBounds.y.get()

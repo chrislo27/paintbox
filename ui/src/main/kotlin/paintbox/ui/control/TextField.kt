@@ -3,8 +3,8 @@ package paintbox.ui.control
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.utils.Align
@@ -604,7 +604,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
         setSelectionStart(-1)
     }
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         val delta = Gdx.graphics.deltaTime
         caretBlinkTimer += delta
         if (keymode != KeyMode.NONE && keyRepeatTimer > 0f) {
@@ -622,7 +622,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
 
     open class TextFieldSkin(element: TextField) : Skin<TextField>(element) {
 
-        override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+        override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
             val renderBounds = element.contentZone
             val rectX = renderBounds.x.get() + originX
             val rectY = originY - renderBounds.y.get()
@@ -700,7 +700,7 @@ open class TextField(font: PaintboxFont = UIElement.defaultFont) : Control<TextF
             batch.packedColor = lastPackedColor
         }
 
-        override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
+        override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: Batch) {
         }
     }
 }

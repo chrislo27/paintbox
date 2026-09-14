@@ -1,7 +1,7 @@
 package paintbox.ui.element
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import paintbox.binding.ContextBinding
 import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
@@ -23,7 +23,7 @@ open class RectElement(initColor: Color) : UIElement() {
         color.bind(bindable)
     }
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         val renderBounds = this.paddingZone
         val x = renderBounds.x.get() + originX
         val y = originY - renderBounds.y.get()

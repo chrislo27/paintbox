@@ -1,9 +1,9 @@
 package paintbox.font
 
 import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Align
 import paintbox.binding.BooleanVar
@@ -398,7 +398,7 @@ class TextBlock(val runs: TextRunList) {
      * Same as calling [drawCompressed] with compressText = false.
      */
     fun draw(
-        batch: SpriteBatch, x: Float, y: Float, align: TextAlign = TextAlign.LEFT,
+        batch: Batch, x: Float, y: Float, align: TextAlign = TextAlign.LEFT,
         scaleX: Float = 1f, scaleY: Float = 1f, alignAffectsRender: Boolean = false,
     ) {
         drawCompressed(
@@ -418,7 +418,7 @@ class TextBlock(val runs: TextRunList) {
      * the [maxWidth]. If [alignAffectsRender] was false, then the entire block is rendered left-aligned.
      */
     fun drawCompressed(
-        batch: SpriteBatch, x: Float, y: Float, maxWidth: Float,
+        batch: Batch, x: Float, y: Float, maxWidth: Float,
         align: TextAlign = TextAlign.LEFT, scaleX: Float = 1f, scaleY: Float = 1f,
         alignAffectsRender: Boolean = false, compressText: Boolean = true,
     ) {

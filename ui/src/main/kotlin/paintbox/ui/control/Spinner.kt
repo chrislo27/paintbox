@@ -1,6 +1,6 @@
 package paintbox.ui.control
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import paintbox.binding.BooleanVar
 import paintbox.binding.FloatVar
 import paintbox.binding.ReadOnlyFloatVar
@@ -116,10 +116,10 @@ open class Spinner(
 
     open class SpinnerSkin(element: Spinner) : Skin<Spinner>(element) {
 
-        override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+        override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         }
 
-        override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
+        override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: Batch) {
         }
     }
 }

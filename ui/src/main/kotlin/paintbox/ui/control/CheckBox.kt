@@ -1,7 +1,7 @@
 package paintbox.ui.control
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import paintbox.PaintboxGame
 import paintbox.binding.*
@@ -128,11 +128,11 @@ open class CheckBox(text: String, font: PaintboxFont = UIElement.defaultFont) : 
 
 open class CheckBoxSkin(element: CheckBox) : Skin<CheckBox>(element) {
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         // NO-OP
     }
 
-    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: Batch) {
         // NO-OP
     }
 

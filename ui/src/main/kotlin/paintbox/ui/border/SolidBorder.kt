@@ -1,7 +1,7 @@
 package paintbox.ui.border
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import paintbox.PaintboxGame
 import paintbox.binding.BooleanVar
@@ -33,7 +33,7 @@ class SolidBorder(initColor: Color) : Border {
         color.bind(binding)
     }
 
-    override fun renderBorder(originX: Float, originY: Float, batch: SpriteBatch, element: UIElement) {
+    override fun renderBorder(originX: Float, originY: Float, batch: Batch, element: UIElement) {
         val insets = element.border.getOrCompute()
         if (insets == Insets.ZERO) return
 

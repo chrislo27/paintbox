@@ -2,7 +2,7 @@ package paintbox.ui.control
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import paintbox.binding.FloatVar
 import paintbox.binding.ReadOnlyFloatVar
 import paintbox.binding.Var
@@ -204,7 +204,7 @@ open class ScrollPaneSkin(element: ScrollPane) : Skin<ScrollPane>(element) {
 
     val bgColor: Var<Color> = Var(Color(0.94f, 0.94f, 0.94f, 0f))
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         val contentBounds = element.contentZone
         val rectX = contentBounds.x.get() + originX
         val rectY = originY - contentBounds.y.get()
@@ -220,6 +220,6 @@ open class ScrollPaneSkin(element: ScrollPane) : Skin<ScrollPane>(element) {
         batch.packedColor = lastPackedColor
     }
 
-    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: Batch) {
     }
 }

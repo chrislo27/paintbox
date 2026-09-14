@@ -1,7 +1,7 @@
 package paintbox.ui
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.utils.Align
 import paintbox.binding.BooleanVar
 import paintbox.binding.IntVar
@@ -30,7 +30,7 @@ open class TextBlockNode(textBlock: TextBlock = TextBlock(emptyList())) : UIElem
     constructor(font: PaintboxFont, text: String, color: Color = Color.WHITE, scale: Float = 1f)
             : this(TextBlock(listOf(TextRun(font, text, color, scale, scale))))
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         val text = textBlock.getOrCompute()
         if (text.runs.isEmpty()) return
 

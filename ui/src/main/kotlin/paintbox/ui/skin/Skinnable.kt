@@ -1,6 +1,6 @@
 package paintbox.ui.skin
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import paintbox.binding.ReadOnlyVar
 import paintbox.binding.Var
 import paintbox.ui.ActionablePane
@@ -23,11 +23,11 @@ abstract class Skinnable<SELF> : ActionablePane() {
 
     abstract fun getDefaultSkinID(): String
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         skin.getOrCompute().renderSelf(originX, originY, batch)
     }
 
-    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: Batch) {
         skin.getOrCompute().renderSelfAfterChildren(originX, originY, batch)
     }
 }

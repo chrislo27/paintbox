@@ -1,7 +1,7 @@
 package paintbox.ui
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.utils.Align
@@ -58,7 +58,7 @@ open class ImageNode(
         scaleY.bind(scale)
     }
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         val tex = textureRegion.getOrCompute()
         if (tex != null) {
             val old = batch.packedColor
@@ -160,7 +160,7 @@ open class ImageWindowNode(tex: TextureRegion? = null) : UIElement() {
         textureRegion.bind(binding)
     }
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         val tex = textureRegion.getOrCompute()
         if (tex != null) {
             val old = batch.packedColor

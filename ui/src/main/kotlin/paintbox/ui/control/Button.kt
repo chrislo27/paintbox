@@ -1,7 +1,7 @@
 package paintbox.ui.control
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.utils.Align
 import paintbox.PaintboxGame
@@ -132,7 +132,7 @@ open class ButtonSkin(element: Button) : Skin<Button>(element) {
         }
     }
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         val paddingBounds = element.paddingZone
         val rectX = paddingBounds.x.get() + originX
         val rectY = originY - paddingBounds.y.get()
@@ -233,7 +233,7 @@ open class ButtonSkin(element: Button) : Skin<Button>(element) {
         batch.packedColor = lastPackedColor
     }
 
-    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: Batch) {
         // NO-OP
     }
 

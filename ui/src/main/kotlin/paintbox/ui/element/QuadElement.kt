@@ -2,7 +2,7 @@ package paintbox.ui.element
 
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import paintbox.PaintboxGame
 import paintbox.binding.ContextBinding
 import paintbox.binding.FloatVar
@@ -106,7 +106,7 @@ open class QuadElement(initTopLeft: Color, initTopRight: Color, initBottomLeft: 
         bottomRightColor.bind(bottom)
     }
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         val renderBounds = this.paddingZone
         val x = renderBounds.x.get() + originX
         val y = originY - renderBounds.y.get()

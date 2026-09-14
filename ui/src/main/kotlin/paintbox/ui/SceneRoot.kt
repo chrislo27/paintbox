@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
@@ -143,7 +143,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         (allLayers - mainLayer).forEach { l -> (l.root.sceneRoot as Var).set(this) }
     }
 
-    fun renderAsRoot(batch: SpriteBatch) {
+    fun renderAsRoot(batch: Batch) {
         if (applyViewport.get()) {
             viewport.apply()
         }
@@ -184,11 +184,11 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         }
     }
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         // NO-OP
     }
 
-    private fun UIElement.drawDebugRect(originX: Float, originY: Float, batch: SpriteBatch, onlyVisible: Boolean) {
+    private fun UIElement.drawDebugRect(originX: Float, originY: Float, batch: Batch, onlyVisible: Boolean) {
         val thisBounds = this.bounds
         val x = originX + thisBounds.x.get()
         val y = originY - thisBounds.y.get()
@@ -204,7 +204,7 @@ class SceneRoot(val viewport: Viewport) : UIElement() {
         }
     }
 
-    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: Batch) {
         super.renderSelfAfterChildren(originX, originY, batch)
     }
 

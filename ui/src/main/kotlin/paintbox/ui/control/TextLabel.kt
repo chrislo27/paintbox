@@ -2,7 +2,7 @@ package paintbox.ui.control
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.utils.Align
 import paintbox.binding.*
 import paintbox.font.*
@@ -250,7 +250,7 @@ open class TextLabelSkin(element: TextLabel) : Skin<TextLabel>(element) {
         }
     }
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         val text = element.internalTextBlock.getOrCompute()
         if (text.runs.isEmpty()) return
 
@@ -317,7 +317,7 @@ open class TextLabelSkin(element: TextLabel) : Skin<TextLabel>(element) {
         batch.packedColor = lastPackedColor
     }
 
-    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: Batch) {
         // NO-OP
     }
 
@@ -352,7 +352,7 @@ class ScrollingTextLabelSkin(element: TextLabel) : TextLabelSkin(element) {
         pauseTimer = wrapAroundPauseSec.get()
     }
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         val text = element.internalTextBlock.getOrCompute()
         if (text.runs.isEmpty()) {
             return
@@ -467,7 +467,7 @@ class ScrollingTextLabelSkin(element: TextLabel) : TextLabelSkin(element) {
         batch.packedColor = lastPackedColor
     }
 
-    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: Batch) {
         // NO-OP
     }
 

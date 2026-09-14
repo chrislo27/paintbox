@@ -1,7 +1,7 @@
 package paintbox.ui.control
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector2
 import paintbox.PaintboxGame
@@ -130,7 +130,7 @@ open class Slider : Control<Slider>() {
         val circleSizeMultiplier: FloatVar = FloatVar(1f)
         val barHeightMultiplier: FloatVar = FloatVar(1f)
 
-        override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+        override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
             val contentBounds = element.contentZone
             val rectX = contentBounds.x.get() + originX
             val rectY = originY - contentBounds.y.get()
@@ -181,7 +181,7 @@ open class Slider : Control<Slider>() {
             batch.packedColor = lastPackedColor
         }
 
-        override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
+        override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: Batch) {
         }
     }
 }

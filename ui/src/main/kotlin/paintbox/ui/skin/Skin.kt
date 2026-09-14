@@ -1,6 +1,6 @@
 package paintbox.ui.skin
 
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import paintbox.ui.UIElement
 
 
@@ -10,9 +10,9 @@ import paintbox.ui.UIElement
  */
 abstract class Skin<Element>(open val element: Element) {
 
-    abstract fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch)
+    abstract fun renderSelf(originX: Float, originY: Float, batch: Batch)
 
-    abstract fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch)
+    abstract fun renderSelfAfterChildren(originX: Float, originY: Float, batch: Batch)
 
 }
 

@@ -1,7 +1,7 @@
 package paintbox.ui.element
 
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import paintbox.PaintboxGame
 import paintbox.binding.ContextBinding
@@ -30,7 +30,7 @@ open class RoundedRectElement(initColor: Color) : UIElement() {
         color.bind(bindable)
     }
 
-    override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         val renderBounds = this.paddingZone
         val rectX = renderBounds.x.get() + originX
         val rectY = originY - renderBounds.y.get()

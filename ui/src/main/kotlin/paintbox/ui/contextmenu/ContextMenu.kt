@@ -2,7 +2,7 @@ package paintbox.ui.contextmenu
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.utils.Align
 import paintbox.binding.BooleanVar
 import paintbox.binding.FloatVar
@@ -347,10 +347,10 @@ open class ContextMenu : Control<ContextMenu>() {
 
     open class ContextMenuSkin(element: ContextMenu) : Skin<ContextMenu>(element) {
 
-        override fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+        override fun renderSelf(originX: Float, originY: Float, batch: Batch) {
         }
 
-        override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
+        override fun renderSelfAfterChildren(originX: Float, originY: Float, batch: Batch) {
         }
     }
 

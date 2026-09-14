@@ -1,7 +1,7 @@
 package paintbox.ui
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import paintbox.PaintboxGame
@@ -105,7 +105,7 @@ open class UIElement : UIBounds() {
 
     @Suppress("RedundantModalityModifier")
     final fun render(
-        originX: Float, originY: Float, batch: SpriteBatch,
+        originX: Float, originY: Float, batch: Batch,
         childCullingRect: Rectangle, uiOriginX: Float, uiOriginY: Float,
     ) {
         if (!visible.get()) return
@@ -168,11 +168,11 @@ open class UIElement : UIBounds() {
         return true
     }
 
-    protected open fun renderSelf(originX: Float, originY: Float, batch: SpriteBatch) {
+    protected open fun renderSelf(originX: Float, originY: Float, batch: Batch) {
     }
 
     private fun renderChildren(
-        originX: Float, originY: Float, batch: SpriteBatch,
+        originX: Float, originY: Float, batch: Batch,
         childCullingRect: Rectangle, uiOriginX: Float, uiOriginY: Float,
     ) {
         val children = this.children.getOrCompute()
@@ -190,7 +190,7 @@ open class UIElement : UIBounds() {
         }
     }
 
-    protected open fun renderSelfAfterChildren(originX: Float, originY: Float, batch: SpriteBatch) {
+    protected open fun renderSelfAfterChildren(originX: Float, originY: Float, batch: Batch) {
     }
     
     protected open fun getClippingChildCullingRectBuffer(): Float = DEFAULT_CHILD_CULLING_RECT_EXTRA_BUFFER
@@ -370,7 +370,7 @@ open class UIElement : UIBounds() {
     /**
      * Begins clipping, defaulting to this UIElement's bounds. Wrap the drawing for the clip section in an
      * if statement with the return value of this function. Returns false if the resultant scissor would have zero area.
-     * Call [SpriteBatch.flush] before calling this function and before calling [clipEnd].
+     * Call [Batch.flush] before calling this function and before calling [clipEnd].
      */
     fun clipBegin(originX: Float, originY: Float, x: Float, y: Float, width: Float, height: Float): Boolean {
         val root = sceneRoot.getOrCompute()
@@ -551,8 +551,8 @@ open class UIElement : UIBounds() {
     }
 
     protected inline fun renderOptionallyWithClip(
-        originX: Float, originY: Float, batch: SpriteBatch, clip: Boolean,
-        renderFunc: (originX: Float, originY: Float, batch: SpriteBatch) -> Unit,
+        originX: Float, originY: Float, batch: Batch, clip: Boolean,
+        renderFunc: (originX: Float, originY: Float, batch: Batch) -> Unit,
     ) {
         if (clip) {
             batch.flush()
