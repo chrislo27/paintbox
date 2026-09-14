@@ -119,6 +119,12 @@ open class UIElement : UIBounds() {
         val newUIOriginY = uiOriginY + childOriginY
 
         renderOptionallyWithClip(originX, originY, batch, clip) { _, _, _ ->
+            val borderStyle = this.borderStyle.getOrCompute()
+            val doRenderBorder = shouldRenderBorder(borderStyle)
+            if (doRenderBorder) {
+                borderStyle.renderBorderBeforeSelf(originX, originY, batch, this)
+            }
+            
             this.renderSelf(originX, originY, batch)
 
             if (clip) {
@@ -151,8 +157,7 @@ open class UIElement : UIBounds() {
 
             this.renderSelfAfterChildren(originX, originY, batch)
 
-            val borderStyle = this.borderStyle.getOrCompute()
-            if (shouldRenderBorder(borderStyle)) {
+            if (doRenderBorder) {
                 borderStyle.renderBorder(originX, originY, batch, this)
             }
         }
