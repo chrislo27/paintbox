@@ -18,7 +18,10 @@ import kotlin.math.roundToInt
 class SolidBorder(initColor: Color) : Border {
 
     val color: Var<Color> = Var(Color(1f, 1f, 1f, 1f).set(initColor))
-    val roundedCorners: BooleanVar = BooleanVar(false)
+    val roundedOffCorners: BooleanVar = BooleanVar(false)
+    
+    @Deprecated("Renamed to roundedOffCorners for clarity", ReplaceWith("roundedOffCorners"))
+    val roundedCorners: BooleanVar get() = roundedOffCorners
 
     constructor() : this(Color.WHITE)
 
@@ -46,23 +49,8 @@ class SolidBorder(initColor: Color) : Border {
         val opacity = element.apparentOpacity.get()
         batch.setColor(thisColor.r, thisColor.g, thisColor.b, thisColor.a * opacity)
 
-        if (roundedCorners.get()) {
+        if (roundedOffCorners.get()) {
             val paintboxSpritesheet = PaintboxGame.gameInstance.staticAssets.paintboxSpritesheet
-//            batch.fillRect(rectX + roundedRad, rectY - rectH + roundedRad, rectW - roundedRad * 2, rectH - roundedRad * 2)
-//            batch.fillRect(rectX, rectY - rectH + roundedRad, (roundedRad).toFloat(), rectH - roundedRad * 2)
-//            batch.fillRect(rectX + rectW - roundedRad, rectY - rectH + roundedRad, (roundedRad).toFloat(), rectH - roundedRad * 2)
-//            batch.fillRect(rectX + roundedRad, rectY - rectH, rectW - roundedRad * 2, (roundedRad).toFloat())
-//            batch.fillRect(rectX + roundedRad, rectY - roundedRad, rectW - roundedRad * 2, (roundedRad).toFloat())
-//            val roundedCornersSet = roundedCorners
-//            batch.draw(if (Corner.TOP_LEFT in roundedCornersSet) roundedRect else spritesheetFill,
-//                    rectX, rectY - roundedRad, (roundedRad).toFloat(), (roundedRad).toFloat()) // TL
-//            batch.draw(if (Corner.BOTTOM_LEFT in roundedCornersSet) roundedRect else spritesheetFill,
-//                    rectX, rectY - rectH + roundedRad, (roundedRad).toFloat(), (-roundedRad).toFloat()) // BL
-//            batch.draw(if (Corner.TOP_RIGHT in roundedCornersSet) roundedRect else spritesheetFill,
-//                    rectX + rectW, rectY - roundedRad, (-roundedRad).toFloat(), (roundedRad).toFloat()) // TR
-//            batch.draw(if (Corner.BOTTOM_RIGHT in roundedCornersSet) roundedRect else spritesheetFill,
-//                    rectX + rectW, rectY - rectH + roundedRad, (-roundedRad).toFloat(), (-roundedRad).toFloat()) // BR
-
             val leftRightHeight = height - insets.bottom - insets.top
             batch.fillRect(x, y - height + insets.bottom, insets.left, leftRightHeight)
             batch.fillRect(x + width - insets.right, y - height + insets.bottom, insets.right, leftRightHeight)
